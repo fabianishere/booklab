@@ -16,8 +16,10 @@
 
 plugins {
     id "java"
+    id "jacoco"
     id "application"
     id "org.jetbrains.kotlin.jvm" version "1.2.40"
+    id "org.jmailen.kotlinter" version "1.11.2"
 }
 
 mainClassName = "nl.tudelft.booklab.backend.LauncherKt"
@@ -32,4 +34,24 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:1.2.40"
+
+    testCompile 'org.jetbrains.kotlin:kotlin-test-junit:1.2.40'
+    testCompile "org.junit.jupiter:junit-jupiter-api:5.1.1"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:5.1.1"
+    testRuntime "org.junit.platform:junit-platform-launcher:1.1.1"
+}
+
+/* Configure test setup */
+test {
+    useJUnitPlatform {}
+
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+    }
+
+    reports {
+        html.enabled = true
+    }
+
+    finalizedBy jacocoTestReport
 }
