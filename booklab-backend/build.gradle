@@ -50,7 +50,8 @@ dependencies {
     testRuntime "org.junit.jupiter:junit-jupiter-engine:5.1.1"
     testRuntime "org.junit.platform:junit-platform-launcher:1.1.1"
 
-    implementation "org.bytedeco.javacpp-presets:opencv:3.4.1-1.4.1"
+    compile group: 'org.openpnp', name: 'opencv', version: '3.2.0-1'
+
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
 }
