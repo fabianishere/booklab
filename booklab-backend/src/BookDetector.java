@@ -19,14 +19,21 @@ public class BookDetector {
     }
 
     public static void detectBook() {
-        String path = System.getProperty("user.dir");
-        Mat im = imread(path + "/booklab-backend/src/bookshelf.jpg");
         Mat hierarchy = new Mat();
         Mat gray = new Mat();
-        cvtColor(im, gray, COLOR_BGR2GRAY);
+        Mat edges = new Mat();
         java.util.List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        findContours(gray, contours, hierarchy,RETR_TREE, CHAIN_APPROX_SIMPLE);
         Scalar color = new Scalar(0, 255, 0);
+
+        String path = System.getProperty("user.dir");
+        Mat im = imread(path + "/booklab-backend/src/bookshelf.jpg");
+
+        cvtColor(im, gray, COLOR_BGR2GRAY);
+
+        Canny(gray, edges, 0, 100);
+
+        findContours(edges, contours, hierarchy,RETR_TREE, CHAIN_APPROX_SIMPLE);
+
         drawContours(im, contours, -1, color);
 
         System.out.println(hierarchy.toString());
