@@ -12,7 +12,6 @@ import static org.opencv.imgproc.Imgproc.*;
 
 public class BookDetector {
 
-
     static {
         nu.pattern.OpenCV.loadShared();
         System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
