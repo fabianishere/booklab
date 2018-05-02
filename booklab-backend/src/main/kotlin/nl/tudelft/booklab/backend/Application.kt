@@ -41,7 +41,7 @@ fun Application.booklab() {
 
     routing {
         // Install the REST api at a versioned endpoint.
-        route("/api/v1") {
+        route("/api") {
             api()
         }
     }

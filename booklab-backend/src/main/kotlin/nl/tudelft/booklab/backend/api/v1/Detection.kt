@@ -16,15 +16,16 @@
 
 package nl.tudelft.booklab.backend.api.v1
 
+import io.ktor.application.call
+import io.ktor.response.respond
 import io.ktor.routing.Route
-import io.ktor.routing.route
+import io.ktor.routing.put
 
 /**
- * Describe the routes for the REST API of the BookLab backend.
+ * Define detection endpoints at the current route for the REST api.
  */
-fun Route.api() {
-    route("detection") {
-        detection()
+fun Route.detection() {
+    put {
+        call.respond("jeej ik heb iets ontvangen")
     }
-    meta()
 }
