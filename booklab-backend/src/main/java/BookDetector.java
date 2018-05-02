@@ -25,7 +25,7 @@ public class BookDetector {
         Scalar color = new Scalar(0, 255, 0);
 
         String path = System.getProperty("user.dir");
-        Mat im = imread(path + "/booklab-backend/src/bookshelf.jpg");
+        Mat im = imread(path + "/booklab-backend/src/main/java/bookshelf.jpg");
 
         cvtColor(im, gray, COLOR_BGR2GRAY);
 

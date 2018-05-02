@@ -23,8 +23,8 @@ public class BasicTesseractExampleTest {
         }
 
         // Open input image with leptonica library
-       //PIX image = pixRead("C:/Users/Vera/Documents/ms1/booklab-backend/src/test/java/test.png");
-        PIX image = pixRead("C:/Users/Vera/Documents/ms1/booklab-backend/src/main/java/bookshelfrotate.jpg");
+        String path = System.getProperty("user.dir");
+        PIX image = pixRead(path+"/src/test/java/test.png");
         api.SetImage(image);
         // Get OCR result
         outText = api.GetUTF8Text();
