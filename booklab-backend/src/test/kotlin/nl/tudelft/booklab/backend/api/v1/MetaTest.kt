@@ -27,10 +27,10 @@ import io.ktor.server.testing.contentType
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
 import nl.tudelft.booklab.backend.booklab
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 /**
  * Unit test suite for the meta endpoint of the BookLab REST api.

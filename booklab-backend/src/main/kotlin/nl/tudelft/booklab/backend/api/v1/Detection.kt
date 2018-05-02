@@ -17,7 +17,6 @@
 package nl.tudelft.booklab.backend.api.v1
 
 import io.ktor.application.call
-import io.ktor.request.receiveStream
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.put
@@ -27,12 +26,20 @@ import io.ktor.routing.put
  */
 fun Route.detection() {
     put {
-        val file = createTempFile("test-image.jpg")
-        call.receiveStream().use { its ->
-            file.outputStream().buffered().use {
-                its.copyTo(it)
-            }
-        }
-        call.respond("received image")
+        // We only provide a mocked interface for now.
+        // As soon as the book detection algorithm is implemented,
+        // we will actually return interesting results.
+        call.respond(DetectionResult(listOf(
+            Book("9789026339592", "De dag van de doden"),
+            Book("9789026336904", "Achter gesloten deuren"),
+            Book("9789402752663", "Goede dochter")
+        )))
     }
 }
+
+/**
+ * The shape of the result given by the detection endpoint.
+ */
+data class DetectionResult(val results: List<Book>)
+
+data class Book(val isbn: String, val title: String)

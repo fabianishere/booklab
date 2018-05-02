@@ -18,15 +18,17 @@ package nl.tudelft.booklab.backend.api.v1
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import io.ktor.application.Application
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
 import nl.tudelft.booklab.backend.booklab
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
 
 /**
  * Unit test suite for the detection endpoint of the BookLab REST api.
@@ -45,9 +47,11 @@ internal class DetectionTest {
     }
 
     @Test
-    fun `put confirms that it received something`() = withTestApplication(Application::booklab) {
+    fun `put returns proper interface`() = withTestApplication(Application::booklab) {
         with(handleRequest(HttpMethod.Put, "/api/detection")) {
             assertEquals(HttpStatusCode.OK, response.status())
+            val response: DetectionResult? = response.content?.let { mapper.readValue(it) }
+            assertNotNull(response)
         }
     }
 }

@@ -48,7 +48,6 @@ dependencies {
     runtime "org.slf4j:slf4j-jdk14:1.7.25"
 
 
-    testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     testCompile "org.junit.jupiter:junit-jupiter-api:$jupiter_version"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:$jupiter_version"
     testRuntime "org.junit.platform:junit-platform-launcher:1.1.1"
