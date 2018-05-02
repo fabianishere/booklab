@@ -6,8 +6,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.StrictMath.max;
-import static org.opencv.imgproc.Imgproc.Canny;
-import static org.opencv.imgproc.Imgproc.equalizeHist;
+import static org.opencv.imgcodecs.Imgcodecs.imread;
+import static org.opencv.imgcodecs.Imgcodecs.imwrite;
+import static org.opencv.imgproc.Imgproc.*;
 
 public class ImgProcessHelper {
     public static Mat colorhist_equalize(Mat img){
@@ -66,5 +67,44 @@ public class ImgProcessHelper {
 //        Log.d(TAG, String.format("getMedian() = %d", med));
 
         return med;
+    }
+
+    @Deprecated
+    public static void detectBookHoughLines() {
+        Mat hierarchy = new Mat();
+        Mat gray = new Mat();
+        Mat canny = new Mat();
+        Mat blur = new Mat();
+        Mat lines = new Mat();
+
+        java.util.List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        Scalar color = new Scalar(0, 255, 0);
+
+        String path = System.getProperty("user.dir");
+        Mat im = imread(path + "/booklab-backend/resources/bookshelf.jpg");
+
+        cvtColor(im, gray, COLOR_BGR2GRAY);
+        GaussianBlur(gray, blur, new Size(), 3);
+        Canny(blur, canny, 50, 150);
+        HoughLines(canny, lines, 1, Math.PI / 180, 100);
+
+        System.out.println(lines.get(1, 0));
+
+        for (int i = 0; i < lines.rows(); i++) {
+            double rho = lines.get(i, 0)[0];
+            double theta = lines.get(i, 0)[1];
+            double a = Math.cos(theta);
+            double b = Math.sin(theta);
+            double x0 = a * rho;
+            double y0 = b * rho;
+            int x1 = (int) (x0 + 1000 * (-b));
+            int y1 = (int) (y0 + 1000 * (a));
+            int x2 = (int) (x0 - 1000 * (-b));
+            int y2 = (int) (y0 - 1000 * (a));
+            line(im, new Point(x1, y1), new Point(x2, y2), new Scalar(0, 0, 255), 2);
+
+        }
+
+        imwrite(path + "/booklab-backend/resources/output.jpg", im);
     }
 }
