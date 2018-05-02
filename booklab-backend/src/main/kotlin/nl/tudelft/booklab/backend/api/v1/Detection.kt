@@ -17,6 +17,7 @@
 package nl.tudelft.booklab.backend.api.v1
 
 import io.ktor.application.call
+import io.ktor.request.receiveStream
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.put
@@ -26,6 +27,12 @@ import io.ktor.routing.put
  */
 fun Route.detection() {
     put {
-        call.respond("jeej ik heb iets ontvangen")
+        val file = createTempFile("test-image.jpg")
+        call.receiveStream().use { its ->
+            file.outputStream().buffered().use {
+                its.copyTo(it)
+            }
+        }
+        call.respond("received image")
     }
 }
