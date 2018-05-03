@@ -29,6 +29,7 @@ plugins {
     id "application"
     id "org.jetbrains.kotlin.jvm" version "1.2.40"
     id "org.jmailen.kotlinter" version "1.11.2"
+    id "com.google.osdetector" version "1.4.0"
 }
 apply plugin: 'kotlin'
 
@@ -51,6 +52,14 @@ dependencies {
     testRuntime "org.junit.platform:junit-platform-launcher:1.1.1"
 
     compile group: 'org.openpnp', name: 'opencv', version: '3.2.0-1'
+
+    compile group: 'org.bytedeco', name: 'javacpp', version: '1.1'
+    compile group: 'org.bytedeco.javacpp-presets', name: 'leptonica', version: '1.72-1.1'
+    compile group: 'org.bytedeco.javacpp-presets', name: 'leptonica', version: '1.72-1.1', classifier: osdetector.classifier
+    compile group: 'org.bytedeco.javacpp-presets', name: 'tesseract', version: '3.04-1.1'
+    compile group: 'org.bytedeco.javacpp-presets', name: 'tesseract', version: '3.04-1.1', classifier: osdetector.classifier
+
+    testCompile group: 'junit', name: 'junit', version: '4.11'
 
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
