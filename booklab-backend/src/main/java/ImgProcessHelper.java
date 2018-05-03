@@ -1,10 +1,17 @@
+import org.bytedeco.javacpp.BytePointer;
+import org.bytedeco.javacpp.PointerPointer;
+import org.bytedeco.javacpp.SizeTPointer;
+import org.bytedeco.javacpp.lept;
 import org.opencv.core.*;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.awt.Color.gray;
 import static java.lang.StrictMath.max;
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.imgcodecs.Imgcodecs.imwrite;
@@ -107,4 +114,12 @@ public class ImgProcessHelper {
 
         imwrite(path + "/booklab-backend/resources/output.jpg", im);
     }
+
+    public static lept.PIX convertMatToPix(Mat mat) {
+        MatOfByte bytes = new MatOfByte();
+        Imgcodecs.imencode(".tiff", mat, bytes);
+        ByteBuffer buff = ByteBuffer.wrap(bytes.toArray());
+        return lept.pixReadMem(buff, buff.capacity());
+    }
+
 }
