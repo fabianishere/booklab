@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,8 +14,25 @@
  * limitations under the License.
  */
 
-rootProject.name = "booklab"
+package nl.tudelft.booklab.catalogue
 
-include 'booklab-backend'
-include 'booklab-frontend'
-include 'booklab-catalogue'
+import org.junit.jupiter.api.Test
+
+import org.junit.jupiter.api.BeforeEach
+
+internal class XMLParserTest {
+
+    lateinit var parser: XMLParser
+
+    @BeforeEach
+    fun setUp() {
+        parser = XMLParser()
+    }
+
+    @Test
+    fun parse() {
+        val result = parser.parse(XMLParserTest::class.java.getResource("/test.xml"))
+        result.records.forEach{ println(it) }
+        println(result.records.size)
+    }
+}
