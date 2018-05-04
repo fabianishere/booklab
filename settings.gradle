@@ -17,3 +17,4 @@
 rootProject.name = "booklab"
 
 include 'booklab-backend'
+include 'booklab-frontend'
