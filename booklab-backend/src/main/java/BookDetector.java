@@ -34,7 +34,7 @@ public class BookDetector {
         Mat image = imread(path);
         image = ImgProcessHelper.colorhist_equalize(image);
         List<Integer> cropLocations = detectBookLocations(image);
-        return cropBooks(image, cropLocations);
+        return cropBooks(image, cropLocations, false);
     }
 
     private static List<Integer> detectBookLocations(Mat image) {
@@ -64,10 +64,10 @@ public class BookDetector {
     }
 
     @NotNull
-    private static List<Mat> cropBooks(Mat im, List<Integer> cropLocations) {
+    private static List<Mat> cropBooks(Mat im, List<Integer> cropLocations, boolean strictCrop) {
         List<Mat> books = new ArrayList<>();
         for (int i = 0; i < cropLocations.size() - 1; i++) {
-            Mat book = cropBook(im, cropLocations.get(i), cropLocations.get(i + 1) - cropLocations.get(i), false);
+            Mat book = cropBook(im, cropLocations.get(i), cropLocations.get(i + 1) - cropLocations.get(i), strictCrop);
             books.add(book);
         }
         return books;
