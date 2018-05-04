@@ -21,9 +21,9 @@ public class BookOCR {
         System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
     }
 
-    private static void preprocessImage(String path) {
+    private static Mat preprocessImage(String path) {
         Mat image = imread(path);
-        preprocessImage(image);
+        return preprocessImage(image);
     }
 
     private static Mat preprocessImage(Mat image) {
@@ -31,6 +31,8 @@ public class BookOCR {
         Mat dilation = new Mat();
         Mat result = new Mat();
         Mat element = getStructuringElement(MORPH_ELLIPSE, new Size(2, 2));
+        List<MatOfPoint> msers = new ArrayList<>();
+        MatOfRect bboxes = new MatOfRect();
 
         rotate(image, image, ROTATE_90_COUNTERCLOCKWISE);
         cvtColor(image, gray, COLOR_BGR2GRAY);
@@ -39,14 +41,20 @@ public class BookOCR {
 
         double mean = mean(gray).val[0];
         threshold(gray, gray, mean, 255, THRESH_BINARY_INV);
+        double threshMean = mean(gray).val[0];
 
-        dilate(gray, dilation, element);
+        // Black text on white background, so invert image
+        if (threshMean > 128) {
+            threshold(gray, gray, mean, 255, THRESH_BINARY_INV);
+            erode(gray, gray, getStructuringElement(MORPH_ELLIPSE, new Size(2, 2)));
+            dilate(gray, dilation, getStructuringElement(MORPH_ELLIPSE, new Size(3, 3)));
+        } else {
+            dilate(gray, dilation, element);
+        }
 
-        List<MatOfPoint> msers = new ArrayList<>();
-        MatOfRect bboxes = new MatOfRect();
+
         MSER mser = MSER.create();
         mser.detectRegions(dilation, msers, bboxes);
-
         List<Rect> filtered = bboxes.toList().stream().filter(a -> a.area() < 0.5 * imageArea).collect(Collectors.toList());
 
         Mat mask = new Mat(image.rows(), image.cols(), CvType.CV_8U, Scalar.all(0));
@@ -57,7 +65,7 @@ public class BookOCR {
 
         bitwise_and(gray, gray, result, mask);
 
-//        imwrite(System.getProperty("user.dir") + "/booklab-backend/resources/preprocess.jpg", result);
+//        imwrite(System.getProperty("user.dir") + "/booklab-backend/resources/preprocess.jpg", gray);
 
         return gray;
     }
@@ -107,6 +115,7 @@ public class BookOCR {
         List<Mat> books = BookDetector.detectBooks(path);
 
         preprocessImages(books).forEach(BookOCR::getText);
+        getText(preprocessImage(System.getProperty("user.dir") + "/booklab-backend/resources/books/roi_2.jpg"));
     }
 
 }
