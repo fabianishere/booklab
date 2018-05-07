@@ -45,6 +45,8 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile "io.ktor:ktor-server-netty:$ktor_version"
     compile "io.ktor:ktor-jackson:$ktor_version"
+    compile "io.ktor:ktor-auth-jwt:$ktor_version"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.+"
     runtime "org.slf4j:slf4j-jdk14:1.7.25"
 
 
