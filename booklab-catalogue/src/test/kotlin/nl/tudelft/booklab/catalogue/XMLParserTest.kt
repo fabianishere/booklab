@@ -16,22 +16,79 @@
 
 package nl.tudelft.booklab.catalogue
 
-import org.junit.jupiter.api.Test
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.equalTo
 
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 
 internal class XMLParserTest {
 
-    lateinit var parser: XMLParser
+    private val books = XMLParser().parse(XMLParserTest::class.java.getResource("/test.xml"))
 
-    @BeforeEach
-    fun setUp() {
-        parser = XMLParser()
+    @Test
+    fun `smoke test`() {
+        val result = books[0]
+
+        assertThat(result.authors[0], equalTo("author name"))
+        assertThat(result.ids[0], equalTo("0123456789"))
+        assertThat(result.titles[0].type, equalTo(TitleType.MAIN))
+        assertThat(result.titles[0].value, equalTo("main title"))
+        assertThat(result.titles[1].type, equalTo(TitleType.SUB))
+        assertThat(result.titles[1].value, equalTo("sub title"))
     }
 
     @Test
-    fun parse() {
-        val result = parser.parse(XMLParserTest::class.java.getResource("/test.xml"))
-        result.forEach { println(it) }
+    fun `no author`() {
+        val result = books[1]
+
+        assertThat(result.authors.size, equalTo(0))
+    }
+
+    @Test
+    fun `multiple authors`() {
+        val result = books[2]
+
+        assertThat(result.authors.size, equalTo(2))
+        assertThat(result.authors[0], equalTo("author 1"))
+        assertThat(result.authors[1], equalTo("author 2"))
+    }
+
+    @Test
+    fun `no isbn`() {
+        val result = books[3]
+
+        assertThat(result.ids.size, equalTo(0))
+    }
+
+    @Test
+    fun `multiple isbn`() {
+        val result = books[4]
+
+        assertThat(result.ids.size, equalTo(2))
+        assertThat(result.ids[0], equalTo("1234"))
+        assertThat(result.ids[1], equalTo("5678"))
+    }
+
+    @Test
+    fun `no titles`() {
+        val result = books[5]
+
+        assertThat(result.titles.size, equalTo(0))
+    }
+
+    @Test
+    fun `multiple titles`() {
+        val result = books[6]
+
+        assertThat(result.titles.size, equalTo(2))
+    }
+
+    @Test
+    fun `multiple elements but no in a row`() {
+        val result = books[7]
+
+        assertThat(result.authors.size, equalTo(3))
+        assertThat(result.titles.size, equalTo(3))
+        assertThat(result.ids.size, equalTo(4))
     }
 }

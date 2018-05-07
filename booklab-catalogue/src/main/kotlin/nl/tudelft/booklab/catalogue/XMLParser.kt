@@ -24,8 +24,8 @@ import java.io.File
 
 data class Book(
     val titles: List<Title>,
-    val author: String,
-    val isbn: String
+    val authors: List<String>,
+    val ids: List<String>
 )
 
 enum class TitleType {
@@ -54,8 +54,8 @@ class XMLParser {
         val titleElements = record.getElementsByTagName("dc:title")
         val titles: MutableList<Title> = mutableListOf()
 
-        for (j in 0 until titleElements.length) {
-            val e = titleElements.item(j) as Element
+        for (i in 0 until titleElements.length) {
+            val e = titleElements.item(i) as Element
             val type = if (e.getAttribute("xsi:type") == "dcx:maintitle") TitleType.MAIN else TitleType.SUB
             titles.add(Title(e.textContent, type))
         }
@@ -63,20 +63,30 @@ class XMLParser {
         return titles
     }
 
-    private fun parseIsbn(record: Element): String {
-        val ids = record.getElementsByTagName("dc:identifier")
-        for (j in 0 until ids.length) {
-            val id = ids.item(j) as Element
+    private fun parseIsbn(record: Element): List<String> {
+        val idElements = record.getElementsByTagName("dc:identifier")
+        val ids: MutableList<String> = mutableListOf()
+
+        for (i in 0 until idElements.length) {
+            val id = idElements.item(i) as Element
             if (id.getAttribute("xsi:type") == "dcterms:ISBN") {
-                return id.textContent
+                ids.add(id.textContent)
             }
         }
 
-        return "NO ISBN"
+        return ids
     }
 
-    private fun parseAuthor(record: Element): String =
-        record.getElementsByTagName("dc:creator").item(0).textContent
+    private fun parseAuthor(record: Element): List<String> {
+        val authorElements = record.getElementsByTagName("dc:creator")
+        val authors: MutableList<String> = mutableListOf()
+
+        for (i in 0 until authorElements.length) {
+            authors.add(authorElements.item(i).textContent)
+        }
+
+        return authors
+    }
 
     fun parse(url: URL): List<Book> {
         val books: MutableList<Book> = mutableListOf()
