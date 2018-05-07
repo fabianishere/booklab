@@ -63,7 +63,7 @@ class XMLParser {
         return titles
     }
 
-    private fun parseIsbn(record: Element): List<String> {
+    private fun parseIds(record: Element): List<String> {
         val idElements = record.getElementsByTagName("dc:identifier")
         val ids: MutableList<String> = mutableListOf()
 
@@ -77,7 +77,7 @@ class XMLParser {
         return ids
     }
 
-    private fun parseAuthor(record: Element): List<String> {
+    private fun parseAuthors(record: Element): List<String> {
         val authorElements = record.getElementsByTagName("dc:creator")
         val authors: MutableList<String> = mutableListOf()
 
@@ -95,7 +95,7 @@ class XMLParser {
             val records = createDocument(url).documentElement.getElementsByTagName("srw:record")
             for (i in 0 until records.length) {
                 val record = records.item(i) as Element
-                books.add(Book(parseTitles(record), parseAuthor(record), parseIsbn(record)))
+                books.add(Book(parseTitles(record), parseAuthors(record), parseIds(record)))
             }
         } catch (e: Exception) {
             throw ParseException()

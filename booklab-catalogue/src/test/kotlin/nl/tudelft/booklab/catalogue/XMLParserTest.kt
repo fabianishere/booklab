@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test
 
 internal class XMLParserTest {
 
-    private val books = XMLParser().parse(XMLParserTest::class.java.getResource("/test.xml"))
+    private val books = XMLParser().parse(XMLParserTest::class.java.getResource("/synthetic-test.xml"))
 
     @Test
     fun `smoke test`() {
