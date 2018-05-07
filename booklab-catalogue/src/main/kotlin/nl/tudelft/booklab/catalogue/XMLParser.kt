@@ -37,7 +37,7 @@ data class Title(
     val type: TitleType
 )
 
-class ParseException: Exception()
+class ParseException : Exception()
 
 class XMLParser {
 
