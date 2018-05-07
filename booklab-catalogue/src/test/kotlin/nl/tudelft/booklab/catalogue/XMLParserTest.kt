@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test
 internal class XMLParserTest {
 
     private val books = XMLParser().parse(XMLParserTest::class.java.getResource("/synthetic-test.xml"))
+    private val realBooks = XMLParser().parse(XMLParserTest::class.java.getResource("/realistic-test.xml"))
 
     @Test
     fun `smoke test`() {
@@ -90,5 +91,15 @@ internal class XMLParserTest {
         assertThat(result.authors.size, equalTo(3))
         assertThat(result.titles.size, equalTo(3))
         assertThat(result.ids.size, equalTo(4))
+    }
+
+    @Test
+    fun `realistic test (de ontdekking van de hemel)`() {
+        assertThat(realBooks.size, equalTo(20))
+
+        assertThat(realBooks[0].titles[0].value, equalTo("De ontdekking van de hemel"))
+        assertThat(realBooks[0].titles[0].type, equalTo(TitleType.MAIN))
+        assertThat(realBooks[0].authors[0], equalTo("Cornelissen, Ignace"))
+        assertThat(realBooks[0].ids[0], equalTo("9789491396311"))
     }
 }
