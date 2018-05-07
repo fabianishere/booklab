@@ -16,56 +16,81 @@
 
 package nl.tudelft.booklab.catalogue
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
-import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import org.w3c.dom.Document
+import org.w3c.dom.Element
 import java.net.URL
-
-data class SruResult(
-    @JacksonXmlProperty(localName = "records")
-    val records: List<Record>
-)
-
-data class Record(
-    @JacksonXmlProperty(localName = "recordData")
-    val data: RecordData
-)
-
-data class RecordData(
-    @JacksonXmlProperty(localName = "dc")
-    val book: Book
-)
+import javax.xml.parsers.DocumentBuilderFactory
+import java.io.File
 
 data class Book(
-    @JacksonXmlProperty(localName = "title")
-    @JacksonXmlElementWrapper(useWrapping = false)
     val titles: List<Title>,
-
-    @JacksonXmlProperty(localName = "creator")
-    val author: String
+    val author: String,
+    val isbn: String
 )
 
-data class Title(
-    @JacksonXmlProperty(isAttribute = true, namespace = "xsi")
-    val type: String,
-
-    @JacksonXmlProperty(isAttribute = true, namespace = "xml", localName = "lang")
-    val language: String) {
-        @JacksonXmlText
-        lateinit var value: String
-
-        override fun toString(): String = "Title(value=$value, type=$type, language=$language)"
+enum class TitleType {
+    MAIN, SUB
 }
+
+data class Title(
+    val value: String,
+    val type: TitleType
+)
+
+class ParseException: Exception()
 
 class XMLParser {
 
-    private val mapper = XmlMapper()
-        .registerKotlinModule()
-        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+    private fun createDocument(url: URL): Document {
+        val inputFile = File(url.toURI())
+        val dbFactory = DocumentBuilderFactory.newInstance()
+        val dBuilder = dbFactory.newDocumentBuilder()
+        val doc = dBuilder.parse(inputFile)
+        doc.documentElement.normalize()
+        return doc
+    }
 
-    fun parse(url: URL): SruResult = mapper.readValue(url)
+    private fun parseTitles(record: Element): List<Title> {
+        val titleElements = record.getElementsByTagName("dc:title")
+        val titles: MutableList<Title> = mutableListOf()
+
+        for (j in 0 until titleElements.length) {
+            val e = titleElements.item(j) as Element
+            val type = if (e.getAttribute("xsi:type") == "dcx:maintitle") TitleType.MAIN else TitleType.SUB
+            titles.add(Title(e.textContent, type))
+        }
+
+        return titles
+    }
+
+    private fun parseIsbn(record: Element): String {
+        val ids = record.getElementsByTagName("dc:identifier")
+        for (j in 0 until ids.length) {
+            val id = ids.item(j) as Element
+            if (id.getAttribute("xsi:type") == "dcterms:ISBN") {
+                return id.textContent
+            }
+        }
+
+        return "NO ISBN"
+    }
+
+    private fun parseAuthor(record: Element): String =
+        record.getElementsByTagName("dc:creator").item(0).textContent
+
+    fun parse(url: URL): List<Book> {
+        val books: MutableList<Book> = mutableListOf()
+
+        try {
+            val records = createDocument(url).documentElement.getElementsByTagName("srw:record")
+            for (i in 0 until records.length) {
+                val record = records.item(i) as Element
+                books.add(Book(parseTitles(record), parseAuthor(record), parseIsbn(record)))
+            }
+        } catch (e: Exception) {
+            throw ParseException()
+        }
+
+        return books
+    }
 }

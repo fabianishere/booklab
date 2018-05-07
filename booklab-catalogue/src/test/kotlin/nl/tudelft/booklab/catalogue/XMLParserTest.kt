@@ -32,7 +32,6 @@ internal class XMLParserTest {
     @Test
     fun parse() {
         val result = parser.parse(XMLParserTest::class.java.getResource("/test.xml"))
-        result.records.forEach{ println(it) }
-        println(result.records.size)
+        result.forEach { println(it) }
     }
 }
