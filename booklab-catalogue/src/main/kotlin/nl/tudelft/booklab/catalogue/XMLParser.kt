@@ -41,11 +41,8 @@ class ParseException : Exception()
 
 class XMLParser {
 
-    private fun createDocument(url: URL): Document {
-        val inputFile = File(url.toURI())
-        val dbFactory = DocumentBuilderFactory.newInstance()
-        val dBuilder = dbFactory.newDocumentBuilder()
-        val doc = dBuilder.parse(inputFile)
+    private fun createDocument(file: File): Document {
+        val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file)
         doc.documentElement.normalize()
         return doc
     }
@@ -89,10 +86,20 @@ class XMLParser {
     }
 
     fun parse(url: URL): List<Book> {
+        return parse(File(url.toURI()))
+    }
+
+    fun parse(source: String): List<Book> {
+        val file = createTempFile()
+        file.writeBytes(source.toByteArray())
+        return parse(file)
+    }
+
+    fun parse(file: File): List<Book> {
         val books: MutableList<Book> = mutableListOf()
 
         try {
-            val records = createDocument(url).documentElement.getElementsByTagName("srw:record")
+            val records = createDocument(file).documentElement.getElementsByTagName("srw:record")
             for (i in 0 until records.length) {
                 val record = records.item(i) as Element
                 books.add(Book(parseTitles(record), parseAuthors(record), parseIds(record)))
