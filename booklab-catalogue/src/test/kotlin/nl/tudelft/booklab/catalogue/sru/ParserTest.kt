@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.catalogue
+package nl.tudelft.booklab.catalogue.sru
 
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
 
-internal class XMLParserTest {
+internal class ParserTest {
 
-    private val books = XMLParser().parse(XMLParserTest::class.java.getResource("/synthetic-test.xml"))
-    private val realBooks = XMLParser().parse(XMLParserTest::class.java.getResource("/realistic-test.xml"))
+    private val books = SruParser.parse(ParserTest::class.java.getResource("/synthetic-test.xml"))
+    private val realBooks = SruParser.parse(ParserTest::class.java.getResource("/realistic-test.xml"))
 
     @Test
     fun `smoke test`() {

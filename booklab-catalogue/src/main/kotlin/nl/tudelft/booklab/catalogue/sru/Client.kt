@@ -14,26 +14,20 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.catalogue
+package nl.tudelft.booklab.catalogue.sru
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.request.get
 
 /**
- * A HTTP client that is used to query books from a SRU database
+ * A SRU client that is used to query books from a SRU database
  *
  * @param client the client used to send a HTTP request to the database
  *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
-class Client(private val client: HttpClient = HttpClient(Apache)) {
-
-    /**
-     * The parser that parses the returned XML to a list of books
-     * @see Book
-     */
-    private val parser = XMLParser()
+class SruClient(private val client: HttpClient = HttpClient(Apache)) {
 
     /**
      * Queries the a SRU database using the given query
@@ -43,6 +37,6 @@ class Client(private val client: HttpClient = HttpClient(Apache)) {
      * @return the list of books returned from the query
      */
     suspend fun query(query: String): List<Book> {
-        return parser.parse(client.get<String>(query))
+        return SruParser.parse(client.get<String>(query))
     }
 }

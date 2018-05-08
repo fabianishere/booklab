@@ -14,53 +14,13 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.catalogue
+package nl.tudelft.booklab.catalogue.sru
 
 import org.w3c.dom.Document
 import org.w3c.dom.Element
+import java.io.File
 import java.net.URL
 import javax.xml.parsers.DocumentBuilderFactory
-import java.io.File
-
-/**
- * A data class representing a book
- *
- * @property titles is a list of titles
- * @see Title
- * @property authors is a list of author names
- * @property ids is a list of isbn identifiers
- *
- * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
- */
-data class Book(
-    val titles: List<Title>,
-    val authors: List<String>,
-    val ids: List<String>
-)
-
-/**
- * Enumeration representing different types of titles
- * as of yet only the main-title and sub-title types exist
- *
- * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
- */
-enum class TitleType {
-    MAIN, SUB
-}
-
-/**
- * Data class that represents a title
- *
- * @property value the actual title
- * @property type the type of the title
- * @see TitleType
- *
- * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
- */
-data class Title(
-    val value: String,
-    val type: TitleType
-)
 
 /**
  * A exception thrown when for whatever reason the parser fails
@@ -76,7 +36,7 @@ class ParseException : Exception()
  *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
-class XMLParser {
+object SruParser {
 
     /**
      * Using a file with the XML source (can be a temporal file)

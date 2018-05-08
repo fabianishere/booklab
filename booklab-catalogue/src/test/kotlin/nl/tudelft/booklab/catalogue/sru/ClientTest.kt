@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.catalogue
+package nl.tudelft.booklab.catalogue.sru
 
 import kotlinx.coroutines.experimental.runBlocking
 import org.hamcrest.MatcherAssert.assertThat
@@ -25,7 +25,7 @@ internal class ClientTest {
     @Test
     fun `smoke test`() {
         runBlocking {
-            val books = Client().query("http://jsru.kb.nl/sru?&operation=searchRetrieve&version=1.2&x-collection=" +
+            val books = SruClient().query("http://jsru.kb.nl/sru?&operation=searchRetrieve&version=1.2&x-collection=" +
                 "GGC&query=dc.title+%3D%22de%20ontdekking%20van%20de%20hemel%22&recordSchema=dcx")
 
             assertThat(books.size, equalTo(20))
