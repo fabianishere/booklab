@@ -23,13 +23,11 @@ import io.ktor.client.request.get
 /**
  * A HTTP client that is used to query books from a SRU database
  *
- * @author wollemat (f.c.slothouber@student.tudelft.nl)
+ * @param client the client used to send a HTTP request to the database
+ *
+ * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
-class Client {
-    /**
-     * The ktor HTTP client using Apache used by the upper client
-     */
-    private val client = HttpClient(Apache)
+class Client(private val client: HttpClient = HttpClient(Apache)) {
 
     /**
      * The parser that parses the returned XML to a list of books
@@ -41,6 +39,8 @@ class Client {
      * Queries the a SRU database using the given query
      *
      * @param query the actual query string that would normally be used in browser
+     *
+     * @return the list of books returned from the query
      */
     suspend fun query(query: String): List<Book> {
         return parser.parse(client.get<String>(query))

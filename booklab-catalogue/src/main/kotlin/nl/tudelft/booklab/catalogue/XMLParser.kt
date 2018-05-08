@@ -30,7 +30,7 @@ import java.io.File
  * @property authors is a list of author names
  * @property ids is a list of isbn identifiers
  *
- * @author wollemat (f.c.slothouber@student.tudelft.nl)
+ * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
 data class Book(
     val titles: List<Title>,
@@ -42,7 +42,7 @@ data class Book(
  * Enumeration representing different types of titles
  * as of yet only the main-title and sub-title types exist
  *
- * @author wollemat (f.c.slothouber@student.tudelft.nl)
+ * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
 enum class TitleType {
     MAIN, SUB
@@ -55,7 +55,7 @@ enum class TitleType {
  * @property type the type of the title
  * @see TitleType
  *
- * @author wollemat (f.c.slothouber@student.tudelft.nl)
+ * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
 data class Title(
     val value: String,
@@ -66,7 +66,7 @@ data class Title(
  * A exception thrown when for whatever reason the parser fails
  * @see Exception
  *
- * @author wollemat (f.c.slothouber@student.tudelft.nl)
+ * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
 class ParseException : Exception()
 
@@ -74,7 +74,7 @@ class ParseException : Exception()
  * A parser that parses XML results into a list of books
  * @see Book
  *
- * @author wollemat (f.c.slothouber@student.tudelft.nl)
+ * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
 class XMLParser {
 
