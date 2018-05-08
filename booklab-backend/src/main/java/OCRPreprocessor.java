@@ -39,7 +39,7 @@ public class OCRPreprocessor {
         int index = 0;
         for (MatOfPoint contour : contours) {
 
-            if (validContour(contour, original)
+            if (isValidContour(contour, original)
                 && validBox(index, contours, hierarchy, original)) {
                 keepers.add(contour);
             }
@@ -48,7 +48,7 @@ public class OCRPreprocessor {
 
         Mat new_mat = new Mat(mIntermediateMat.width(), mIntermediateMat.height(), CvType.CV_8U);
 
-       for (MatOfPoint contour : contours) {
+        for (MatOfPoint contour : contours) {
             double foregroundInt = 0.0;
             Point[] points_contour = contour.toArray();
             int nbPoints = points_contour.length;
@@ -81,7 +81,7 @@ public class OCRPreprocessor {
                 getIntensity(original, (int) box.x + box.width, (int) box.y
                     + box.height + 1),
                 getIntensity(original, (int) box.x + box.width + 1,
-                    (int) box.y + box.height), };
+                    (int) box.y + box.height),};
             Arrays.sort(backgroundInt);
             double median = backgroundInt[6];
 
@@ -119,21 +119,17 @@ public class OCRPreprocessor {
         return 0.30 * pixel[2] + 0.59 * pixel[1] + 0.11 * pixel[0];
     }
 
-    public static boolean validContour(MatOfPoint contour, Mat image) {
-        double w = contour.width();
-        double h = contour.height();
+    public static boolean isValidContour(MatOfPoint contour, Mat image) {
+        double width = contour.width();
+        double height = contour.height();
 
         // if the contour is too long or wide it is rejected
-        if (w / h < 0.1 && w / h > 10) {
+        if (width / height < 0.1 && width / height > 10) {
             return false;
         }
 
-        // if the contour in too wide
-        if (w > image.width() / 5)
-            return false;
-
-        // if the contour is too tall
-        if (h > image.height() / 5)
+        // if the contour in too wide or tall
+        if (width > image.width() / 5 || height > image.height() / 5)
             return false;
 
         return true;
@@ -154,6 +150,7 @@ public class OCRPreprocessor {
 
         return true;
     }
+
     public static int countChildren(int index, List<MatOfPoint> contours,
                                     Mat hierarchy, Mat image) {
 
@@ -165,7 +162,7 @@ public class OCRPreprocessor {
         if (iBuff[0] < 0) {
             return 0;
         } else {
-            if (validContour(contours.get(iBuff[0]), image)) {
+            if (isValidContour(contours.get(iBuff[0]), image)) {
                 count = 1;
                 // count += countSiblings(iBuff[0], contours, hierarchy, image);
             }
@@ -183,7 +180,7 @@ public class OCRPreprocessor {
         int parent = iBuff[0];
 
         // searches until a valid parent is found
-        while (!validContour(contours.get(parent), image)) {
+        while (!isValidContour(contours.get(parent), image)) {
             hierarchy.get(parent, 3, iBuff);
             parent = iBuff[0];
         }
@@ -197,7 +194,7 @@ public class OCRPreprocessor {
         String path = System.getProperty("user.dir") + "/booklab-backend/resources/bookshelf.jpg";
         String outputpath = System.getProperty("user.dir") + "/booklab-backend/resources/bookshelfcorrected.jpg";
         Mat image = imread(path);
-        Mat imtmp =  optimizeImg(image);
+        Mat imtmp = optimizeImg(image);
         imwrite(outputpath, imtmp);
     }
 
