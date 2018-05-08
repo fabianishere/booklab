@@ -22,20 +22,19 @@ public class OCRPreprocessor {
     }
 
     public static Mat optimizeImg(Mat original) {
+        int imageWidth = original.width();
+        int imageHeight = original.height();
 
-        int width = original.width();
-        int height = original.height();
-
-        List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        List<MatOfPoint> contours = new ArrayList<>();
         Mat hierarchy = new Mat();
-        Mat mIntermediateMat = new Mat(width, height, CvType.CV_8UC3);
+        Mat mIntermediateMat = new Mat(imageWidth, imageHeight, CvType.CV_8UC3);
 
         Imgproc.Canny(original, mIntermediateMat, 200, 250);
         Imgproc.findContours(mIntermediateMat, contours, hierarchy,
             Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE, new Point(0, 0));
 
 
-        List<MatOfPoint> keepers = new ArrayList<MatOfPoint>();
+        List<MatOfPoint> keepers = new ArrayList<>();
         int index = 0;
         for (MatOfPoint contour : contours) {
 
@@ -46,58 +45,55 @@ public class OCRPreprocessor {
             index++;
         }
 
-        Mat new_mat = new Mat(mIntermediateMat.width(), mIntermediateMat.height(), CvType.CV_8U);
+        Mat new_mat = new Mat(imageWidth, imageHeight, CvType.CV_8U);
 
-        for (MatOfPoint contour : contours) {
-            double foregroundInt = 0.0;
-            Point[] points_contour = contour.toArray();
-            int nbPoints = points_contour.length;
-            for (int i = 0; i < nbPoints; i++) {
-                Point p = points_contour[i];
-                foregroundInt += getIntensity(original, (int) p.x, (int) p.y);
+        for (MatOfPoint contour : keepers) {
+            double foregroundIntensity = 0.0;
+            Point[] contourPoints = contour.toArray();
+            for (int i = 0; i < contourPoints.length; i++) {
+                Point p = contourPoints[i];
+                foregroundIntensity += getIntensity(original, (int) p.x, (int) p.y);
             }
 
-            foregroundInt = foregroundInt / nbPoints;
+            foregroundIntensity = foregroundIntensity / contourPoints.length;
 
             Rect box = Imgproc.boundingRect(contour);
+            int boxX = box.x;
+            int boxY = box.y;
+            int boxWidth = box.width;
+            int boxHeight = box.height;
             double[] backgroundInt = {
-                getIntensity(original, (int) box.x - 1, (int) box.y - 1),
-                getIntensity(original, (int) box.x - 1, (int) box.y),
-                getIntensity(original, (int) box.x, (int) box.y - 1),
-                getIntensity(original, (int) box.x + box.width + 1,
-                    (int) box.y - 1),
-                getIntensity(original, (int) box.x + box.width,
-                    (int) box.y - 1),
-                getIntensity(original, (int) box.x + box.width + 1,
-                    (int) box.y),
-                getIntensity(original, (int) box.x - 1, (int) box.y
-                    + box.height + 1),
-                getIntensity(original, (int) box.x - 1, (int) box.y
-                    + box.height),
-                getIntensity(original, (int) box.x, (int) box.y
-                    + box.height + 1),
-                getIntensity(original, (int) box.x + box.width + 1,
-                    (int) box.y + box.height + 1),
-                getIntensity(original, (int) box.x + box.width, (int) box.y
-                    + box.height + 1),
-                getIntensity(original, (int) box.x + box.width + 1,
-                    (int) box.y + box.height),};
+                getIntensity(original, boxX - 1, boxY - 1),
+                getIntensity(original, boxX - 1, boxY),
+                getIntensity(original, boxX, boxY - 1),
+                getIntensity(original, boxX + boxWidth + 1, boxY - 1),
+                getIntensity(original, boxX + boxWidth, boxY - 1),
+                getIntensity(original, boxX + boxWidth + 1, boxY),
+                getIntensity(original, boxX - 1, boxY + boxHeight + 1),
+                getIntensity(original, boxX - 1, boxY + boxHeight),
+                getIntensity(original, boxX, boxY + boxHeight + 1),
+                getIntensity(original, boxX + boxWidth + 1, boxY + boxHeight + 1),
+                getIntensity(original, boxX + boxWidth, boxY + boxHeight + 1),
+                getIntensity(original, boxX + boxWidth + 1, boxY + boxHeight)};
+
             Arrays.sort(backgroundInt);
             double median = backgroundInt[6];
 
             int fg = 255;
             int bg = 0;
-            if (foregroundInt <= median) {
+            if (foregroundIntensity <= median) {
                 fg = 0;
                 bg = 255;
             }
-            for (int x = box.x; x < box.x + box.width; x++) {
-                for (int y = box.y; y < box.y + box.height; y++) {
-                    if (x < original.width() && y < original.height()) {
-                        if (getIntensity(original, x, y) > foregroundInt)
+            for (int x = boxX; x < boxX + boxWidth; x++) {
+                for (int y = boxY; y < boxY + boxHeight; y++) {
+                    if (x < imageWidth && y < imageHeight) {
+                        if (getIntensity(original, x, y) > foregroundIntensity) {
                             new_mat.put(x, y, bg);
-                        else
+                        } else {
                             new_mat.put(x, y, fg);
+
+                        }
                     }
                 }
             }
