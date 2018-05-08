@@ -21,93 +21,85 @@ public class OCRPreprocessor {
         System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
     }
 
-    public static Mat optimizeImg(Mat original) {
-        int imageWidth = original.width();
-        int imageHeight = original.height();
+    public static Mat optimizeImg(Mat image) {
+        Mat edges = new Mat();
+        Mat hierarchy = new Mat();
+        Mat result = new Mat();
 
         List<MatOfPoint> contours = new ArrayList<>();
-        Mat hierarchy = new Mat();
-        Mat mIntermediateMat = new Mat(imageWidth, imageHeight, CvType.CV_8UC3);
 
-        Imgproc.Canny(original, mIntermediateMat, 200, 250);
-        Imgproc.findContours(mIntermediateMat, contours, hierarchy,
+        Imgproc.Canny(image, edges, 200, 250);
+        Imgproc.findContours(edges, contours, hierarchy,
             Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE, new Point(0, 0));
-
 
         List<MatOfPoint> keepers = new ArrayList<>();
         int index = 0;
         for (MatOfPoint contour : contours) {
-
-            if (isValidContour(contour, original)
-                && validBox(index, contours, hierarchy, original)) {
+            if (isValidContour(contour, image) && isValidBox(index, contours, hierarchy, image)) {
                 keepers.add(contour);
             }
             index++;
         }
 
-        Mat new_mat = new Mat(imageWidth, imageHeight, CvType.CV_8U);
-
         for (MatOfPoint contour : keepers) {
             double foregroundIntensity = 0.0;
             Point[] contourPoints = contour.toArray();
-            for (int i = 0; i < contourPoints.length; i++) {
-                Point p = contourPoints[i];
-                foregroundIntensity += getIntensity(original, (int) p.x, (int) p.y);
-            }
+            double totalIntensity = Arrays.stream(contourPoints).mapToDouble(p -> getIntensity(image, (int) p.x, (int) p.y)).sum();
 
-            foregroundIntensity = foregroundIntensity / contourPoints.length;
+            foregroundIntensity += totalIntensity;
+            foregroundIntensity /= contourPoints.length;
 
             Rect box = Imgproc.boundingRect(contour);
             int boxX = box.x;
             int boxY = box.y;
             int boxWidth = box.width;
             int boxHeight = box.height;
-            double[] backgroundInt = {
-                getIntensity(original, boxX - 1, boxY - 1),
-                getIntensity(original, boxX - 1, boxY),
-                getIntensity(original, boxX, boxY - 1),
-                getIntensity(original, boxX + boxWidth + 1, boxY - 1),
-                getIntensity(original, boxX + boxWidth, boxY - 1),
-                getIntensity(original, boxX + boxWidth + 1, boxY),
-                getIntensity(original, boxX - 1, boxY + boxHeight + 1),
-                getIntensity(original, boxX - 1, boxY + boxHeight),
-                getIntensity(original, boxX, boxY + boxHeight + 1),
-                getIntensity(original, boxX + boxWidth + 1, boxY + boxHeight + 1),
-                getIntensity(original, boxX + boxWidth, boxY + boxHeight + 1),
-                getIntensity(original, boxX + boxWidth + 1, boxY + boxHeight)};
+            double[] backgroundIntensities = {
+                getIntensity(image, boxX - 1, boxY - 1),
+                getIntensity(image, boxX - 1, boxY),
+                getIntensity(image, boxX, boxY - 1),
+                getIntensity(image, boxX + boxWidth + 1, boxY - 1),
+                getIntensity(image, boxX + boxWidth, boxY - 1),
+                getIntensity(image, boxX + boxWidth + 1, boxY),
+                getIntensity(image, boxX - 1, boxY + boxHeight + 1),
+                getIntensity(image, boxX - 1, boxY + boxHeight),
+                getIntensity(image, boxX, boxY + boxHeight + 1),
+                getIntensity(image, boxX + boxWidth + 1, boxY + boxHeight + 1),
+                getIntensity(image, boxX + boxWidth, boxY + boxHeight + 1),
+                getIntensity(image, boxX + boxWidth + 1, boxY + boxHeight)};
 
-            Arrays.sort(backgroundInt);
-            double median = backgroundInt[6];
+            Arrays.sort(backgroundIntensities);
+            double median = backgroundIntensities[6];
 
-            int fg = 255;
-            int bg = 0;
+            int foregroundColor = 255;
+            int backgroundColor = 0;
+
             if (foregroundIntensity <= median) {
-                fg = 0;
-                bg = 255;
+                foregroundColor = 0;
+                backgroundColor = 255;
             }
+
             for (int x = boxX; x < boxX + boxWidth; x++) {
                 for (int y = boxY; y < boxY + boxHeight; y++) {
-                    if (x < imageWidth && y < imageHeight) {
-                        if (getIntensity(original, x, y) > foregroundIntensity) {
-                            new_mat.put(x, y, bg);
+                    if (x < image.width() && y < image.height()) {
+                        if (getIntensity(image, x, y) > foregroundIntensity) {
+                            result.put(x, y, backgroundColor);
                         } else {
-                            new_mat.put(x, y, fg);
-
+                            result.put(x, y, foregroundColor);
                         }
                     }
                 }
             }
         }
 
-        flip(new_mat, new_mat, 1);
-        return new_mat;
+        flip(result, result, 1);
+        return result;
 
     }
 
     public static double getIntensity(Mat image, int x, int y) {
-
         // check if the pixel index is out of the frame
-        if (image.width() <= x || image.height() <= y || x < 0 || y < 0)
+        if (x >= image.width() || y >= image.height() || x < 0 || y < 0)
             return 0;
 
         double[] pixel = image.get(y, x);
@@ -120,27 +112,25 @@ public class OCRPreprocessor {
         double height = contour.height();
 
         // if the contour is too long or wide it is rejected
-        if (width / height < 0.1 && width / height > 10) {
+        if (width / height < 0.01 || width / height > 10
+            || width > image.width() / 5 || height > image.height() / 5) {
             return false;
         }
-
-        // if the contour in too wide or tall
-        if (width > image.width() / 5 || height > image.height() / 5)
-            return false;
 
         return true;
     }
 
-    public static boolean validBox(int index, List<MatOfPoint> contours,
-                                   Mat hierarchy, Mat image) {
+    public static boolean isValidBox(int index, List<MatOfPoint> contours,
+                                     Mat hierarchy, Mat image) {
 
         // if it is a child of a accepting contour and has no children it is
         // probably the interior of a letter
         if (isChild(index, contours, hierarchy, image)
-            && countChildren(index, contours, hierarchy, image) <= 2)
+            && countChildren(index, contours, hierarchy, image) <= 2
+            )
             return false;
-
-        // if the contour has more than two children it is not a letter
+//
+//        // if the contour has more than two children it is not a letter
         if (countChildren(index, contours, hierarchy, image) > 2)
             return false;
 
@@ -151,17 +141,53 @@ public class OCRPreprocessor {
                                     Mat hierarchy, Mat image) {
 
         // get the child contour index
-        int iBuff[] = new int[(int) (hierarchy.total() * hierarchy.channels())];
-        hierarchy.get(index, 2, iBuff);
+        int data[] = new int[(int) (hierarchy.total() * hierarchy.channels())];
+        hierarchy.get(index, 2, data);
 
         int count = 0;
-        if (iBuff[0] < 0) {
+        if (data[0] < 0) {
             return 0;
         } else {
-            if (isValidContour(contours.get(iBuff[0]), image)) {
+            if (isValidContour(contours.get(data[0]), image)) {
                 count = 1;
-                // count += countSiblings(iBuff[0], contours, hierarchy, image);
             }
+        }
+
+//        count += countSiblings(data[0], contours, hierarchy, image);
+        return count;
+    }
+
+    public static int countSiblings(int index, List<MatOfPoint> contours,
+                                    Mat hierarchy, Mat image) {
+        int count = 0;
+
+        int iBuff[] = new int[(int) (hierarchy.total() * hierarchy.channels())];
+        hierarchy.get(index, 0, iBuff);
+        int next = iBuff[0];
+
+        // counting the children of the next contour
+        while (next > 0) {
+            if (isValidContour(contours.get(next), image)) {
+                count += 1;
+            }
+            hierarchy.get(next, 0, iBuff);
+            next = iBuff[0];
+            if (next == index)
+                break;
+        }
+
+        hierarchy.get(index, 1, iBuff);
+        int prev = iBuff[0];
+
+        // counting the children of the previous contour
+        while (prev > 0) {
+            if (isValidContour(contours.get(prev), image)) {
+                count += 1;
+            }
+            hierarchy.get(prev, 1, iBuff);
+            prev = iBuff[0];
+            if (prev == index)
+                break;
         }
 
         return count;
@@ -169,21 +195,19 @@ public class OCRPreprocessor {
 
     public static boolean isChild(int index, List<MatOfPoint> contours,
                                   Mat hierarchy, Mat image) {
-
         // get the parent in the contour hierarchy
-        int iBuff[] = new int[(int) (hierarchy.total() * hierarchy.channels())];
-        hierarchy.get(index, 3, iBuff);
-        int parent = iBuff[0];
+        int data[] = new int[(int) (hierarchy.total() * hierarchy.channels())];
+        hierarchy.get(index, 3, data);
+        int parent = data[0];
 
         // searches until a valid parent is found
         while (!isValidContour(contours.get(parent), image)) {
-            hierarchy.get(parent, 3, iBuff);
-            parent = iBuff[0];
+            hierarchy.get(parent, 3, data);
+            parent = data[0];
         }
 
         // return true of there is a valid parent
         return parent > 0;
-
     }
 
     public static void main(String[] args) {
