@@ -2,6 +2,10 @@ import org.bytedeco.javacpp.*;
 import org.opencv.core.*;
 import org.opencv.features2d.MSER;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,8 +13,7 @@ import java.util.stream.Collectors;
 import static org.bytedeco.javacpp.lept.*;
 import static org.bytedeco.javacpp.tesseract.*;
 import static org.opencv.core.Core.*;
-import static org.opencv.imgcodecs.Imgcodecs.imread;
-import static org.opencv.imgcodecs.Imgcodecs.imwrite;
+import static org.opencv.imgcodecs.Imgcodecs.*;
 import static org.opencv.imgproc.Imgproc.*;
 
 
@@ -98,7 +101,7 @@ public class BookOCR {
         lept.PIX image = ImgProcessHelper.convertMatToPix(mat);
         api.SetImage(image);
 
-        // Get OCR result
+        // Get OCR resultx
         outText = api.GetUTF8Text();
         String string = outText.getString();
         System.out.println("OCR output:\n" + string);
@@ -110,12 +113,28 @@ public class BookOCR {
         return result;
     }
 
-    public static void main(String[] args) {
-        String path = System.getProperty("user.dir") + "/booklab-backend/resources/bookshelf.jpg";
-        List<Mat> books = BookDetector.detectBooks(path);
+    public static List<String> getBookList(InputStream is) throws IOException {
+        // read stream into mat via buffer
+        int nRead;
+        byte[] data = new byte[16 * 1024];
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        while ((nRead = is.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+        byte[] bytes = buffer.toByteArray();
+        Mat image = imdecode(new MatOfByte(bytes), CV_LOAD_IMAGE_UNCHANGED);
 
-        preprocessImages(books).forEach(BookOCR::getText);
-        getText(preprocessImage(System.getProperty("user.dir") + "/booklab-backend/resources/books/roi_2.jpg"));
+        List<Mat> books = BookDetector.detectBooks(image);
+
+        List<String> result = preprocessImages(books).parallelStream().map(BookOCR::getText).collect(Collectors.toList());
+        return result;
+    }
+
+    public static void main(String[] args) throws IOException {
+        String path = System.getProperty("user.dir") + "/booklab-backend/resources/bookshelf.jpg";
+
+        InputStream is = new FileInputStream(path);
+        getBookList(is);
     }
 
 }

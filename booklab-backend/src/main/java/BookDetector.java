@@ -23,15 +23,15 @@ public class BookDetector {
         String path = System.getProperty("user.dir");
         path = path + "/booklab-backend/resources/bookshelf.jpg";
 
-        List<Mat> books = detectBooks(path);
+        Mat image = imread(path);
+        List<Mat> books = detectBooks(image);
 
         for (int i = 0; i < books.size(); i++) {
             imwrite(System.getProperty("user.dir") + "/booklab-backend/resources/books/roi_" + i + ".jpg", books.get(i));
         }
     }
 
-    public static List<Mat> detectBooks(String path) {
-        Mat image = imread(path);
+    public static List<Mat> detectBooks(Mat image) {
         image = ImgProcessHelper.colorhist_equalize(image);
         List<Integer> cropLocations = detectBookLocations(image);
         return cropBooks(image, cropLocations, false);
