@@ -72,6 +72,14 @@ public class ImgProcessHelper {
         return med;
     }
 
+    public static Mat adaptiveThreshold(Mat img) {
+
+        Imgproc.adaptiveThreshold(img, img, 255.0, Imgproc.THRESH_BINARY,
+            Imgproc.ADAPTIVE_THRESH_MEAN_C, 11, 15);
+
+        return img;
+    }
+
     @Deprecated
     public static void detectBookHoughLines() {
         Mat hierarchy = new Mat();
