@@ -18,4 +18,3 @@ gradle-app.setting
 .idea
 *.iml
 /out
-booklab-backend/out

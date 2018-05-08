@@ -27,7 +27,23 @@ To run the test code, run the following code in your command prompt:
 ```sh
 $ ./gradlew test
 ```
+## Working with Angular
+To install Angular globally run the following code in your command prompt:
+```sh
+$ npm install -g @angular/cli
+````
+To install dependencies run the following code within booklab-frontend:
+```
+$npm install
+```
+
+To run the website run the following code in your command prompt:
+```sh
+ng serve --open
+```
 
 ## License
 The code is released under the Apache version 2.0 license. See the 
 `LICENSE.txt` file.
+
+

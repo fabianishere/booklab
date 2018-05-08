@@ -14,7 +14,25 @@
  * limitations under the License.
  */
 
-rootProject.name = "booklab"
+package nl.tudelft.booklab.backend.api.v1
 
-include 'booklab-backend'
-include 'booklab-frontend'
+import io.ktor.application.call
+import io.ktor.response.respond
+import io.ktor.routing.Route
+import io.ktor.routing.get
+
+/**
+ * Define meta endpoints at the current route for the REST api.
+ */
+fun Route.meta() {
+    get("/health") {
+        call.respond(HealthCheck(true))
+    }
+}
+
+/**
+ * This class represents the result of a health check.
+ *
+ * @author Fabian Mastenbroek (f.s.mastenbroek@student.tudelft.nl)
+ */
+data class HealthCheck(val success: Boolean)

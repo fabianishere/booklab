@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-rootProject.name = "booklab"
+package nl.tudelft.booklab.backend.api.v1
 
-include 'booklab-backend'
-include 'booklab-frontend'
+import io.ktor.routing.Route
+import io.ktor.routing.route
+
+/**
+ * Describe the routes for the REST API of the BookLab backend.
+ */
+fun Route.api() {
+    route("detection") {
+        detection()
+    }
+    meta()
+}

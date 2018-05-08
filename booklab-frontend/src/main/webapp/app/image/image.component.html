@@ -1,0 +1,17 @@
+<div class="container-fluid top-container">
+  <div class="row row-top-container">
+    <div class="col-6 input">
+      <label class="upload-button">
+        Upload your image
+        <input type="file" (change)="onSubmit($event)" style="display: none" accept="image/*"/>
+      </label>
+    </div>
+    <div class="col-6 results">
+      <img *ngIf="img!=null" class="image" src="{{img}}">
+      <svg *ngIf="img==null" class="image">
+        <rect width="450" height="450" class="image"></rect>
+      </svg>
+      <p *ngIf="img!=null">No books were found</p>
+    </div>
+  </div>
+</div>
