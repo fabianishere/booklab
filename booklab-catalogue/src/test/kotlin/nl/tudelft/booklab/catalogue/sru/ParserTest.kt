@@ -22,8 +22,8 @@ import org.junit.jupiter.api.Test
 
 internal class ParserTest {
 
-    private val books = SruParser.parse(ParserTest::class.java.getResource("/synthetic-test.xml"))
-    private val realBooks = SruParser.parse(ParserTest::class.java.getResource("/realistic-test.xml"))
+    private val books = SruParser.parse(ParserTest::class.java.getResource("/synthetic-test.xml").openStream())
+    private val realBooks = SruParser.parse(ParserTest::class.java.getResource("/realistic-test.xml").openStream())
 
     @Test
     fun `smoke test`() {

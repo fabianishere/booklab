@@ -19,7 +19,7 @@ package nl.tudelft.booklab.catalogue.sru
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import java.io.File
-import java.net.URL
+import java.io.InputStream
 import javax.xml.parsers.DocumentBuilderFactory
 
 /**
@@ -48,8 +48,8 @@ object SruParser {
      *
      * @return the document
      */
-    private fun createDocument(file: File): Document {
-        val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file)
+    private fun createDocument(stream: InputStream): Document {
+        val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(stream)
         doc.documentElement.normalize()
         return doc
     }
@@ -119,49 +119,18 @@ object SruParser {
     }
 
     /**
-     * parses XML to a list of books.
-     * the source is located using the url given
-     * @see Book
-     *
-     * @param url the url to the file to be parsed
-     * @see URL
-     *
-     * @return the list of books
-     */
-    fun parse(url: URL): List<Book> {
-        return parse(File(url.toURI()))
-    }
-
-    /**
-     * parses XML to a list of books.
-     * the source is directly passed
-     * @see Book
-     *
-     * @param source the xml source
-     *
-     * @return the list of books
-     */
-    fun parse(source: String): List<Book> {
-        val file = createTempFile()
-        file.writeBytes(source.toByteArray())
-        return parse(file)
-    }
-
-    /**
-     * parses XML to a list of books.
+     * parses XML to a list of [Book]s.
      * the source is passed using a file
-     * @see Book
      *
-     * @param file the containing the xml source
-     * @see File
+     * @param stream the [InputStream] containing the xml source
      *
      * @return the list of books
      */
-    fun parse(file: File): List<Book> {
+    fun parse(stream: InputStream): List<Book> {
         val books: MutableList<Book> = mutableListOf()
 
         try {
-            val records = createDocument(file).documentElement.getElementsByTagName("srw:record")
+            val records = createDocument(stream).documentElement.getElementsByTagName("srw:record")
             for (i in 0 until records.length) {
                 val record = records.item(i) as Element
                 books.add(Book(parseTitles(record), parseAuthors(record), parseIds(record)))

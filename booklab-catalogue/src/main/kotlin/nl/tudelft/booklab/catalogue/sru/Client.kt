@@ -17,8 +17,11 @@
 package nl.tudelft.booklab.catalogue.sru
 
 import io.ktor.client.HttpClient
+import io.ktor.client.call.call
 import io.ktor.client.engine.apache.Apache
-import io.ktor.client.request.get
+import io.ktor.client.request.url
+import io.ktor.http.HttpMethod
+import kotlinx.coroutines.experimental.io.jvm.javaio.toInputStream
 
 /**
  * A SRU client that is used to query books from a SRU database
@@ -37,6 +40,10 @@ class SruClient(private val client: HttpClient = HttpClient(Apache)) {
      * @return the list of books returned from the query
      */
     suspend fun query(query: String): List<Book> {
-        return SruParser.parse(client.get<String>(query))
+        val stream = client.call {
+            url(query)
+            method = HttpMethod.Get
+        }.response.content.toInputStream()
+        return SruParser.parse(stream)
     }
 }
