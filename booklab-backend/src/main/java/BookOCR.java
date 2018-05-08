@@ -1,3 +1,19 @@
+/*
+ * Copyright 2018 The BookLab Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import org.bytedeco.javacpp.*;
 import org.opencv.core.*;
 import org.opencv.features2d.MSER;
@@ -11,24 +27,30 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.bytedeco.javacpp.lept.*;
-import static org.bytedeco.javacpp.tesseract.*;
 import static org.opencv.core.Core.*;
 import static org.opencv.imgcodecs.Imgcodecs.*;
 import static org.opencv.imgproc.Imgproc.*;
 
-
+/**
+ * This class is responsible for reading the backs of the books in an image
+ *
+ * @author Vera Hoveling (v.t.hoveling@student.tudelft.nl)
+ * @author Sayra Ranjha (s.s.ranjha@student.tudelft.nl)
+ */
 public class BookOCR {
 
+    /**
+    Load OpenCV
+     */
     static {
         nu.pattern.OpenCV.loadShared();
         System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
     }
 
-    private static Mat preprocessImage(String path) {
-        Mat image = imread(path);
-        return preprocessImage(image);
-    }
-
+    /**
+     * Method to process an image such that it is optimized for OCR
+     * @param image openCV matrix containing the image
+     */
     private static Mat preprocessImage(Mat image) {
         Mat gray = new Mat();
         Mat dilation = new Mat();
@@ -73,18 +95,20 @@ public class BookOCR {
         return gray;
     }
 
+    /**
+     * Process a list of images such that they are optimized for OCR
+     * @param images list of openCV matrices containing images
+     * @return list of images
+     */
     private static List<Mat> preprocessImages(List<Mat> images) {
         return images.stream().map(BookOCR::preprocessImage).collect(Collectors.toList());
     }
 
-    // resize
-    // grayscale
-    // reduce noise
-    private static lept.PIX preprocessImg(Mat mat) {
-        lept.PIX piximage = new lept.PIX();
-        return piximage;
-    }
-
+    /**
+     * Get text from image
+     * @param mat openCV matrix containing image
+     * @return String text read from image
+     */
     public static String getText(Mat mat) {
         String result = "";
         BytePointer outText;
@@ -101,7 +125,7 @@ public class BookOCR {
         lept.PIX image = ImgProcessHelper.convertMatToPix(mat);
         api.SetImage(image);
 
-        // Get OCR resultx
+        // Get OCR result
         outText = api.GetUTF8Text();
         String string = outText.getString();
         System.out.println("OCR output:\n" + string);
@@ -113,6 +137,12 @@ public class BookOCR {
         return result;
     }
 
+    /**
+     * Method that takes an image and returns a list of strings containing the books in the image
+     * @param is inputstream containing the image
+     * @return list of strings with books
+     * @throws IOException
+     */
     public static List<String> getBookList(InputStream is) throws IOException {
         // read stream into mat via buffer
         int nRead;
