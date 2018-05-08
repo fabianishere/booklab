@@ -21,6 +21,7 @@ import io.ktor.client.call.call
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.request.url
 import io.ktor.http.HttpMethod
+import io.ktor.http.formUrlEncode
 import kotlinx.coroutines.experimental.io.jvm.javaio.toInputStream
 
 /**
@@ -30,7 +31,10 @@ import kotlinx.coroutines.experimental.io.jvm.javaio.toInputStream
  *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
-class SruClient(private val client: HttpClient = HttpClient(Apache)) {
+class SruClient(
+    private val client: HttpClient = HttpClient(Apache),
+    private val baseUrl: String = "http://jsru.kb.nl/sru"
+) {
 
     /**
      * Queries the a SRU database using the given query
@@ -41,9 +45,29 @@ class SruClient(private val client: HttpClient = HttpClient(Apache)) {
      */
     suspend fun query(query: String): List<Book> {
         val stream = client.call {
-            url(query)
+            url(createSruUrl(query))
             method = HttpMethod.Get
         }.response.content.toInputStream()
         return SruParser.parse(stream)
+    }
+
+    /**
+     * creates a SRU URL query
+     *
+     * @param query the actual query used
+     * @param max the maximum number of records that are received.
+     * this value defaults to 100
+     *
+     * @return a string representation of the the url
+     */
+    private fun createSruUrl(query: String, max: Int = 100): String {
+        val params = listOf(
+            "operation" to "searchRetrieve",
+            "version" to "1.2",
+            "recordSchema" to "dcx",
+            "x-collection" to "GGC",
+            "query" to query,
+            "maximumRecords" to max.toString())
+        return "$baseUrl?${params.formUrlEncode()}"
     }
 }

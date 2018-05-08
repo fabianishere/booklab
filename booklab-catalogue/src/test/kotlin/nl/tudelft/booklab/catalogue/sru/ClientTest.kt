@@ -25,10 +25,9 @@ internal class ClientTest {
     @Test
     fun `smoke test`() {
         runBlocking {
-            val books = SruClient().query("http://jsru.kb.nl/sru?&operation=searchRetrieve&version=1.2&x-collection=" +
-                "GGC&query=dc.title+%3D%22de%20ontdekking%20van%20de%20hemel%22&recordSchema=dcx")
+            val books = SruClient().query("dc.title=\"de ontdekking van de hemel\"")
 
-            assertThat(books.size, equalTo(20))
+            assertThat(books.size, equalTo(25))
         }
     }
 }
