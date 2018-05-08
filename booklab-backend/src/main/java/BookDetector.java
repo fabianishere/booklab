@@ -1,119 +1,159 @@
-import org.opencv.core.*
+/*
+ * Copyright 2018 The BookLab Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import org.jetbrains.annotations.NotNull;
+import org.opencv.core.*;
 
-import java.util.ArrayList
-import java.util.Collections
-import java.util.stream.Collectors
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import org.opencv.core.Core.REDUCE_AVG
-import org.opencv.core.Core.reduce
-import org.opencv.imgcodecs.Imgcodecs.imread
-import org.opencv.imgcodecs.Imgcodecs.imwrite
-import org.opencv.imgproc.Imgproc.*
+import static org.opencv.core.Core.REDUCE_AVG;
+import static org.opencv.core.Core.reduce;
+import static org.opencv.imgproc.Imgproc.*;
 
-object BookDetector {
+/**
+ * Class to detect books in an image
+ */
+public class BookDetector {
 
-    init {
-        nu.pattern.OpenCV.loadShared()
-        System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME)
+    /**
+     * Init
+     */
+    static {
+        nu.pattern.OpenCV.loadShared();
+        System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
     }
 
-    fun detectBooks() {
-        var path = System.getProperty("user.dir")
-        path = path + "/booklab-backend/resources/bookshelf.jpg"
+    /**
+     * Method to detect books in an image
+     * @param image openCV matrix containing an image
+     * @return list of images (openCV matrices)
+     */
+    public static List<Mat> detectBooks(Mat image) {
+        image = ImgProcessHelper.colorhist_equalize(image);
+        List<Integer> cropLocations = detectBookLocations(image);
+        return cropBooks(image, cropLocations, false);
+    }
 
-        val image = imread(path)
-        val books = detectBooks(image)
+    /**
+     * Find the locations of the books in the image
+     * @param image openCV matrix containing an image
+     * @return list of x coordinates of each book-segement
+     */
+    private static List<Integer> detectBookLocations(Mat image) {
+        Mat gray = new Mat();
+        Mat dilation = new Mat();
+        Mat reduced = new Mat();
+        List<Point> coordinates = new ArrayList<>();
 
-        for (i in books.indices) {
-            imwrite(System.getProperty("user.dir") + "/booklab-backend/resources/books/roi_" + i + ".jpg", books[i])
+        image = ImgProcessHelper.colorhist_equalize(image);
+        cvtColor(image, gray, COLOR_BGR2GRAY);
+        Mat edges = ImgProcessHelper.autoCanny(gray);
+        dilate(edges, dilation, new Mat());
+        reduce(dilation, reduced, 0, REDUCE_AVG);
+        GaussianBlur(reduced, reduced, new Size(), 3);
+
+        for (int i = 0; i < image.cols(); i++) {
+            coordinates.add(new Point(i, reduced.get(0, i)[0]));
         }
+
+        List<Integer> localMinima = findLocalMinima(coordinates, 5);
+
+        List<Integer> cropLocations = new ArrayList<>(localMinima);
+        cropLocations.add(0, 0);
+        cropLocations.add(image.cols());
+
+        return cropLocations;
     }
 
-    fun detectBooks(image: Mat): List<Mat> {
-        var image = image
-        image = ImgProcessHelper.colorhist_equalize(image)
-        val cropLocations = detectBookLocations(image)
-        return cropBooks(image, cropLocations, false)
-    }
-
-    private fun detectBookLocations(image: Mat): List<Int> {
-        var image = image
-        val gray = Mat()
-        val dilation = Mat()
-        val reduced = Mat()
-        val coordinates = ArrayList<Point>()
-
-        image = ImgProcessHelper.colorhist_equalize(image)
-        cvtColor(image, gray, COLOR_BGR2GRAY)
-        val edges = ImgProcessHelper.autoCanny(gray)
-        dilate(edges, dilation, Mat())
-        reduce(dilation, reduced, 0, REDUCE_AVG)
-        GaussianBlur(reduced, reduced, Size(), 3.0)
-
-        for (i in 0..image.cols() - 1) {
-            coordinates.add(Point(i.toDouble(), reduced.get(0, i)[0]))
+    /**
+     * Uses a list of x coordinates to split the image on
+     * @param image openCV matrix containing an image
+     * @param cropLocations list of x coordinates of each book-segement
+     * @param strictCrop boolean
+     * @return list of separated book segments
+     */
+    @NotNull
+    private static List<Mat> cropBooks(Mat image, List<Integer> cropLocations, boolean strictCrop) {
+        List<Mat> books = new ArrayList<>();
+        for (int i = 0; i < cropLocations.size() - 1; i++) {
+            Mat book = cropBook(image, cropLocations.get(i), cropLocations.get(i + 1) - cropLocations.get(i), strictCrop);
+            books.add(book);
         }
-
-        val localMinima = findLocalMinima(coordinates, 5)
-
-        val cropLocations = ArrayList(localMinima)
-        cropLocations.add(0, 0)
-        cropLocations.add(image.cols())
-
-        return cropLocations
+        return books;
     }
 
-    private fun cropBooks(im: Mat, cropLocations: List<Int>, strictCrop: Boolean): List<Mat> {
-        val books = ArrayList<Mat>()
-        for (i in 0..cropLocations.size - 1 - 1) {
-            val book = cropBook(im, cropLocations[i], cropLocations[i + 1] - cropLocations[i], strictCrop)
-            books.add(book)
-        }
-        return books
-    }
-
-    private fun cropBook(im: Mat, x: Int, width: Int, strictCrop: Boolean): Mat {
-        var x = x
-        var width = width
+    /**
+     * Crops a segment from the image
+     * @param image openCV matrix containing an image
+     * @param x x-coordinate
+     * @param width width of segment
+     * @param strictCrop boolean
+     * @return cropped image
+     */
+    @NotNull
+    private static Mat cropBook(Mat image, int x, int width, boolean strictCrop) {
         if (!strictCrop) {
-            width = (1.1 * (width + 0.05 * x)).toInt()
-            x = (0.95 * x).toInt()
+            width = (int) (1.1 * (width + 0.05 * x));
+            x = (int) (0.95 * x);
         }
 
-        if (x + width > im.cols()) {
-            width = width - (x + width - im.cols())
+        if (x + width > image.cols()) {
+            width = width - (x + width - image.cols());
         }
 
-        val roi = Rect(x, 0, width, im.rows())
-        return Mat(im, roi)
+        Rect roi = new Rect(x, 0, width, image.rows());
+        return new Mat(image, roi);
     }
 
-    private fun findLocalMinima(coordinates: List<Point>, windowSize: Int): List<Int> {
-        val yCoordinates = coordinates.stream().map { a -> a.y }.collect<List<Double>, Any>(Collectors.toList())
-        val localMinima = ArrayList<Int>()
-        for (i in windowSize..coordinates.size - windowSize - 1) {
-            val sublist = yCoordinates.subList(i - windowSize, i + windowSize + 1)
+    /**
+     * Find the local minima in a list of coordinates
+     * @param coordinates list of coordinate points
+     * @param windowSize size of window
+     * @return list of indices of local minima
+     */
+    @NotNull
+    private static List<Integer> findLocalMinima(List<Point> coordinates, int windowSize) {
+        List<Double> yCoordinates = coordinates.stream().map(a -> a.y).collect(Collectors.toList());
+        List<Integer> localMinima = new ArrayList<>();
+        for (int i = windowSize; i < coordinates.size() - windowSize; i++) {
+            List<Double> sublist = yCoordinates.subList(i - windowSize, i + windowSize + 1);
             if (sublist.indexOf(Collections.min(sublist)) == windowSize) {
-                localMinima.add(coordinates[i].x.toInt())
+                localMinima.add((int) coordinates.get(i).x);
             }
         }
-        return localMinima
+        return localMinima;
     }
 
-    private fun drawGraphs(reducedImage: Mat, originalImage: Mat, lineLocations: List<Int>) {
-        for (i in 0..originalImage.cols() - 1) {
-            line(originalImage, Point(i.toDouble(), 0.0), Point(i.toDouble(), reducedImage.get(0, i)[0]), Scalar(255.0, 255.0, 0.0), 1)
+    /**
+     * Debug drawing
+     * @param reducedImage openCV matrix with reduced image
+     * @param originalImage openCV matrix containing an image
+     * @param lineLocations locations of lines
+     */
+    @Deprecated
+    private static void drawGraphs(Mat reducedImage, Mat originalImage, List<Integer> lineLocations) {
+        for (int i = 0; i < originalImage.cols(); i++) {
+            line(originalImage, new Point(i, 0), new Point(i, reducedImage.get(0, i)[0]), new Scalar(255, 255, 0), 1);
         }
 
-        for (i in lineLocations.indices) {
-            line(originalImage, Point(lineLocations[i].toDouble(), 0.0), Point(lineLocations[i].toDouble(), originalImage.rows().toDouble()), Scalar(0.0, 255.0, 0.0), 2)
+        for (int i = 0; i < lineLocations.size(); i++) {
+            line(originalImage, new Point(lineLocations.get(i), 0), new Point(lineLocations.get(i), originalImage.rows()), new Scalar(0, 255, 0), 2);
         }
-    }
-
-
-    @JvmStatic
-    fun main(args: Array<String>) {
-        detectBooks()
     }
 
 }
