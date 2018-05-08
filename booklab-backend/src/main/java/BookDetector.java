@@ -140,12 +140,11 @@ public class BookDetector {
     }
 
     /**
-     * Debug drawing
+     * Debug drawing: draws segments and the graph the segmentation is based on
      * @param reducedImage openCV matrix with reduced image
      * @param originalImage openCV matrix containing an image
      * @param lineLocations locations of lines
      */
-    @Deprecated
     private static void drawGraphs(Mat reducedImage, Mat originalImage, List<Integer> lineLocations) {
         for (int i = 0; i < originalImage.cols(); i++) {
             line(originalImage, new Point(i, 0), new Point(i, reducedImage.get(0, i)[0]), new Scalar(255, 255, 0), 1);

@@ -1,3 +1,18 @@
+/*
+ * Copyright 2018 The BookLab Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import org.bytedeco.javacpp.lept;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -9,11 +24,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.StrictMath.max;
-import static org.opencv.imgcodecs.Imgcodecs.imread;
-import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 import static org.opencv.imgproc.Imgproc.*;
 
+/**
+ * Container class for helper functions wrt image processing
+ */
 public class ImgProcessHelper {
+    /**
+     * Color histogram equalization
+     * @param img openCV matrix containing a BGR image
+     * @return openCV matrix containing a BGR image with its color channels equalized
+     */
     public static Mat colorhist_equalize(Mat img){
         Mat reassemble = new Mat();
 
@@ -31,8 +52,12 @@ public class ImgProcessHelper {
         return reassemble;
     }
 
+    /**
+     * Select the edges from an image with the Canny method with adaptive thresholding
+     * @param img openCV matrix containing an image
+     * @return openCV matrix containing the edges in the image
+     */
     public static Mat autoCanny(Mat img){
-
         float sigma = 0.33f;
         // median
         float v = (float)getMedian(img);
@@ -44,6 +69,11 @@ public class ImgProcessHelper {
         return edges;
     }
 
+    /**
+     * Retrieve the median value of an openCV matrix
+     * @param mat openCV matrix
+     * @return median
+     */
     public static int getMedian(Mat mat) {
         ArrayList<Mat> listOfMat = new ArrayList<>();
         listOfMat.add(mat);
@@ -67,39 +97,37 @@ public class ImgProcessHelper {
             total += val;
         }
 
-//        Log.d(TAG, String.format("getMedian() = %d", med));
-
         return med;
     }
 
-    public static Mat adaptiveThreshold(Mat img) {
-
-        Imgproc.adaptiveThreshold(img, img, 255.0, Imgproc.THRESH_BINARY,
-            Imgproc.ADAPTIVE_THRESH_MEAN_C, 11, 15);
-
-        return img;
+    /**
+     * Util function to convert an openCV matrix to leptonica PIX format
+     * @param mat openCV matrix
+     * @return PIX
+     */
+    public static lept.PIX convertMatToPix(Mat mat) {
+        MatOfByte bytes = new MatOfByte();
+        Imgcodecs.imencode(".tiff", mat, bytes);
+        ByteBuffer buff = ByteBuffer.wrap(bytes.toArray());
+        return lept.pixReadMem(buff, buff.capacity());
     }
 
+    /**
+     * Depricated method to detect vertical hough lines in image, will also draw the houglines in the input image
+     * @param img openCV matrix containing an image
+     * @return matrix containing hough lines
+     */
     @Deprecated
-    public static void detectBookHoughLines() {
-        Mat hierarchy = new Mat();
+    public static Mat detectBookHoughLines(Mat img) {
         Mat gray = new Mat();
         Mat canny = new Mat();
         Mat blur = new Mat();
         Mat lines = new Mat();
 
-        java.util.List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Scalar color = new Scalar(0, 255, 0);
-
-        String path = System.getProperty("user.dir");
-        Mat im = imread(path + "/booklab-backend/resources/bookshelf.jpg");
-
-        cvtColor(im, gray, COLOR_BGR2GRAY);
+        cvtColor(img, gray, COLOR_BGR2GRAY);
         GaussianBlur(gray, blur, new Size(), 3);
         Canny(blur, canny, 50, 150);
         HoughLines(canny, lines, 1, Math.PI / 180, 100);
-
-        System.out.println(lines.get(1, 0));
 
         for (int i = 0; i < lines.rows(); i++) {
             double rho = lines.get(i, 0)[0];
@@ -112,18 +140,10 @@ public class ImgProcessHelper {
             int y1 = (int) (y0 + 1000 * (a));
             int x2 = (int) (x0 - 1000 * (-b));
             int y2 = (int) (y0 - 1000 * (a));
-            line(im, new Point(x1, y1), new Point(x2, y2), new Scalar(0, 0, 255), 2);
+            line(img, new Point(x1, y1), new Point(x2, y2), new Scalar(0, 0, 255), 2);
 
         }
-
-        imwrite(path + "/booklab-backend/resources/output.jpg", im);
-    }
-
-    public static lept.PIX convertMatToPix(Mat mat) {
-        MatOfByte bytes = new MatOfByte();
-        Imgcodecs.imencode(".tiff", mat, bytes);
-        ByteBuffer buff = ByteBuffer.wrap(bytes.toArray());
-        return lept.pixReadMem(buff, buff.capacity());
+        return lines;
     }
 
 }
