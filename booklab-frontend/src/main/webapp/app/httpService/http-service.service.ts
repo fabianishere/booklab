@@ -17,7 +17,7 @@ export class HttpServiceService {
         });
     }
 
-    putImg(img: any): Observable<Object> {
+    putImg(img: Blob): Observable<Object> {
         let response = this.http.put('http://localhost:8080/api/detection', img);
         return response;
     }
