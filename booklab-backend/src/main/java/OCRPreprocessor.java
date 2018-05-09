@@ -8,9 +8,7 @@ import org.opencv.imgproc.Imgproc;
 import static org.opencv.core.Core.*;
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.imgcodecs.Imgcodecs.imwrite;
-import static org.opencv.imgproc.Imgproc.COLOR_BGR2GRAY;
-import static org.opencv.imgproc.Imgproc.boundingRect;
-import static org.opencv.imgproc.Imgproc.cvtColor;
+import static org.opencv.imgproc.Imgproc.*;
 
 public class OCRPreprocessor {
 
@@ -24,14 +22,8 @@ public class OCRPreprocessor {
         copyMakeBorder(image, image, 50, 50, 50, 50, BORDER_CONSTANT);
         Mat edges = new Mat();
         Mat hierarchy = new Mat();
-        Mat gray = new Mat();
-        Mat result = new Mat(image.width(), image.height(), CvType.CV_8U);
 
         List<MatOfPoint> contours = new ArrayList<>();
-
-//        cvtColor(image, gray, COLOR_BGR2GRAY);
-//        edges = ImgProcessHelper.autoCanny(gray);
-////        Imgproc.Canny(gray, edges, 200, 250);
 
         List<Mat> bgrList = new ArrayList<>(3);
         split(image, bgrList);
@@ -55,11 +47,16 @@ public class OCRPreprocessor {
         for (MatOfPoint contour : contours) {
             System.out.println(index);
             if ((keepContour(contour, image)
+                //&& (contourArea(contour) > 10)
                 && includeBox(index, contours, hierarchy, image))) {
                 keepers.add(contour);
             }
             index++;
         }
+
+        Mat new_image = new Mat();
+        edges.copyTo(new_image);
+        new_image.setTo(new Scalar(255,255,255));
 
         for (MatOfPoint contour : keepers) {
             double foregroundIntensity = 0.0;
@@ -103,18 +100,18 @@ public class OCRPreprocessor {
                 for (int y = boxY; y < boxY + boxHeight; y++) {
                     if (x < image.width() && y < image.height()) {
                         if (getIntensity(image, x, y) > foregroundIntensity) {
-                            result.put(x, y, backgroundColor);
+                            new_image.put(y, x, backgroundColor);
                         } else {
-                            result.put(x, y, foregroundColor);
+                            new_image.put(y, x, foregroundColor);
                         }
                     }
                 }
             }
         }
 
-        flip(result, result, 0);
-
-        return result;
+        blur(new_image, new_image, new Size(2,2));
+        rotate(new_image, new_image, ROTATE_90_COUNTERCLOCKWISE);
+        return new_image;
 
     }
 
