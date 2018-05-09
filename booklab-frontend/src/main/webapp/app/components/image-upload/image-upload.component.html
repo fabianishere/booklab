@@ -18,9 +18,9 @@
                     <div class="col-5">{{book.title}}</div>
                     <div class="col-6">{{book.isbn}}</div>
                 </div>
-                <label class="button bookshelf">
+                <label class="button bookshelf {{addedToShelf? 'disabled' : ''}}">
                     Add to your bookshelf
-                    <input type="button" (click)="console.log('click!'); user.addMultToBookshelf(results)">
+                    <input type="button" (click)="addToBookShelf($event)" disabled="{{addedToShelf? 'disabled' : ''}}">
                 </label>
             </div>
         </div>

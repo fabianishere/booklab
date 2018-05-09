@@ -18,9 +18,15 @@ interface DetectionResult {
 export class ImageUploadComponent implements OnInit {
     public img: any;
     public results: Book[];
-    public console = console;
+    public addedToShelf: boolean;
 
-    constructor(private http: HttpService, public user: UserService) {
+    constructor(private http: HttpService, private user: UserService) {
+    }
+
+    ngOnInit() {
+        this.img = null;
+        this.results = [];
+        this.addedToShelf = false;
     }
 
     onSubmit(event) {
@@ -34,11 +40,14 @@ export class ImageUploadComponent implements OnInit {
             res.results.forEach(book => console.log(book.title + ' ' + book.isbn));
             this.results = res.results;
         });
+        this.addedToShelf = false;
 
     }
 
-    ngOnInit() {
-        this.img = null;
-        this.results = [];
+    addToBookShelf(event: Event) {
+        console.log('click!');
+        this.user.addMultToBookshelf(this.results);
+        this.addedToShelf = true;
     }
+
 }
