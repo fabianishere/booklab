@@ -19,25 +19,33 @@ public class OCRPreprocessor {
     }
 
     public static Mat optimizeImg(Mat image) {
-        copyMakeBorder(image, image, 50, 50, 50, 50, BORDER_CONSTANT);
+//        copyMakeBorder(image, image, 50, 50, 50, 50, BORDER_CONSTANT);
         Mat edges = new Mat();
         Mat hierarchy = new Mat();
 
         List<MatOfPoint> contours = new ArrayList<>();
 
-        List<Mat> bgrList = new ArrayList<>(3);
-        split(image, bgrList);
+//        List<Mat> bgrList = new ArrayList<>(3);
+//        split(image, bgrList);
+//
+//        Mat blue = bgrList.get(0);
+//        Mat green = bgrList.get(1);
+//        Mat red = bgrList.get(2);
+//
+//        Mat blue_edges = ImgProcessHelper.autoCanny(blue);
+//        Mat green_edges = ImgProcessHelper.autoCanny(green);
+//        Mat red_edges = ImgProcessHelper.autoCanny(red);
+//
+//        Core.bitwise_or(blue_edges, green_edges, edges);
+//        Core.bitwise_or(red_edges, edges, edges);
 
-        Mat blue = bgrList.get(0);
-        Mat green = bgrList.get(1);
-        Mat red = bgrList.get(2);
+        Mat gray = new Mat();
+        cvtColor(image, gray, COLOR_BGR2GRAY);
+//        adaptiveThreshold(gray, gray, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 15, 0);
+//        blur(gray, gray, new Size(3, 3));
+        edges = ImgProcessHelper.autoCanny(gray);
 
-        Mat blue_edges = ImgProcessHelper.autoCanny(blue);
-        Mat green_edges = ImgProcessHelper.autoCanny(green);
-        Mat red_edges = ImgProcessHelper.autoCanny(red);
 
-        Core.bitwise_or(blue_edges, green_edges, edges);
-        Core.bitwise_or(red_edges, edges, edges);
 
         Imgproc.findContours(edges, contours, hierarchy,
             Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_NONE);
@@ -45,10 +53,10 @@ public class OCRPreprocessor {
         List<MatOfPoint> keepers = new ArrayList<>();
         int index = 0;
         for (MatOfPoint contour : contours) {
-            System.out.println(index);
             if ((keepContour(contour, image)
-                //&& (contourArea(contour) > 10)
-                && includeBox(index, contours, hierarchy, image))) {
+//                && (contourArea(contour) > 10)
+                && includeBox(index, contours, hierarchy, image)
+            )) {
                 keepers.add(contour);
             }
             index++;
@@ -111,6 +119,10 @@ public class OCRPreprocessor {
 
         blur(new_image, new_image, new Size(2,2));
         rotate(new_image, new_image, ROTATE_90_COUNTERCLOCKWISE);
+
+        drawContours(image, keepers, -1, new Scalar(0, 0, 255));
+
+
         return new_image;
 
     }
@@ -191,7 +203,7 @@ public class OCRPreprocessor {
 
 
     public static boolean keepContour(MatOfPoint contour, Mat image) {
-        return keepBox(contour, image) && isConnected(contour);
+        return keepBox(contour, image) ; //&& isConnected(contour)
 //        return true;
     }
 
@@ -199,10 +211,13 @@ public class OCRPreprocessor {
         Rect rect = boundingRect(contour);
         double width = rect.width;
         double height = rect.height;
-
+        int area = image.width() * image.height();
         // if the contour is too long or wide it is rejected
-        if (width / height < 0.01 || width / height > 10
-            || width > image.width() / 5 || height > image.height() / 5) {
+        if (width * height > 0.5 * area || height > 0.2 * image.height()) {
+            return false;
+        }
+
+        if(width / height > 6 || height / width > 10 ) {
             return false;
         }
 
@@ -216,13 +231,13 @@ public class OCRPreprocessor {
 
 
         if (isChild(index, contours, hierarchy, image)
-            && countChildren(parent, contours, hierarchy, image) <= 2) {
+            && countChildren(parent, contours, hierarchy, image) <= 5) {
 //            System.out.println("a");
             return false;
         }
 
         // if the contour has more than two children it is not a letter
-        if (countChildren(index, contours, hierarchy, image) > 2) {
+        if (countChildren(index, contours, hierarchy, image) > 5) {
 //            System.out.println("b");
             return false;
         }
@@ -244,7 +259,7 @@ public class OCRPreprocessor {
 
 
     public static void main(String[] args) {
-        String path = System.getProperty("user.dir") + "/booklab-backend/resources/books/roi_64.jpg";
+        String path = System.getProperty("user.dir") + "/booklab-backend/resources/books/roi_1.jpg";
         String outputpath = System.getProperty("user.dir") + "/booklab-backend/resources/roi_0_corrected.jpg";
         Mat image = imread(path);
         Mat imtmp = optimizeImg(image);
