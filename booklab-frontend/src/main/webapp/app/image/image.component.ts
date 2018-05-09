@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpServiceService } from "../httpService/http-service.service";
+import { HttpServiceService } from '../httpService/http-service.service';
 
 
 interface Book {
@@ -8,7 +8,7 @@ interface Book {
 }
 
 interface DetectionResult {
-    results: Book[]
+    results: Book[];
 }
 
 
@@ -32,9 +32,9 @@ export class ImageComponent implements OnInit {
         const reader = new FileReader();
         reader.readAsDataURL(files[0]);
         reader.onload = () => this.img = reader.result;
-        this.http.checkHealth()
+        this.http.checkHealth();
         this.http.putImg(null).subscribe((res: DetectionResult) => {
-            res.results.forEach(book => console.log(book.title + " " + book.isbn));
+            res.results.forEach(book => console.log(book.title + ' ' + book.isbn));
             this.results = res.results;
         });
 

@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { HttpServiceService } from "./httpService/http-service.service";
+import { HttpServiceService } from './httpService/http-service.service';
 
 
 import { AppComponent } from './app.component';
