@@ -11,6 +11,7 @@ import { AppComponent } from './app.component';
 import { ImageUploadComponent } from './components/image-upload/image-upload.component';
 import { HeaderComponent } from './components/header/header.component';
 import { BookshelfComponent } from "./components/bookshelf/bookshelf.component";
+import { SidebarComponent} from "./components/sidebar/sidebar.component";
 
 const routes: Routes = [
     {
@@ -28,7 +29,8 @@ const routes: Routes = [
         AppComponent,
         ImageUploadComponent,
         HeaderComponent,
-        BookshelfComponent
+        BookshelfComponent,
+        SidebarComponent
     ],
     imports: [
         BrowserModule,
