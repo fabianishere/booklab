@@ -2,17 +2,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
+import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
 import static org.opencv.core.Core.*;
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 import static org.opencv.imgproc.Imgproc.COLOR_BGR2GRAY;
+import static org.opencv.imgproc.Imgproc.boundingRect;
 import static org.opencv.imgproc.Imgproc.cvtColor;
 
 public class OCRPreprocessor {
@@ -24,6 +21,7 @@ public class OCRPreprocessor {
     }
 
     public static Mat optimizeImg(Mat image) {
+        copyMakeBorder(image, image, 50, 50, 50, 50, BORDER_CONSTANT);
         Mat edges = new Mat();
         Mat hierarchy = new Mat();
         Mat gray = new Mat();
@@ -31,19 +29,33 @@ public class OCRPreprocessor {
 
         List<MatOfPoint> contours = new ArrayList<>();
 
-        cvtColor(image, gray, COLOR_BGR2GRAY);
-        edges = ImgProcessHelper.autoCanny(gray);
-//        Imgproc.Canny(gray, edges, 200, 250);
+//        cvtColor(image, gray, COLOR_BGR2GRAY);
+//        edges = ImgProcessHelper.autoCanny(gray);
+////        Imgproc.Canny(gray, edges, 200, 250);
+
+        List<Mat> bgrList = new ArrayList<>(3);
+        split(image, bgrList);
+
+        Mat blue = bgrList.get(0);
+        Mat green = bgrList.get(1);
+        Mat red = bgrList.get(2);
+
+        Mat blue_edges = ImgProcessHelper.autoCanny(blue);
+        Mat green_edges = ImgProcessHelper.autoCanny(green);
+        Mat red_edges = ImgProcessHelper.autoCanny(red);
+
+        Core.bitwise_or(blue_edges, green_edges, edges);
+        Core.bitwise_or(red_edges, edges, edges);
 
         Imgproc.findContours(edges, contours, hierarchy,
-            Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE, new Point(0, 0));
+            Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_NONE);
 
         List<MatOfPoint> keepers = new ArrayList<>();
         int index = 0;
         for (MatOfPoint contour : contours) {
-            if (isValidContour(contour, image)
-                && isConnectedContour(contour)
-                && isValidBox(index, contours, hierarchy, image)) {
+            System.out.println(index);
+            if ((keepContour(contour, image)
+                && includeBox(index, contours, hierarchy, image))) {
                 keepers.add(contour);
             }
             index++;
@@ -82,7 +94,7 @@ public class OCRPreprocessor {
             int foregroundColor = 255;
             int backgroundColor = 0;
 
-            if (foregroundIntensity <= median) {
+            if (foregroundIntensity < median) {
                 foregroundColor = 0;
                 backgroundColor = 255;
             }
@@ -116,47 +128,10 @@ public class OCRPreprocessor {
         return 0.30 * pixel[2] + 0.59 * pixel[1] + 0.11 * pixel[0];
     }
 
-    public static boolean isValidContour(MatOfPoint contour, Mat image) {
-
-        double width = contour.width();
-        double height = contour.height();
-
-        // if the contour is too long or wide it is rejected
-        if (width / height < 0.01 || width / height > 10
-            || width > image.width() / 5 || height > image.height() / 5) {
-            return false;
-        }
-
-        return true;
-    }
-
-    public static boolean isConnectedContour(MatOfPoint contour) {
-        double[] first = contour.get(0,0);
+    public static boolean isConnected(MatOfPoint contour) {
+        double[] first = contour.get(0, 0);
         double[] last = contour.get(contour.rows() - 1, 0);
         return Math.abs(first[0] - last[0]) <= 1 && Math.abs(first[1] - last[1]) <= 1;
-    }
-
-    public static boolean isValidBox(int index, List<MatOfPoint> contours,
-                                     Mat hierarchy, Mat image) {
-
-        // if it is a child of a accepting contour and has no children it is
-        // probably the interior of a letter
-
-        int children = countChildren(index, contours, hierarchy, image);
-
-        if (isChild(index, contours, hierarchy, image)
-            && children <= 2) {
-//            System.out.println("a");
-            return false;
-        }
-
-        // if the contour has more than two children it is not a letter
-        if (children > 2) {
-//            System.out.println("b");
-            return false;
-        }
-
-        return true;
     }
 
     public static int countChildren(int index, List<MatOfPoint> contours,
@@ -169,7 +144,9 @@ public class OCRPreprocessor {
             return 0;
         }
 
-        if (isValidContour(contours.get(child), image)) {
+        System.out.println("child: " + child);
+
+        if (keepContour(contours.get(child), image)) {
             count = 1;
         }
 
@@ -177,6 +154,7 @@ public class OCRPreprocessor {
 
         return count;
     }
+
 
     public static int countSiblings(int index, List<MatOfPoint> contours,
                                     Mat hierarchy, Mat image) {
@@ -186,7 +164,7 @@ public class OCRPreprocessor {
 
         // counting the children of the next contour
         while (next > 0) {
-            if (isValidContour(contours.get(next), image)) {
+            if (keepContour(contours.get(next), image)) {
                 count += 1;
             }
             next = (int) hierarchy.get(0, next)[0];
@@ -198,7 +176,7 @@ public class OCRPreprocessor {
 
         // counting the children of the previous contour
         while (prev > 0) {
-            if (isValidContour(contours.get(prev), image)) {
+            if (keepContour(contours.get(prev), image)) {
                 count += 1;
             }
             prev = (int) hierarchy.get(0, prev)[1];
@@ -211,17 +189,62 @@ public class OCRPreprocessor {
 
     public static boolean isChild(int index, List<MatOfPoint> contours,
                                   Mat hierarchy, Mat image) {
-        // get the parent in the contour hierarchy
+        return getParent(index, contours, hierarchy, image) > 0;
+    }
+
+
+    public static boolean keepContour(MatOfPoint contour, Mat image) {
+        return keepBox(contour, image) && isConnected(contour);
+//        return true;
+    }
+
+    public static boolean keepBox(MatOfPoint contour, Mat image) {
+        Rect rect = boundingRect(contour);
+        double width = rect.width;
+        double height = rect.height;
+
+        // if the contour is too long or wide it is rejected
+        if (width / height < 0.01 || width / height > 10
+            || width > image.width() / 5 || height > image.height() / 5) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    public static boolean includeBox(int index, List<MatOfPoint> contours,
+                                     Mat hierarchy, Mat image) {
+        int parent = getParent(index, contours, hierarchy, image);
+
+
+        if (isChild(index, contours, hierarchy, image)
+            && countChildren(parent, contours, hierarchy, image) <= 2) {
+//            System.out.println("a");
+            return false;
+        }
+
+        // if the contour has more than two children it is not a letter
+        if (countChildren(index, contours, hierarchy, image) > 2) {
+//            System.out.println("b");
+            return false;
+        }
+
+        return true;
+    }
+
+    private static int getParent(int index, List<MatOfPoint> contours, Mat hierarchy, Mat image) {
+        // if it is a child of a accepting contour and has no children it is
+        // probably the interior of a letter
         int parent = (int) hierarchy.get(0, index)[3];
 
         // searches until a valid parent is found
-        while (parent > 0 && !isValidContour(contours.get(parent), image)) {
+        while (parent > 0 && !keepContour(contours.get(parent), image)) {
             parent = (int) hierarchy.get(0, parent)[3];
         }
-
-        // return true of there is a valid parent
-        return parent > 0;
+        return parent;
     }
+
 
     public static void main(String[] args) {
         String path = System.getProperty("user.dir") + "/booklab-backend/resources/books/roi_64.jpg";
