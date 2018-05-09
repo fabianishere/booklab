@@ -3,18 +3,19 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
-import { HttpServiceService } from './httpService/http-service.service';
+import { HttpService } from './services/http/http.service';
+import { UserService } from "./services/user/user.service";
 
 
 import { AppComponent } from './app.component';
-import { ImageComponent } from './image/image.component';
-import { HeaderComponent } from './header/header.component';
-import { BookshelfComponent } from "./bookshelf/bookshelf.component";
+import { ImageUploadComponent } from './components/image-upload/image-upload.component';
+import { HeaderComponent } from './components/header/header.component';
+import { BookshelfComponent } from "./components/bookshelf/bookshelf.component";
 
 const routes: Routes = [
     {
         path: '',
-        component: ImageComponent
+        component: ImageUploadComponent
     },
     {
         path: 'bookshelf',
@@ -25,7 +26,7 @@ const routes: Routes = [
 @NgModule({
     declarations: [
         AppComponent,
-        ImageComponent,
+        ImageUploadComponent,
         HeaderComponent,
         BookshelfComponent
     ],
@@ -39,7 +40,8 @@ const routes: Routes = [
         )
     ],
     providers: [
-        HttpServiceService
+        HttpService,
+        UserService
     ],
     bootstrap: [AppComponent]
 })

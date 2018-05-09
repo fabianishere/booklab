@@ -1,0 +1,7 @@
+<div class="container books">
+    <div class="row" *ngFor="let book of books">
+        <div class="col-1"><img src="../../../assets/delete.png" class="delete-icon" (click)="delete(book)"></div>
+        <div class="col-5">{{book.title}}</div>
+        <div class="col-6">{{book.isbn}}</div>
+    </div>
+</div>

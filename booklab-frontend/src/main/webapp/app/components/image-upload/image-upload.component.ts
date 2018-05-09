@@ -1,11 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpServiceService } from '../httpService/http-service.service';
-
-
-interface Book {
-    isbn: string;
-    title: string;
-}
+import { HttpService } from '../../services/http/http.service';
+import { UserService } from "../../services/user/user.service";
+import {Book} from "../../dataTypes";
 
 interface DetectionResult {
     results: Book[];
@@ -15,15 +11,15 @@ interface DetectionResult {
 
 @Component({
     selector: 'app-image',
-    templateUrl: './image.component.html',
-    styleUrls: ['./image.component.less']
+    templateUrl: './image-upload.component.html',
+    styleUrls: ['./image-upload.component.less']
 })
 
-export class ImageComponent implements OnInit {
+export class ImageUploadComponent implements OnInit {
     public img: any;
     public results: Book[];
 
-    constructor(private http: HttpServiceService) {
+    constructor(private http: HttpService, private user: UserService) {
     }
 
     onSubmit(event) {
@@ -36,6 +32,7 @@ export class ImageComponent implements OnInit {
         this.http.putImg(null).subscribe((res: DetectionResult) => {
             res.results.forEach(book => console.log(book.title + ' ' + book.isbn));
             this.results = res.results;
+            this.user.setBookshelf(res.results);
         });
 
     }

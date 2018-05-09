@@ -14,9 +14,10 @@
             <p *ngIf="results.length == 0 && img!= null">No books were found</p>
             <div class="container books">
                 <div class="row" *ngFor="let book of results">
-                    <div class="col-1"> <img src="../../assets/delete.png"> </div>
+                    <div class="col-1"><img src="../../../assets/delete.png"></div>
                     <div class="col-5">{{book.title}}</div>
-                    <div class="col-6"> {{book.isbn}}</div>
+                    <div class="col-6">{{book.isbn}}</div>
+                </div>
             </div>
         </div>
     </div>
