@@ -9,9 +9,11 @@ import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
 
-import static org.opencv.core.Core.flip;
+import static org.opencv.core.Core.*;
 import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.imgcodecs.Imgcodecs.imwrite;
+import static org.opencv.imgproc.Imgproc.COLOR_BGR2GRAY;
+import static org.opencv.imgproc.Imgproc.cvtColor;
 
 public class OCRPreprocessor {
 
@@ -24,18 +26,24 @@ public class OCRPreprocessor {
     public static Mat optimizeImg(Mat image) {
         Mat edges = new Mat();
         Mat hierarchy = new Mat();
-        Mat result = new Mat();
+        Mat gray = new Mat();
+        Mat result = new Mat(image.width(), image.height(), CvType.CV_8U);
 
         List<MatOfPoint> contours = new ArrayList<>();
 
-        Imgproc.Canny(image, edges, 200, 250);
+        cvtColor(image, gray, COLOR_BGR2GRAY);
+        edges = ImgProcessHelper.autoCanny(gray);
+//        Imgproc.Canny(gray, edges, 200, 250);
+
         Imgproc.findContours(edges, contours, hierarchy,
             Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE, new Point(0, 0));
 
         List<MatOfPoint> keepers = new ArrayList<>();
         int index = 0;
         for (MatOfPoint contour : contours) {
-            if (isValidContour(contour, image) && isValidBox(index, contours, hierarchy, image)) {
+            if (isValidContour(contour, image)
+                && isConnectedContour(contour)
+                && isValidBox(index, contours, hierarchy, image)) {
                 keepers.add(contour);
             }
             index++;
@@ -92,7 +100,8 @@ public class OCRPreprocessor {
             }
         }
 
-        flip(result, result, 1);
+        flip(result, result, 0);
+
         return result;
 
     }
@@ -108,6 +117,7 @@ public class OCRPreprocessor {
     }
 
     public static boolean isValidContour(MatOfPoint contour, Mat image) {
+
         double width = contour.width();
         double height = contour.height();
 
@@ -120,40 +130,51 @@ public class OCRPreprocessor {
         return true;
     }
 
+    public static boolean isConnectedContour(MatOfPoint contour) {
+        double[] first = contour.get(0,0);
+        double[] last = contour.get(contour.rows() - 1, 0);
+        return Math.abs(first[0] - last[0]) <= 1 && Math.abs(first[1] - last[1]) <= 1;
+    }
+
     public static boolean isValidBox(int index, List<MatOfPoint> contours,
                                      Mat hierarchy, Mat image) {
 
         // if it is a child of a accepting contour and has no children it is
         // probably the interior of a letter
+
+        int children = countChildren(index, contours, hierarchy, image);
+
         if (isChild(index, contours, hierarchy, image)
-            && countChildren(index, contours, hierarchy, image) <= 2
-            )
+            && children <= 2) {
+//            System.out.println("a");
             return false;
-//
-//        // if the contour has more than two children it is not a letter
-        if (countChildren(index, contours, hierarchy, image) > 2)
+        }
+
+        // if the contour has more than two children it is not a letter
+        if (children > 2) {
+//            System.out.println("b");
             return false;
+        }
 
         return true;
     }
 
     public static int countChildren(int index, List<MatOfPoint> contours,
                                     Mat hierarchy, Mat image) {
-
-        // get the child contour index
-        int data[] = new int[(int) (hierarchy.total() * hierarchy.channels())];
-        hierarchy.get(index, 2, data);
-
         int count = 0;
-        if (data[0] < 0) {
+        // get the child contour index
+        int child = (int) hierarchy.get(0, index)[2];
+
+        if (child < 0) {
             return 0;
-        } else {
-            if (isValidContour(contours.get(data[0]), image)) {
-                count = 1;
-            }
         }
 
-//        count += countSiblings(data[0], contours, hierarchy, image);
+        if (isValidContour(contours.get(child), image)) {
+            count = 1;
+        }
+
+        count += countSiblings(child, contours, hierarchy, image);
+
         return count;
     }
 
@@ -161,31 +182,26 @@ public class OCRPreprocessor {
                                     Mat hierarchy, Mat image) {
         int count = 0;
 
-        int iBuff[] = new int[(int) (hierarchy.total() * hierarchy.channels())];
-        hierarchy.get(index, 0, iBuff);
-        int next = iBuff[0];
+        int next = (int) hierarchy.get(0, index)[0];
 
         // counting the children of the next contour
         while (next > 0) {
             if (isValidContour(contours.get(next), image)) {
                 count += 1;
             }
-            hierarchy.get(next, 0, iBuff);
-            next = iBuff[0];
+            next = (int) hierarchy.get(0, next)[0];
             if (next == index)
                 break;
         }
 
-        hierarchy.get(index, 1, iBuff);
-        int prev = iBuff[0];
+        int prev = (int) hierarchy.get(0, index)[1];
 
         // counting the children of the previous contour
         while (prev > 0) {
             if (isValidContour(contours.get(prev), image)) {
                 count += 1;
             }
-            hierarchy.get(prev, 1, iBuff);
-            prev = iBuff[0];
+            prev = (int) hierarchy.get(0, prev)[1];
             if (prev == index)
                 break;
         }
@@ -196,14 +212,11 @@ public class OCRPreprocessor {
     public static boolean isChild(int index, List<MatOfPoint> contours,
                                   Mat hierarchy, Mat image) {
         // get the parent in the contour hierarchy
-        int data[] = new int[(int) (hierarchy.total() * hierarchy.channels())];
-        hierarchy.get(index, 3, data);
-        int parent = data[0];
+        int parent = (int) hierarchy.get(0, index)[3];
 
         // searches until a valid parent is found
-        while (!isValidContour(contours.get(parent), image)) {
-            hierarchy.get(parent, 3, data);
-            parent = data[0];
+        while (parent > 0 && !isValidContour(contours.get(parent), image)) {
+            parent = (int) hierarchy.get(0, parent)[3];
         }
 
         // return true of there is a valid parent
@@ -211,8 +224,8 @@ public class OCRPreprocessor {
     }
 
     public static void main(String[] args) {
-        String path = System.getProperty("user.dir") + "/booklab-backend/resources/bookshelf.jpg";
-        String outputpath = System.getProperty("user.dir") + "/booklab-backend/resources/bookshelfcorrected.jpg";
+        String path = System.getProperty("user.dir") + "/booklab-backend/resources/books/roi_64.jpg";
+        String outputpath = System.getProperty("user.dir") + "/booklab-backend/resources/roi_0_corrected.jpg";
         Mat image = imread(path);
         Mat imtmp = optimizeImg(image);
         imwrite(outputpath, imtmp);
