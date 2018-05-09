@@ -8,29 +8,36 @@ import {BehaviorSubject} from "rxjs/BehaviorSubject";
 export class UserService {
 
     private bookshelf: Book[];
-    private bookObs: BehaviorSubject<Book[]>;
+    private bookSub: BehaviorSubject<Book[]>;
 
     constructor() {
-        this.bookObs = new BehaviorSubject([]);
+        this.bookSub = new BehaviorSubject([]);
+        this.bookshelf = [];
     }
 
     getBookshelf(): Observable<Book[]> {
-        return this.bookObs.asObservable();
+        return this.bookSub.asObservable();
     }
 
     setBookshelf(books: Book[]) {
         this.bookshelf = books;
-        this.bookObs.next(this.bookshelf);
+        this.bookSub.next(this.bookshelf);
     }
 
     addToBookshelf(book: Book) {
         this.bookshelf.push(book);
-        this.bookObs.next(this.bookshelf);
+        this.bookSub.next(this.bookshelf);
     }
+
+    addMultToBookshelf(books: Book[]) {
+        this.bookshelf = this.bookshelf.concat(books);
+        this.bookSub.next(this.bookshelf);
+    }
+
 
     deleteFromBookshelf(book: Book) {
         this.bookshelf = this.bookshelf.filter(b => b.isbn!=book.isbn);
-        this.bookObs.next(this.bookshelf);
+        this.bookSub.next(this.bookshelf);
     }
 
 }

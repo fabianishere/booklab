@@ -18,8 +18,9 @@ interface DetectionResult {
 export class ImageUploadComponent implements OnInit {
     public img: any;
     public results: Book[];
+    public console = console;
 
-    constructor(private http: HttpService, private user: UserService) {
+    constructor(private http: HttpService, public user: UserService) {
     }
 
     onSubmit(event) {
@@ -32,7 +33,6 @@ export class ImageUploadComponent implements OnInit {
         this.http.putImg(null).subscribe((res: DetectionResult) => {
             res.results.forEach(book => console.log(book.title + ' ' + book.isbn));
             this.results = res.results;
-            this.user.setBookshelf(res.results);
         });
 
     }

@@ -1,9 +1,9 @@
 <div class="container-fluid top-container">
     <div class="row row-top-container">
         <div class="col-6 input">
-            <label class="upload-button">
+            <label class="button upload">
                 Upload your image
-                <input type="file" (change)="onSubmit($event)" style="display: none" accept="image/*"/>
+                <input type="file" (change)="onSubmit($event)" accept="image/*"/>
             </label>
         </div>
         <div class="col-6 results">
@@ -12,12 +12,16 @@
                 <rect width="450" height="450" class="image"></rect>
             </svg>
             <p *ngIf="results.length == 0 && img!= null">No books were found</p>
-            <div class="container books">
+            <div *ngIf="results.length > 0" class="container books">
                 <div class="row" *ngFor="let book of results">
                     <div class="col-1"><img src="../../../assets/delete.png"></div>
                     <div class="col-5">{{book.title}}</div>
                     <div class="col-6">{{book.isbn}}</div>
                 </div>
+                <label class="button bookshelf">
+                    Add to your bookshelf
+                    <input type="button" (click)="console.log('click!'); user.addMultToBookshelf(results)">
+                </label>
             </div>
         </div>
     </div>
