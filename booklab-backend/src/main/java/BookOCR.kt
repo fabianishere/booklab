@@ -156,8 +156,10 @@ object BookOCR {
         }
         val bytes = buffer.toByteArray()
         val image = imdecode(MatOfByte(*bytes), CV_LOAD_IMAGE_UNCHANGED)
-        val books = BookDetector.detectBooks(image)
 
+        // get the books
+        val books = BookDetector.detectBooks(image)
+        // get the names of the books
         val result = preprocessImages(books).parallelStream().map{getText(it)}
         return result.collect(Collectors.toList())
     }
@@ -166,7 +168,6 @@ object BookOCR {
     @JvmStatic
     fun main(args: Array<String>) {
         val path = System.getProperty("user.dir") + "/booklab-backend/resources/bookshelf.jpg"
-
         val `is` = FileInputStream(path)
         getBookList(`is`)
     }
