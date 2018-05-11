@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from "../../services/user/user.service";
-import {Book} from "../../dataTypes";
+import { UserService } from '../../services/user/user.service';
+import {Book} from '../../dataTypes';
 
 @Component({
     selector: 'app-bookshelf',
@@ -16,7 +16,7 @@ export class BookshelfComponent implements OnInit {
     ngOnInit() {
        this.user.getBookshelf().subscribe(b => {
            this.books = b;
-       })
+       });
     }
 
     delete(book: Book) {

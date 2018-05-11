@@ -4,14 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpService } from './services/http/http.service';
-import { UserService } from "./services/user/user.service";
+import { UserService } from './services/user/user.service';
 
 
 import { AppComponent } from './app.component';
 import { ImageUploadComponent } from './components/image-upload/image-upload.component';
 import { HeaderComponent } from './components/header/header.component';
-import { BookshelfComponent } from "./components/bookshelf/bookshelf.component";
-import { SidebarComponent} from "./components/sidebar/sidebar.component";
+import { BookshelfComponent } from './components/bookshelf/bookshelf.component';
+import { SidebarComponent} from './components/sidebar/sidebar.component';
 
 const routes: Routes = [
     {
@@ -22,7 +22,7 @@ const routes: Routes = [
         path: 'bookshelf',
         component: BookshelfComponent
     }
-]
+];
 
 @NgModule({
     declarations: [
