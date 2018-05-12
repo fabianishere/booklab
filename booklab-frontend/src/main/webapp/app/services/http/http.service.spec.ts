@@ -1,6 +1,6 @@
 import {TestBed, inject} from '@angular/core/testing';
 
-import {HttpServiceService} from './http-service.service';
+import {HttpServiceService} from './http.service';
 
 describe('HttpServiceService', () => {
     beforeEach(() => {

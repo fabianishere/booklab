@@ -7,7 +7,7 @@ interface Success {
 }
 
 @Injectable()
-export class HttpServiceService {
+export class HttpService {
 
     constructor(private http: HttpClient) {
     }
