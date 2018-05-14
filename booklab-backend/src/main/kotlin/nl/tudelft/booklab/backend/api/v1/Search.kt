@@ -29,7 +29,7 @@ fun Route.search() {
         val author = call.parameters["author"]
 
         if (title != null && author != null) {
-            call.respond(client.query(client.createQuery(title, author)))
+            call.respond(client.query(client.createQuery(title, author), 5))
         } else {
             call.respond("failed to query.\nquery is written like this:\n.../search?title=<title>&author=<author> \n")
         }

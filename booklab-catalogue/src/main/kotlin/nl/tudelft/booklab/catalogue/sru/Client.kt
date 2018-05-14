@@ -44,9 +44,9 @@ class SruClient(
      *
      * @return the list of books returned from the query
      */
-    suspend fun query(query: String): List<Book> {
+    suspend fun query(query: String, max: Int = 100): List<Book> {
         val stream = client.call {
-            url(createSruUrl(query.toLowerCase()))
+            url(createSruUrl(query.toLowerCase(), max))
             method = HttpMethod.Get
         }.response.content.toInputStream()
         return SruParser.parse(stream)
@@ -70,7 +70,7 @@ class SruClient(
      *
      * @return a string representation of the the url
      */
-    fun createSruUrl(query: String, max: Int = 100): String {
+    fun createSruUrl(query: String, max: Int): String {
         val params = listOf(
             "operation" to "searchRetrieve",
             "version" to "1.2",
