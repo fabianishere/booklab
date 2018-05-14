@@ -42,9 +42,10 @@ public class OCRPreprocessor {
         Mat gray = new Mat();
         cvtColor(image, gray, COLOR_BGR2GRAY);
 //        adaptiveThreshold(gray, gray, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 15, 0);
-//        blur(gray, gray, new Size(3, 3));
+//        blur(gray, gray, new Size(2, 2));
         edges = ImgProcessHelper.autoCanny(gray);
-
+//        dilate(edges, edges, getStructuringElement(MORPH_ELLIPSE, new Size(3,3)));
+//        erode(edges, edges, getStructuringElement(MORPH_ELLIPSE, new Size(2,2)));
 
 
         Imgproc.findContours(edges, contours, hierarchy,
