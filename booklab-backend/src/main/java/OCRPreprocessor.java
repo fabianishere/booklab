@@ -1,3 +1,18 @@
+/*
+ * Copyright 2018 The BookLab Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,6 +25,9 @@ import static org.opencv.imgcodecs.Imgcodecs.imread;
 import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 import static org.opencv.imgproc.Imgproc.*;
 
+/**
+ * Class containing functionality to preprocess images for OCR with Tesseract
+ */
 public class OCRPreprocessor {
 
     // init OpenCV
@@ -18,55 +36,48 @@ public class OCRPreprocessor {
         System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
     }
 
+    /**
+     * Optimize the image
+     * @param image openCV matrix containing image
+     * @return image
+     */
     public static Mat optimizeImg(Mat image) {
-//        copyMakeBorder(image, image, 50, 50, 50, 50, BORDER_CONSTANT);
-        Mat edges = new Mat();
         Mat hierarchy = new Mat();
-
         List<MatOfPoint> contours = new ArrayList<>();
-
-//        List<Mat> bgrList = new ArrayList<>(3);
-//        split(image, bgrList);
-//
-//        Mat blue = bgrList.get(0);
-//        Mat green = bgrList.get(1);
-//        Mat red = bgrList.get(2);
-//
-//        Mat blue_edges = ImgProcessHelper.autoCanny(blue);
-//        Mat green_edges = ImgProcessHelper.autoCanny(green);
-//        Mat red_edges = ImgProcessHelper.autoCanny(red);
-//
-//        Core.bitwise_or(blue_edges, green_edges, edges);
-//        Core.bitwise_or(red_edges, edges, edges);
-
+        // grayscale
         Mat gray = new Mat();
-        cvtColor(image, gray, COLOR_BGR2GRAY);
-//        adaptiveThreshold(gray, gray, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 15, 0);
-//        blur(gray, gray, new Size(2, 2));
-        edges = ImgProcessHelper.autoCanny(gray);
-//        dilate(edges, edges, getStructuringElement(MORPH_ELLIPSE, new Size(3,3)));
-//        erode(edges, edges, getStructuringElement(MORPH_ELLIPSE, new Size(2,2)));
-
-
+       cvtColor(image, gray, COLOR_BGR2GRAY);
+        // get edges
+        Mat edges = ImgProcessHelper.autoCanny(gray);
+        // get contours
         Imgproc.findContours(edges, contours, hierarchy,
             Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_NONE);
-
-        List<MatOfPoint> keepers = new ArrayList<>();
-        int index = 0;
-        for (MatOfPoint contour : contours) {
-            if ((keepContour(contour, image)
-//                && (contourArea(contour) > 10)
-                && includeBox(index, contours, hierarchy, image)
-            )) {
-                keepers.add(contour);
-            }
-            index++;
-        }
+        // retrieve keepers
+        List<MatOfPoint> keepers = findKeepers(contours, image, hierarchy);
 
         Mat new_image = new Mat();
         edges.copyTo(new_image);
         new_image.setTo(new Scalar(255,255,255));
 
+        createNewImageFromContours(keepers, new_image, image);
+
+        blur(new_image, new_image, new Size(2,2));
+        rotate(new_image, new_image, ROTATE_90_COUNTERCLOCKWISE);
+
+        drawContours(image, keepers, -1, new Scalar(0, 0, 255));
+
+        return new_image;
+
+    }
+
+    /**
+     * Takes a list of contours, an image and a destination image and adds the contours to that new image
+     * @param keepers list of contours
+     * @param new_image blank image
+     * @param image original image
+     */
+    private static void createNewImageFromContours(List<MatOfPoint> keepers, Mat new_image, Mat image) {
+        // loop over keepers
         for (MatOfPoint contour : keepers) {
             double foregroundIntensity = 0.0;
             Point[] contourPoints = contour.toArray();
@@ -117,33 +128,53 @@ public class OCRPreprocessor {
                 }
             }
         }
-
-        blur(new_image, new_image, new Size(2,2));
-        rotate(new_image, new_image, ROTATE_90_COUNTERCLOCKWISE);
-
-        drawContours(image, keepers, -1, new Scalar(0, 0, 255));
-
-
-        return new_image;
-
     }
 
+    /**
+     * Select suitable contours from list of contours
+     * @param contours list of contours
+     * @param image source image
+     * @param hierarchy contour hierarchy
+     * @return list of selected contours
+     */
+    private static List<MatOfPoint> findKeepers(List<MatOfPoint> contours, Mat image, Mat hierarchy) {
+        List<MatOfPoint> keepers = new ArrayList<>();
+        int index = 0;
+        for (MatOfPoint contour : contours) {
+            if ((keepContour(contour, image)
+                && includeBox(index, contours, hierarchy, image)
+            )) {
+                keepers.add(contour);
+            }
+            index++;
+        }
+        return keepers;
+    }
+
+    /**
+     * Retrieve intensity of pixel in image
+     * @param image
+     * @param x
+     * @param y
+     * @return
+     */
     public static double getIntensity(Mat image, int x, int y) {
         // check if the pixel index is out of the frame
         if (x >= image.width() || y >= image.height() || x < 0 || y < 0)
             return 0;
 
         double[] pixel = image.get(y, x);
-
         return 0.30 * pixel[2] + 0.59 * pixel[1] + 0.11 * pixel[0];
     }
 
-    public static boolean isConnected(MatOfPoint contour) {
-        double[] first = contour.get(0, 0);
-        double[] last = contour.get(contour.rows() - 1, 0);
-        return Math.abs(first[0] - last[0]) <= 1 && Math.abs(first[1] - last[1]) <= 1;
-    }
-
+    /**
+     * Count children of countour
+     * @param index index of contour
+     * @param contours list of contours
+     * @param hierarchy hierarchy of contours
+     * @param image source image
+     * @return number of children
+     */
     public static int countChildren(int index, List<MatOfPoint> contours,
                                     Mat hierarchy, Mat image) {
         int count = 0;
@@ -153,8 +184,6 @@ public class OCRPreprocessor {
         if (child < 0) {
             return 0;
         }
-
-        System.out.println("child: " + child);
 
         if (keepContour(contours.get(child), image)) {
             count = 1;
@@ -166,6 +195,14 @@ public class OCRPreprocessor {
     }
 
 
+    /**
+     * Count siblings of contour
+     * @param index index of contour
+     * @param contours all contours
+     * @param hierarchy hierarchy structure
+     * @param image source image
+     * @return number of siblings
+     */
     public static int countSiblings(int index, List<MatOfPoint> contours,
                                     Mat hierarchy, Mat image) {
         int count = 0;
@@ -197,17 +234,35 @@ public class OCRPreprocessor {
         return count;
     }
 
+    /**
+     * Check if contour is a child of any other contour
+     * @param index index of contour
+     * @param contours list of contours
+     * @param hierarchy hierarchy structure
+     * @param image source image
+     * @return boolean
+     */
     public static boolean isChild(int index, List<MatOfPoint> contours,
                                   Mat hierarchy, Mat image) {
         return getParent(index, contours, hierarchy, image) > 0;
     }
 
-
+    /**
+     * Check if contour should be kept
+     * @param contour contour
+     * @param image source image
+     * @return boolean
+     */
     public static boolean keepContour(MatOfPoint contour, Mat image) {
-        return keepBox(contour, image) ; //&& isConnected(contour)
-//        return true;
+        return keepBox(contour, image) ;
     }
 
+    /**
+     * Check if box should be kept
+     * @param contour contour
+     * @param image source image
+     * @return boolean
+     */
     public static boolean keepBox(MatOfPoint contour, Mat image) {
         Rect rect = boundingRect(contour);
         double width = rect.width;
@@ -225,7 +280,14 @@ public class OCRPreprocessor {
         return true;
     }
 
-
+    /**
+     * Check if box should be included
+     * @param index index
+     * @param contours list of contours
+     * @param hierarchy hierarchy structure
+     * @param image source image
+     * @return boolean
+     */
     public static boolean includeBox(int index, List<MatOfPoint> contours,
                                      Mat hierarchy, Mat image) {
         int parent = getParent(index, contours, hierarchy, image);
@@ -233,19 +295,25 @@ public class OCRPreprocessor {
 
         if (isChild(index, contours, hierarchy, image)
             && countChildren(parent, contours, hierarchy, image) <= 5) {
-//            System.out.println("a");
             return false;
         }
 
         // if the contour has more than two children it is not a letter
         if (countChildren(index, contours, hierarchy, image) > 5) {
-//            System.out.println("b");
             return false;
         }
 
         return true;
     }
 
+    /**
+     * Retrieve parent of contour
+     * @param index index
+     * @param contours list of contours
+     * @param hierarchy hierarchy structure for contours
+     * @param image source image
+     * @return index of parent
+     */
     private static int getParent(int index, List<MatOfPoint> contours, Mat hierarchy, Mat image) {
         // if it is a child of a accepting contour and has no children it is
         // probably the interior of a letter
@@ -261,7 +329,7 @@ public class OCRPreprocessor {
 
     public static void main(String[] args) {
         String path = System.getProperty("user.dir") + "/booklab-backend/resources/books/roi_1.jpg";
-        String outputpath = System.getProperty("user.dir") + "/booklab-backend/resources/roi_0_corrected.jpg";
+        String outputpath = System.getProperty("user.dir") + "/booklab-backend/resources/roi_1_correctedbyOCRPreprocessor.jpg";
         Mat image = imread(path);
         Mat imtmp = optimizeImg(image);
         imwrite(outputpath, imtmp);

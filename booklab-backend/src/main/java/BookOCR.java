@@ -1,3 +1,18 @@
+/*
+ * Copyright 2018 The BookLab Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import org.bytedeco.javacpp.*;
 import org.opencv.core.*;
 import org.opencv.features2d.MSER;
@@ -17,8 +32,9 @@ import static org.opencv.core.Core.*;
 import static org.opencv.imgcodecs.Imgcodecs.*;
 import static org.opencv.imgproc.Imgproc.*;
 
-
-
+/**
+ * Class to read titles from books in image
+ */
 public class BookOCR {
 
     static {
@@ -26,82 +42,21 @@ public class BookOCR {
         System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
     }
 
-    private static Mat preprocessImage(String path) {
-        Mat image = imread(path);
-        return preprocessImage(image);
-    }
 
-
-    private static Mat preprocessImage(Mat image) {
-        Mat gray = new Mat();
-        Mat dilation = new Mat();
-        Mat result = new Mat();
-        Mat element = getStructuringElement(MORPH_ELLIPSE, new Size(2, 2));
-        List<MatOfPoint> msers = new ArrayList<>();
-        MatOfRect bboxes = new MatOfRect();
-
-        rotate(image, image, ROTATE_90_COUNTERCLOCKWISE);
-
-
-
-
-        int imageArea = image.height() * image.width();
-
-        dilate(image, gray, getStructuringElement(MORPH_ELLIPSE, new Size(3,3)));
-        erode(gray, gray, getStructuringElement(MORPH_ELLIPSE, new Size(3,3)));
-        cvtColor(gray, gray, COLOR_BGR2GRAY);
-
-
-        double mean = mean(gray).val[0];
-//        threshold(gray, gray, mean, 255, THRESH_BINARY_INV);
-        adaptiveThreshold(gray, gray, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY, 41, 0);
-        double threshMean = mean(gray).val[0];
-
-        // Black text on white background, so invert image
-//        if (threshMean > 128) {
-//            threshold(gray, gray, mean, 255, THRESH_BINARY_INV);
-//            erode(gray, gray, getStructuringElement(MORPH_ELLIPSE, new Size(2, 2)));
-//            dilate(gray, dilation, getStructuringElement(MORPH_ELLIPSE, new Size(3, 3)));
-//        } else {
-//            dilate(gray, dilation, element);
-//        }
-
-//        Mat canny = ImgProcessHelper.autoCanny(gray);
-
-
-//        MSER mser = MSER.create();
-//        mser.detectRegions(dilation, msers, bboxes);
-//        List<Rect> filtered = bboxes.toList().stream().filter(a -> a.area() < 0.5 * imageArea).collect(Collectors.toList());
-//
-//        Mat mask = new Mat(image.rows(), image.cols(), CvType.CV_8U, Scalar.all(0));
-//        for (Rect box : filtered) {
-//            rectangle(mask, new Point(box.x, box.y), new Point(box.x + box.width, box.y + box.height),
-//                new Scalar(255, 255, 255), FILLED);
-//        }
-//
-//        bitwise_and(gray, gray, result, mask);
-
-
-
-
-
-        imwrite(System.getProperty("user.dir") + "/booklab-backend/resources/preprocess.jpg", gray);
-
-        return gray;
-    }
-
+    /**
+     * Wrapper method to preprocess all images
+     * @param images list of images
+     * @return preprocessed images
+     */
     private static List<Mat> preprocessImages(List<Mat> images) {
-        return images.stream().map(BookOCR::preprocessImage).collect(Collectors.toList());
+        return images.stream().map(OCRPreprocessor::optimizeImg).collect(Collectors.toList());
     }
 
-    // resize
-    // grayscale
-    // reduce noise
-    private static lept.PIX preprocessImg(Mat mat) {
-        lept.PIX piximage = new lept.PIX();
-        return piximage;
-    }
-
+    /**
+     * Retrieve text from image with Tesseract
+     * @param mat image
+     * @return String
+     */
     public static String getText(Mat mat) {
         String result = "";
         BytePointer outText;
@@ -130,6 +85,12 @@ public class BookOCR {
         return result;
     }
 
+    /**
+     * Retrieve list of books from image
+     * @param is inputstream
+     * @return list of titles
+     * @throws IOException
+     */
     public static List<String> getBookList(InputStream is) throws IOException {
         // read stream into mat via buffer
         int nRead;
@@ -148,11 +109,10 @@ public class BookOCR {
     }
 
     public static void main(String[] args) throws IOException {
-//        String path = System.getProperty("user.dir") + "/booklab-backend/resources/bookshelf.jpg";
-//
-//        InputStream is = new FileInputStream(path);
-//        getBookList(is);
-        getText(preprocessImage(imread(System.getProperty("user.dir") + "/booklab-backend/resources/books/roi_14.jpg")));
+        String path = System.getProperty("user.dir") + "/booklab-backend/resources/bookshelf.jpg";
+
+        InputStream is = new FileInputStream(path);
+        getBookList(is);
     }
 
 }
