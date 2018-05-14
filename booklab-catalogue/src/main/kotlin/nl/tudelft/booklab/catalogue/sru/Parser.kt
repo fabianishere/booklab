@@ -109,6 +109,19 @@ object SruParser {
         return authors
     }
 
+    private fun parseNur(record: Element): Int {
+        val nurElements = record.getElementsByTagName("dc:subject")
+
+        for (i in 0 until nurElements.length) {
+            val subject = nurElements.item(i) as Element
+            if (subject.getAttribute("xsi:type") == "dcx:NUR") {
+                return subject.textContent.toInt()
+            }
+        }
+
+        return -1
+    }
+
     /**
      * parses Dublin Core XML to a list of [Book]s.
      * the source is passed using a [InputStream]
@@ -123,7 +136,7 @@ object SruParser {
             val records = createDocument(stream).documentElement.getElementsByTagName("srw:record")
             for (i in 0 until records.length) {
                 val record = records.item(i) as Element
-                books.add(Book(parseTitles(record), parseAuthors(record), parseIds(record)))
+                books.add(Book(parseTitles(record), parseAuthors(record), parseIds(record), parseNur(record)))
             }
         } catch (e: Exception) {
             throw ParseException()
