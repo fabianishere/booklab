@@ -63,14 +63,19 @@ public class BookOCR {
         String path = System.getProperty("user.dir");
 
         tesseract.TessBaseAPI api = new tesseract.TessBaseAPI();
+
         // Initialize tesseract-ocr with English, without specifying tessdata path
         if (api.Init(path + "/booklab-backend/tessdata/", "ENG") != 0) {
             System.err.println("Could not initialize tesseract.");
             System.exit(1);
         }
+        api.SetVariable("load_system_dawg", "false");
+        api.SetVariable("load_freq_dawg", "false");
+        api.ReadConfigFile(path+"/booklab-backend/tessdata/configs/api_config");
 
         // Open input image with leptonica library
         lept.PIX image = ImgProcessHelper.convertMatToPix(mat);
+
         api.SetImage(image);
 
         // Get OCR resultx
@@ -104,7 +109,7 @@ public class BookOCR {
 
         List<Mat> books = BookDetector.detectBooks(image);
 
-        List<String> result = preprocessImages(books).parallelStream().map(BookOCR::getText).collect(Collectors.toList());
+        List<String> result = preprocessImages(books).stream().map(BookOCR::getText).collect(Collectors.toList());
         return result;
     }
 
