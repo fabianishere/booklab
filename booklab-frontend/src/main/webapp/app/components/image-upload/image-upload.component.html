@@ -9,12 +9,12 @@
         <div class="col-6 results">
             <img *ngIf="img!=null" class="image" src="{{img}}">
             <svg *ngIf="img==null" class="image">
-                <rect width="450" height="450" class="image"></rect>
+                <rect class="rect"></rect>
             </svg>
             <p *ngIf="results.length == 0 && img!= null">No books were found</p>
-            <div *ngIf="results.length > 0" class="container books">
+            <div *ngIf="results.length > 0" class="books">
                 <div class="row" *ngFor="let book of results">
-                    <div class="col-1"><img src="../../../assets/delete.png"></div>
+                    <div class="col-1"><i class="fas fa-trash-alt delete"></i></div>
                     <div class="col-5">{{book.title}}</div>
                     <div class="col-6">{{book.isbn}}</div>
                 </div>

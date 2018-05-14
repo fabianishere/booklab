@@ -1,7 +1,28 @@
 <div class="container books">
+    <h1>Your Bookshelf</h1>
+    <div *ngIf="books.length == 0" class="row">
+        <div class="col-12">
+            <p class="ml-0">You do not have any books yet</p>
+        </div>
+    </div>
     <div class="row" *ngFor="let book of books">
-        <div class="col-1"><img src="../../../assets/delete.png" class="delete-icon" (click)="delete(book)"></div>
+        <div class="col-1"><i class="fas fa-trash-alt delete" (click)="delete(book)"></i></div>
         <div class="col-5">{{book.title}}</div>
         <div class="col-6">{{book.isbn}}</div>
+    </div>
+    <div class="row" *ngIf="enterBook">
+        <div class="col-12 flex flex-column">
+            <label>Book</label>
+            <input type="text" [(ngModel)]="nameInput">
+            <label>Author</label>
+            <input type="text" [(ngModel)]="authorInput">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 flex align-items-baseline">
+            <button class="button ml-0" (click)="enterBook? findBook(): enterBook = true;">{{enterBook? 'Submit':'Enter your book'}}</button>
+            <p class="m-0" *ngIf="!enterBook">or</p>
+            <button class="button" routerLink="../" *ngIf="!enterBook">Upload an image of your bookshelf</button>
+        </div>
     </div>
 </div>
