@@ -45,6 +45,7 @@ dependencies {
     compile "io.ktor:ktor-client-core:$ktor_version"
     compile "io.ktor:ktor-client-apache:$ktor_version"
     compile "org.apache.httpcomponents:httpasyncclient:4.1.3"
+    compile project(":booklab-catalogue")
 
     testCompile "org.junit.jupiter:junit-jupiter-api:$jupiter_version"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:$jupiter_version"

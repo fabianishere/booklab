@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-rootProject.name = "booklab"
+package nl.tudelft.booklab.recommender
 
-include 'booklab-backend'
-include 'booklab-vision'
-include 'booklab-catalogue'
-include 'ktor-auth-oauth2'
-include 'booklab-recommender'
+import nl.tudelft.booklab.catalogue.sru.Book
+
+object Recommender {
+    fun recommend(collection: List<Book>, candidates: List<Book>): List<Book> {
+        return emptyList()
+    }
+}
