@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpService } from '../../services/http/http.service';
 import { UserService } from '../../services/user/user.service';
-import {Book} from '../../dataTypes';
+import {MockBook} from '../../dataTypes';
 
 interface DetectionResult {
-    results: Book[];
+    results: MockBook[];
 }
 
 
@@ -17,7 +17,7 @@ interface DetectionResult {
 
 export class ImageUploadComponent implements OnInit {
     public img: any;
-    public results: Book[];
+    public results: MockBook[];
     public addedToShelf: boolean;
 
     constructor(private http: HttpService, private user: UserService) {

@@ -1,9 +1,19 @@
-export class Book {
-    isbn: string;
-    title: string;
+export class MockBook {
+    constructor(public isbn: string,
+                public title: string,
+                public isSearched: boolean = false) {
+    }
+}
 
-    constructor(isbn: string, title: string) {
-        this.isbn = isbn;
-        this.title = title;
+export class Book {
+    constructor(public titles: Title[],
+                public authors: string[],
+                public ids: string[]) {
+    }
+}
+
+export class Title {
+    constructor(public value: string,
+                public type: string) {
     }
 }

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
-import {Book} from "../../dataTypes";
+import {MockBook} from "../../dataTypes";
 
 interface Success {
     success: boolean;
@@ -23,7 +23,7 @@ export class HttpService {
         return this.http.put('http://localhost:8080/api/detection', img);
     }
 
-    findBook(nameInput: string, authorInput: string): Book {
-        return null;
+    findBook(nameInput: string, authorInput: string): Observable<Object> {
+        return this.http.get('http://localhost:8080/api/search?title='+ nameInput + '&author=' + authorInput);
     }
 }
