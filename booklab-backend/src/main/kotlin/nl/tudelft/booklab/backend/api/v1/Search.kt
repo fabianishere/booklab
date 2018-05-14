@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.catalogue.sru
+package nl.tudelft.booklab.backend.api.v1
 
-import kotlinx.coroutines.experimental.runBlocking
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.equalTo
-import org.junit.jupiter.api.Test
+import io.ktor.application.call
+import io.ktor.response.respond
+import io.ktor.routing.Route
+import io.ktor.routing.get
+import nl.tudelft.booklab.catalogue.sru.SruClient
 
-internal class ClientTest {
-    @Test
-    fun `smoke test`() {
-        runBlocking {
-            val books = SruClient().query("de ontdekking van de hemel harry mullish")
-            books.forEach { println("${it.authors} ${it.titles}") }
+fun Route.search() {
+    get {
+        val client = SruClient()
+        val title = call.parameters["title"]
+        val author = call.parameters["author"]
 
-            assertThat(books.size, equalTo(25))
+        if (title != null && author != null) {
+            call.respond(client.query(client.createQuery(title, author)))
+        } else {
+            call.respond("failed to query.\nquery is written like this:\n.../search?title=<title>&author=<author> \n")
         }
     }
 }
