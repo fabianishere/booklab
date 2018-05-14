@@ -150,9 +150,13 @@ public class OCRPreprocessor {
         List<MatOfPoint> filtered = contours.stream()
             .filter(a -> keepContour(a, image))
             .collect(Collectors.toList());
-        return filtered.stream()
+
+        List<MatOfPoint> keepers =  filtered.stream()
             .filter(a -> includeBox(contours.indexOf(a), contours, filtered, hierarchy, image))
             .collect(Collectors.toList());
+
+        double averageArea = keepers.stream().mapToDouble(Imgproc::contourArea).average().getAsDouble();
+        return keepers.stream().filter(a -> contourArea(a) > 0.3*averageArea).collect(Collectors.toList());
     }
 
     /**
