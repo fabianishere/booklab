@@ -45,6 +45,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile "io.ktor:ktor-server-netty:$ktor_version"
     compile "io.ktor:ktor-jackson:$ktor_version"
+    compile project(":booklab-catalogue")
     runtime "org.slf4j:slf4j-jdk14:1.7.25"
 
 

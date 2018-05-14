@@ -44,16 +44,21 @@ class SruClient(
      *
      * @return the list of books returned from the query
      */
-    suspend fun query(keywords: String): List<Book> {
+    suspend fun query(query: String): List<Book> {
         val stream = client.call {
-            url(createSruUrl(createQuery(keywords.toLowerCase())))
+            url(createSruUrl(query.toLowerCase()))
             method = HttpMethod.Get
         }.response.content.toInputStream()
         return SruParser.parse(stream)
     }
 
+    fun createQuery(title: String, author: String): String {
+        return "dc.title any/fuzzy/ignoreCase/ignoreAccents \"$title\" OR " +
+            "dc.creator any/fuzzy/ignoreCase/ignoreAccents \"$author\""
+    }
+
     fun createQuery(keywords: String): String {
-        return "dc.title any/fuzzy/ignoreCase/ignoreAccents \"$keywords\" OR dc.creator any/fuzzy/ignoreCase/ignoreAccents \"$keywords\""
+        return createQuery(keywords, keywords)
     }
 
     /**
