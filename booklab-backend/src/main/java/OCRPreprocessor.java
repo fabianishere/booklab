@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.opencv.core.*;
+import org.opencv.features2d.MSER;
 import org.opencv.imgproc.Imgproc;
 
 import static org.opencv.core.Core.*;
@@ -38,6 +41,7 @@ public class OCRPreprocessor {
 
     /**
      * Optimize the image
+     *
      * @param image openCV matrix containing image
      * @return image
      */
@@ -46,9 +50,13 @@ public class OCRPreprocessor {
         List<MatOfPoint> contours = new ArrayList<>();
         // grayscale
         Mat gray = new Mat();
-       cvtColor(image, gray, COLOR_BGR2GRAY);
+        cvtColor(image, gray, COLOR_BGR2GRAY);
         // get edges
         Mat edges = ImgProcessHelper.autoCanny(gray);
+
+        dilate(edges, edges, getStructuringElement(MORPH_ELLIPSE, new Size(2, 2)));
+        erode(edges, edges, getStructuringElement(MORPH_ELLIPSE, new Size(2, 2)));
+
         // get contours
         Imgproc.findContours(edges, contours, hierarchy,
             Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_NONE);
@@ -132,27 +140,24 @@ public class OCRPreprocessor {
 
     /**
      * Select suitable contours from list of contours
-     * @param contours list of contours
-     * @param image source image
+     *
+     * @param contours  list of contours
+     * @param image     source image
      * @param hierarchy contour hierarchy
      * @return list of selected contours
      */
     private static List<MatOfPoint> findKeepers(List<MatOfPoint> contours, Mat image, Mat hierarchy) {
-        List<MatOfPoint> keepers = new ArrayList<>();
-        int index = 0;
-        for (MatOfPoint contour : contours) {
-            if ((keepContour(contour, image)
-                && includeBox(index, contours, hierarchy, image)
-            )) {
-                keepers.add(contour);
-            }
-            index++;
-        }
-        return keepers;
+        List<MatOfPoint> filtered = contours.stream()
+            .filter(a -> keepContour(a, image))
+            .collect(Collectors.toList());
+        return filtered.stream()
+            .filter(a -> includeBox(contours.indexOf(a), contours, filtered, hierarchy, image))
+            .collect(Collectors.toList());
     }
 
     /**
      * Retrieve intensity of pixel in image
+     *
      * @param image
      * @param x
      * @param y
@@ -268,12 +273,16 @@ public class OCRPreprocessor {
         double width = rect.width;
         double height = rect.height;
         int area = image.width() * image.height();
-        // if the contour is too long or wide it is rejected
+
         if (width * height > 0.5 * area || height > 0.2 * image.height()) {
             return false;
         }
 
-        if(width / height > 6 || height / width > 10 ) {
+        if (width / height > 6 || height / width > 10) {
+            return false;
+        }
+
+        if (contourArea(contour) < 0.01) {
             return false;
         }
 
@@ -282,36 +291,27 @@ public class OCRPreprocessor {
 
     /**
      * Check if box should be included
-     * @param index index
-     * @param contours list of contours
+     *
+     * @param index     index
+     * @param contours  list of contours
      * @param hierarchy hierarchy structure
-     * @param image source image
+     * @param image     source image
      * @return boolean
      */
-    public static boolean includeBox(int index, List<MatOfPoint> contours,
+    public static boolean includeBox(int index, List<MatOfPoint> contours, List<MatOfPoint> keepers,
                                      Mat hierarchy, Mat image) {
         int parent = getParent(index, contours, hierarchy, image);
 
-
-        if (isChild(index, contours, hierarchy, image)
-            && countChildren(parent, contours, hierarchy, image) <= 5) {
-            return false;
-        }
-
-        // if the contour has more than two children it is not a letter
-        if (countChildren(index, contours, hierarchy, image) > 5) {
-            return false;
-        }
-
-        return true;
+        return !(isChild(index, contours, hierarchy, image) && keepers.contains(contours.get(parent)));
     }
 
     /**
      * Retrieve parent of contour
-     * @param index index
-     * @param contours list of contours
+     *
+     * @param index     index
+     * @param contours  list of contours
      * @param hierarchy hierarchy structure for contours
-     * @param image source image
+     * @param image     source image
      * @return index of parent
      */
     private static int getParent(int index, List<MatOfPoint> contours, Mat hierarchy, Mat image) {
