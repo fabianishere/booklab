@@ -25,10 +25,11 @@ internal class ClientTest {
     @Test
     fun `smoke test`() {
         runBlocking {
-            val books = SruClient().query("de ontdekking van de hemel harry mullish")
+            val client = SruClient()
+            val books = client.query(client.createQuery("de ontdekking van de hemel harry mullish"))
             books.forEach { println("${it.authors} ${it.titles}") }
 
-            assertThat(books.size, equalTo(25))
+            assertThat(books.size, equalTo(100))
         }
     }
 }
