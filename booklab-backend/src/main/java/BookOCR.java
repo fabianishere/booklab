@@ -24,7 +24,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.bytedeco.javacpp.lept.*;
+import static org.opencv.core.CvType.CV_8U;
+import static org.opencv.core.CvType.CV_8UC3;
 import static org.opencv.imgcodecs.Imgcodecs.*;
+import static org.opencv.imgproc.Imgproc.INTER_CUBIC;
+import static org.opencv.imgproc.Imgproc.resize;
+import org.apache.commons.codec.binary.Base64;
 
 /**
  * Class to read titles from books in image
@@ -110,19 +115,18 @@ public class BookOCR {
         List<AnnotateImageRequest> requests = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
 
-        byte[] bytes = new byte[(int) inputimg.total() * inputimg.channels()];
-        inputimg.get(0,0, bytes);
-        ByteString imgBytes = ByteString.copyFrom(bytes);
+        Mat mat = inputimg.clone();
+        MatOfByte bytemat = new MatOfByte();
+        imencode(".jpg", mat, bytemat);
 
-//        String filePath = System.getProperty("user.dir") + "/booklab-backend/resources/bookshelf.jpg";
-//
-//        ByteString imgBytes = null;
-//        try {
-//            imgBytes = ByteString.readFrom(new FileInputStream(filePath));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
+        byte[] bytes = bytemat.toArray();
+        
+        ByteString imgBytes = null;
+        try {
+            imgBytes = ByteString.readFrom(new ByteArrayInputStream(bytes));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         Image img = Image.newBuilder().setContent(imgBytes).build();
         Feature feat = Feature.newBuilder().setType(Feature.Type.DOCUMENT_TEXT_DETECTION).build();
