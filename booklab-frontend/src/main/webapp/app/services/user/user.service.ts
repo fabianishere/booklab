@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {MockBook} from '../../dataTypes';
 import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 @Injectable()

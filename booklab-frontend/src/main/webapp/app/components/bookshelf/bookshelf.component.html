@@ -6,7 +6,7 @@
         </div>
     </div>
     <div class="row" *ngFor="let book of books">
-        <div class="col-1"><i *ngIf="!book.isSearched" class="fas fa-trash-alt delete" (click)="delete(book)"></i></div>
+        <div class="col-1"><i *ngIf="!book.isSearched" class="fas fa-trash-alt delete" (click)="deleteBook(book)"></i></div>
         <div class="col-5">{{book.isSearched? 'searching book..':book.title}}</div>
         <div class="col-1">{{book.isSearched? '': book.isbn}}</div>
     </div>

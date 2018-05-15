@@ -25,12 +25,12 @@ export class BookshelfComponent implements OnInit {
         this.enterBook = false;
     }
 
-    delete(book: MockBook) {
+    deleteBook(book: MockBook) {
         this.user.deleteFromBookshelf(book);
     }
 
     findBook() {
-        this.user.addToBookshelf(new MockBook('', '', true))
+        this.user.addToBookshelf(new MockBook('', '', true));
         this.http.findBook(this.nameInput, this.authorInput).subscribe((book: Book[]) => {
             this.user.bookSearchComplete(new MockBook(book[0].ids[0], book[0].titles[0].value));
         });
