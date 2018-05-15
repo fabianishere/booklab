@@ -1,4 +1,4 @@
-/*
+package nl.tudelft.nlbooklab.backend.ocr.vision;/*
  * Copyright 2018 The BookLab Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,9 @@
  */
 import com.google.cloud.vision.v1.*;
 import com.google.protobuf.ByteString;
+import nl.tudelft.nlbooklab.backend.ocr.BookDetector;
+import nl.tudelft.nlbooklab.backend.ocr.ImgProcessHelper;
+import nl.tudelft.nlbooklab.backend.ocr.tesseract.OCRPreprocessor;
 import org.bytedeco.javacpp.*;
 import org.opencv.core.*;
 

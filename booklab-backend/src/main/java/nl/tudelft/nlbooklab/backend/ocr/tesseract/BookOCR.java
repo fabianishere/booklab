@@ -1,4 +1,4 @@
-/*
+package nl.tudelft.nlbooklab.backend.ocr.tesseract;/*
  * Copyright 2018 The BookLab Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import nl.tudelft.nlbooklab.backend.ocr.BookDetector;
+import nl.tudelft.nlbooklab.backend.ocr.ImgProcessHelper;
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.lept;
 import org.bytedeco.javacpp.tesseract;
@@ -30,7 +32,7 @@ import static org.opencv.imgcodecs.Imgcodecs.imdecode;
 /**
  * Class to read titles from books in image. This class uses Tesseract to provide an open source alternative to Google Vision.
  */
-public class TesseractBookOCR {
+public class BookOCR {
 
     /**
      * Initialize OpenCV
@@ -97,7 +99,7 @@ public class TesseractBookOCR {
 
         List<Mat> books = BookDetector.detectBooks(image);
 
-        return books.stream().map(TesseractBookOCR::getText).collect(Collectors.toList());
+        return books.stream().map(BookOCR::getText).collect(Collectors.toList());
     }
 
 }

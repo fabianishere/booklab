@@ -1,4 +1,4 @@
-/*
+package nl.tudelft.nlbooklab.backend.ocr.tesseract;/*
  * Copyright 2018 The BookLab Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import nl.tudelft.nlbooklab.backend.ocr.ImgProcessHelper;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
