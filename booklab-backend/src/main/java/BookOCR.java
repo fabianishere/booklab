@@ -102,38 +102,27 @@ public class BookOCR {
 
         List<Mat> books = BookDetector.detectBooks(image);
 
-        List<String> result = preprocessImages(books).stream().map(BookOCR::getText).collect(Collectors.toList());
-        return result;
+        return books.stream().map(BookOCR::getTextFromVision).collect(Collectors.toList());
+
     }
 
-    /**
-     * Retrieve list of books from image
-     * @param is inputstream
-     * @return list of titles
-     * @throws IOException
-     */
-    public static List<String> getBookListFromVision(InputStream is) throws IOException {
-        // read stream into mat via buffer
-        int nRead;
-        byte[] data = new byte[16 * 1024];
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        while ((nRead = is.read(data, 0, data.length)) != -1) {
-            buffer.write(data, 0, nRead);
-        }
-        byte[] bytes = buffer.toByteArray();
-        Mat image = imdecode(new MatOfByte(bytes), CV_LOAD_IMAGE_UNCHANGED);
-
-        List<Mat> books = BookDetector.detectBooks(image);
-
-        List<String> result = preprocessImages(books).stream().map(BookOCR::getText).collect(Collectors.toList());
-        return result;
-    }
-
-    private static void getTextFromVision(Mat inputimg) throws IOException {
-        String filePath = System.getProperty("user.dir") + "/booklab-backend/resources/bookshelf.jpg";
+    private static String getTextFromVision(Mat inputimg) {
         List<AnnotateImageRequest> requests = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
 
-        ByteString imgBytes = ByteString.readFrom(new FileInputStream(filePath));
+        byte[] bytes = new byte[(int) inputimg.total() * inputimg.channels()];
+        inputimg.get(0,0, bytes);
+        ByteString imgBytes = ByteString.copyFrom(bytes);
+
+//        String filePath = System.getProperty("user.dir") + "/booklab-backend/resources/bookshelf.jpg";
+//
+//        ByteString imgBytes = null;
+//        try {
+//            imgBytes = ByteString.readFrom(new FileInputStream(filePath));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
 
         Image img = Image.newBuilder().setContent(imgBytes).build();
         Feature feat = Feature.newBuilder().setType(Feature.Type.DOCUMENT_TEXT_DETECTION).build();
@@ -149,7 +138,7 @@ public class BookOCR {
             for (AnnotateImageResponse res : responses) {
                 if (res.hasError()) {
                     System.out.printf("Error: %s\n", res.getError().getMessage());
-                    return;
+                    return sb.toString();
                 }
 
                 // For full list of available annotations, see http://g.co/cloud/vision/docs
@@ -176,8 +165,15 @@ public class BookOCR {
                     }
                 }
                 System.out.println(annotation.getText());
+                sb.append(annotation.getText());
             }
+
         }
+
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
     }
 
     public static void main(String[] args) throws IOException {
