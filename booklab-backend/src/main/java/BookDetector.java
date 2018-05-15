@@ -140,7 +140,7 @@ public class BookDetector {
     }
 
     /**
-     * Debug drawing: draws segments and the graph the segmentation is based on
+     * Debug drawing: draws segments and the graph on which the segmentation is based, useful for debugging 
      * @param reducedImage openCV matrix with reduced image
      * @param originalImage openCV matrix containing an image
      * @param lineLocations locations of lines
