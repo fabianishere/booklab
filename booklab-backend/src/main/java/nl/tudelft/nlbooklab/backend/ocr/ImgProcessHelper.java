@@ -1,4 +1,4 @@
-/*
+package nl.tudelft.nlbooklab.backend.ocr;/*
  * Copyright 2018 The BookLab Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,7 +38,7 @@ public class ImgProcessHelper {
     public static Mat colorhist_equalize(Mat img){
         Mat reassemble = new Mat();
 
-        List<Mat> lim = new ArrayList<Mat>(3);
+        List<Mat> lim = new ArrayList<>(3);
         Core.split(img, lim);
         Mat mB = lim.get(0);
         Mat mG = lim.get(1);
@@ -114,7 +114,7 @@ public class ImgProcessHelper {
 
     /**
      * Depricated method to detect vertical hough lines in image, will also draw the houglines in the input image
-     * @param img openCV matrix containing an image
+     * @param img   openCV matrix containing an image
      * @return matrix containing hough lines
      */
     @Deprecated

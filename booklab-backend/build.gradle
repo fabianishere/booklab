@@ -70,6 +70,8 @@ dependencies {
     testCompile "io.ktor:ktor-server-test-host:$ktor_version"
 
     compile 'com.google.cloud:google-cloud-vision:1.28.0'
+    compile group: 'com.google.guava', name: 'guava', version: '25.0-jre'
+
 
 }
 

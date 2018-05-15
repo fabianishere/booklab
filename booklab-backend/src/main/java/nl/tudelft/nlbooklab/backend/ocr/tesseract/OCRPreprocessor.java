@@ -1,4 +1,4 @@
-/*
+package nl.tudelft.nlbooklab.backend.ocr.tesseract;/*
  * Copyright 2018 The BookLab Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,13 +19,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import nl.tudelft.nlbooklab.backend.ocr.ImgProcessHelper;
 import org.opencv.core.*;
-import org.opencv.features2d.MSER;
 import org.opencv.imgproc.Imgproc;
 
 import static org.opencv.core.Core.*;
-import static org.opencv.imgcodecs.Imgcodecs.imread;
-import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 import static org.opencv.imgproc.Imgproc.*;
 
 /**
@@ -33,7 +31,9 @@ import static org.opencv.imgproc.Imgproc.*;
  */
 public class OCRPreprocessor {
 
-    // init OpenCV
+    /**
+     * Initialize OpenCV
+     */
     static {
         nu.pattern.OpenCV.loadShared();
         System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
@@ -75,7 +75,6 @@ public class OCRPreprocessor {
         drawContours(image, keepers, -1, new Scalar(0, 0, 255));
 
         return new_image;
-
     }
 
     /**
@@ -328,15 +327,6 @@ public class OCRPreprocessor {
             parent = (int) hierarchy.get(0, parent)[3];
         }
         return parent;
-    }
-
-
-    public static void main(String[] args) {
-        String path = System.getProperty("user.dir") + "/booklab-backend/resources/books/roi_1.jpg";
-        String outputpath = System.getProperty("user.dir") + "/booklab-backend/resources/roi_1_correctedbyOCRPreprocessor.jpg";
-        Mat image = imread(path);
-        Mat imtmp = optimizeImg(image);
-        imwrite(outputpath, imtmp);
     }
 
 }

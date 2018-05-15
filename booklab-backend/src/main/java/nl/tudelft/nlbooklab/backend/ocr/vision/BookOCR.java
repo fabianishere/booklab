@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+package nl.tudelft.nlbooklab.backend.ocr.vision;
+
 import com.google.cloud.vision.v1.*;
 import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
 import org.jetbrains.annotations.NotNull;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
+import nl.tudelft.nlbooklab.backend.ocr.BookDetector;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -38,6 +41,7 @@ public class BookOCR {
         nu.pattern.OpenCV.loadShared();
         System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
     }
+
 
     /**
      * Retrieve list of books from image
