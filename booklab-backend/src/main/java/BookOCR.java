@@ -13,23 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import com.google.cloud.vision.v1.*;
+import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
-import org.bytedeco.javacpp.*;
-import org.opencv.core.*;
+import org.jetbrains.annotations.NotNull;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.bytedeco.javacpp.lept.*;
-import static org.opencv.core.CvType.CV_8U;
-import static org.opencv.core.CvType.CV_8UC3;
 import static org.opencv.imgcodecs.Imgcodecs.*;
-import static org.opencv.imgproc.Imgproc.INTER_CUBIC;
-import static org.opencv.imgproc.Imgproc.resize;
-import org.apache.commons.codec.binary.Base64;
 
 /**
  * Class to read titles from books in image
@@ -42,54 +40,8 @@ public class BookOCR {
     }
 
     /**
-     * Wrapper method to preprocess all images
-     * @param images list of images
-     * @return preprocessed images
-     */
-    private static List<Mat> preprocessImages(List<Mat> images) {
-        return images.stream().map(OCRPreprocessor::optimizeImg).collect(Collectors.toList());
-    }
-
-    /**
-     * Retrieve text from image with Tesseract
-     * @param mat image
-     * @return String
-     */
-    public static String getText(Mat mat) {
-        String result = "";
-        BytePointer outText;
-        String path = System.getProperty("user.dir");
-
-        tesseract.TessBaseAPI api = new tesseract.TessBaseAPI();
-
-        // Initialize tesseract-ocr with English, without specifying tessdata path
-        if (api.Init(path + "/booklab-backend/tessdata/", "ENG") != 0) {
-            System.err.println("Could not initialize tesseract.");
-            System.exit(1);
-        }
-        api.SetVariable("load_system_dawg", "false");
-        api.SetVariable("load_freq_dawg", "false");
-        api.ReadConfigFile(path+"/booklab-backend/tessdata/configs/api_config");
-
-        // Open input image with leptonica library
-        lept.PIX image = ImgProcessHelper.convertMatToPix(mat);
-
-        api.SetImage(image);
-
-        // Get OCR resultx
-        outText = api.GetUTF8Text();
-        String string = outText.getString();
-        System.out.println("OCR output:\n" + string);
-
-        // Destroy used object and release memory
-        api.End();
-        outText.deallocate();
-        pixDestroy(image);
-        return result;
-    }
-
-    /**
      * Retrieve list of books from image
+     *
      * @param is inputstream
      * @return list of titles
      * @throws IOException
@@ -107,32 +59,28 @@ public class BookOCR {
 
         List<Mat> books = BookDetector.detectBooks(image);
 
-        return books.stream().map(BookOCR::getTextFromVision).collect(Collectors.toList());
+        return getTextFromVision(books);
 
     }
 
-    private static String getTextFromVision(Mat inputimg) {
-        List<AnnotateImageRequest> requests = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
+    private static List<String> getTextFromVision(List<Mat> images) {
+        List<AnnotateImageRequest> requests = images.stream()
+            .map(BookOCR::createImageRequest)
+            .collect(Collectors.toList());
 
-        Mat mat = inputimg.clone();
-        MatOfByte bytemat = new MatOfByte();
-        imencode(".jpg", mat, bytemat);
+        List<List<AnnotateImageRequest>> requestPartitions = Lists.partition(requests, 16);
 
-        byte[] bytes = bytemat.toArray();
-        
-        ByteString imgBytes = null;
-        try {
-            imgBytes = ByteString.readFrom(new ByteArrayInputStream(bytes));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        List<List<String>> responsePartitions = requestPartitions.stream()
+            .map(BookOCR::getImageResponseText)
+            .collect(Collectors.toList());
 
-        Image img = Image.newBuilder().setContent(imgBytes).build();
-        Feature feat = Feature.newBuilder().setType(Feature.Type.DOCUMENT_TEXT_DETECTION).build();
-        AnnotateImageRequest request =
-            AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(img).build();
-        requests.add(request);
+        return responsePartitions.stream()
+            .flatMap(Collection::stream)
+            .collect(Collectors.toList());
+    }
+
+    private static List<String> getImageResponseText(List<AnnotateImageRequest> requests) {
+        List<String> responseTexts = new ArrayList<>();
 
         try (ImageAnnotatorClient client = ImageAnnotatorClient.create()) {
             BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
@@ -142,49 +90,43 @@ public class BookOCR {
             for (AnnotateImageResponse res : responses) {
                 if (res.hasError()) {
                     System.out.printf("Error: %s\n", res.getError().getMessage());
-                    return sb.toString();
+                    return responseTexts;
                 }
 
-                // For full list of available annotations, see http://g.co/cloud/vision/docs
                 TextAnnotation annotation = res.getFullTextAnnotation();
-                for (Page page: annotation.getPagesList()) {
-                    String pageText = "";
-                    for (Block block : page.getBlocksList()) {
-                        String blockText = "";
-                        for (Paragraph para : block.getParagraphsList()) {
-                            String paraText = "";
-                            for (Word word: para.getWordsList()) {
-                                String wordText = "";
-                                for (Symbol symbol: word.getSymbolsList()) {
-                                    wordText = wordText + symbol.getText();
-                                }
-                                paraText = paraText + wordText;
-                            }
-                            // Output Example using Paragraph:
-                            System.out.println("Paragraph: \n" + paraText);
-                            System.out.println("Bounds: \n" + para.getBoundingBox() + "\n");
-                            blockText = blockText + paraText;
-                        }
-                        pageText = pageText + blockText;
-                    }
-                }
-                System.out.println(annotation.getText());
-                sb.append(annotation.getText());
+                responseTexts.add(annotation.getText());
             }
-
-        }
-
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        return sb.toString();
+
+        return responseTexts;
+    }
+
+    @NotNull
+    private static AnnotateImageRequest createImageRequest(Mat image) {
+        MatOfByte byteMat = new MatOfByte();
+        imencode(".jpg", image.clone(), byteMat);
+
+        byte[] bytes = byteMat.toArray();
+
+        ByteString imgBytes = null;
+        try {
+            imgBytes = ByteString.readFrom(new ByteArrayInputStream(bytes));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Image img = Image.newBuilder().setContent(imgBytes).build();
+        Feature feat = Feature.newBuilder().setType(Feature.Type.DOCUMENT_TEXT_DETECTION).build();
+        return AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(img).build();
     }
 
     public static void main(String[] args) throws IOException {
         String path = System.getProperty("user.dir") + "/booklab-backend/resources/bookshelf.jpg";
 
         InputStream is = new FileInputStream(path);
-        getBookList(is);
+        System.out.println(getBookList(is).toString());
     }
 
 }
