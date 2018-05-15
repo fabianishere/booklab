@@ -13,24 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import com.google.cloud.vision.v1.*;
+import com.google.protobuf.ByteString;
 import org.bytedeco.javacpp.*;
 import org.opencv.core.*;
-import org.opencv.features2d.MSER;
-import org.opencv.imgproc.Imgproc;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.bytedeco.javacpp.lept.*;
-import static org.bytedeco.javacpp.tesseract.*;
-import static org.opencv.core.Core.*;
 import static org.opencv.imgcodecs.Imgcodecs.*;
-import static org.opencv.imgproc.Imgproc.*;
 
 /**
  * Class to read titles from books in image
@@ -41,7 +35,6 @@ public class BookOCR {
         nu.pattern.OpenCV.loadShared();
         System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
     }
-
 
     /**
      * Wrapper method to preprocess all images
@@ -111,6 +104,80 @@ public class BookOCR {
 
         List<String> result = preprocessImages(books).stream().map(BookOCR::getText).collect(Collectors.toList());
         return result;
+    }
+
+    /**
+     * Retrieve list of books from image
+     * @param is inputstream
+     * @return list of titles
+     * @throws IOException
+     */
+    public static List<String> getBookListFromVision(InputStream is) throws IOException {
+        // read stream into mat via buffer
+        int nRead;
+        byte[] data = new byte[16 * 1024];
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        while ((nRead = is.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+        byte[] bytes = buffer.toByteArray();
+        Mat image = imdecode(new MatOfByte(bytes), CV_LOAD_IMAGE_UNCHANGED);
+
+        List<Mat> books = BookDetector.detectBooks(image);
+
+        List<String> result = preprocessImages(books).stream().map(BookOCR::getText).collect(Collectors.toList());
+        return result;
+    }
+
+    private static void getTextFromVision(Mat inputimg) throws IOException {
+        String filePath = System.getProperty("user.dir") + "/booklab-backend/resources/bookshelf.jpg";
+        List<AnnotateImageRequest> requests = new ArrayList<>();
+
+        ByteString imgBytes = ByteString.readFrom(new FileInputStream(filePath));
+
+        Image img = Image.newBuilder().setContent(imgBytes).build();
+        Feature feat = Feature.newBuilder().setType(Feature.Type.DOCUMENT_TEXT_DETECTION).build();
+        AnnotateImageRequest request =
+            AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(img).build();
+        requests.add(request);
+
+        try (ImageAnnotatorClient client = ImageAnnotatorClient.create()) {
+            BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
+            List<AnnotateImageResponse> responses = response.getResponsesList();
+            client.close();
+
+            for (AnnotateImageResponse res : responses) {
+                if (res.hasError()) {
+                    System.out.printf("Error: %s\n", res.getError().getMessage());
+                    return;
+                }
+
+                // For full list of available annotations, see http://g.co/cloud/vision/docs
+                TextAnnotation annotation = res.getFullTextAnnotation();
+                for (Page page: annotation.getPagesList()) {
+                    String pageText = "";
+                    for (Block block : page.getBlocksList()) {
+                        String blockText = "";
+                        for (Paragraph para : block.getParagraphsList()) {
+                            String paraText = "";
+                            for (Word word: para.getWordsList()) {
+                                String wordText = "";
+                                for (Symbol symbol: word.getSymbolsList()) {
+                                    wordText = wordText + symbol.getText();
+                                }
+                                paraText = paraText + wordText;
+                            }
+                            // Output Example using Paragraph:
+                            System.out.println("Paragraph: \n" + paraText);
+                            System.out.println("Bounds: \n" + para.getBoundingBox() + "\n");
+                            blockText = blockText + paraText;
+                        }
+                        pageText = pageText + blockText;
+                    }
+                }
+                System.out.println(annotation.getText());
+            }
+        }
     }
 
     public static void main(String[] args) throws IOException {

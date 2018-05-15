@@ -1,46 +1,30 @@
-// Imports the Google Cloud client library
 
-import com.google.cloud.vision.v1.AnnotateImageRequest;
-import com.google.cloud.vision.v1.AnnotateImageResponse;
-import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
-import com.google.cloud.vision.v1.EntityAnnotation;
-import com.google.cloud.vision.v1.Feature;
+import com.google.cloud.vision.v1.*;
 import com.google.cloud.vision.v1.Feature.Type;
-import com.google.cloud.vision.v1.Image;
-import com.google.cloud.vision.v1.ImageAnnotatorClient;
 import com.google.protobuf.ByteString;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class QuickstartSample {
     public static void main(String... args) throws Exception {
-        // Instantiates a client
-        try (ImageAnnotatorClient vision = ImageAnnotatorClient.create()) {
+        // The path to the image file to annotate
+        String filePath = System.getProperty("user.dir") + "/booklab-backend/resources/bookshelf.jpg";
+        List<AnnotateImageRequest> requests = new ArrayList<>();
 
-            // The path to the image file to annotate
-            String fileName = System.getProperty("user.dir") + "/booklab-backend/resources/bookshelf.jpg";
+        ByteString imgBytes = ByteString.readFrom(new FileInputStream(filePath));
 
-            // Reads the image file into memory
-            Path path = Paths.get(fileName);
-            byte[] data = Files.readAllBytes(path);
-            ByteString imgBytes = ByteString.copyFrom(data);
+        Image img = Image.newBuilder().setContent(imgBytes).build();
+        Feature feat = Feature.newBuilder().setType(Type.DOCUMENT_TEXT_DETECTION).build();
+        AnnotateImageRequest request =
+            AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(img).build();
+        requests.add(request);
 
-            // Builds the image annotation request
-            List<AnnotateImageRequest> requests = new ArrayList<>();
-            Image img = Image.newBuilder().setContent(imgBytes).build();
-            Feature feat = Feature.newBuilder().setType(Type.LABEL_DETECTION).build();
-            AnnotateImageRequest request = AnnotateImageRequest.newBuilder()
-                .addFeatures(feat)
-                .setImage(img)
-                .build();
-            requests.add(request);
-
-            // Performs label detection on the image file
-            BatchAnnotateImagesResponse response = vision.batchAnnotateImages(requests);
+        try (ImageAnnotatorClient client = ImageAnnotatorClient.create()) {
+            BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
             List<AnnotateImageResponse> responses = response.getResponsesList();
+            client.close();
 
             for (AnnotateImageResponse res : responses) {
                 if (res.hasError()) {
@@ -48,10 +32,30 @@ public class QuickstartSample {
                     return;
                 }
 
-                for (EntityAnnotation annotation : res.getLabelAnnotationsList()) {
-                    annotation.getAllFields().forEach((k, v) ->
-                        System.out.printf("%s : %s\n", k, v.toString()));
+                // For full list of available annotations, see http://g.co/cloud/vision/docs
+                TextAnnotation annotation = res.getFullTextAnnotation();
+                for (Page page: annotation.getPagesList()) {
+                    String pageText = "";
+                    for (Block block : page.getBlocksList()) {
+                        String blockText = "";
+                        for (Paragraph para : block.getParagraphsList()) {
+                            String paraText = "";
+                            for (Word word: para.getWordsList()) {
+                                String wordText = "";
+                                for (Symbol symbol: word.getSymbolsList()) {
+                                    wordText = wordText + symbol.getText();
+                                }
+                                paraText = paraText + wordText;
+                            }
+                            // Output Example using Paragraph:
+                            System.out.println("Paragraph: \n" + paraText);
+                            System.out.println("Bounds: \n" + para.getBoundingBox() + "\n");
+                            blockText = blockText + paraText;
+                        }
+                        pageText = pageText + blockText;
+                    }
                 }
+                System.out.println(annotation.getText());
             }
         }
     }
