@@ -24,12 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.bytedeco.javacpp.lept.*;
-import static org.opencv.core.CvType.CV_8U;
-import static org.opencv.core.CvType.CV_8UC3;
 import static org.opencv.imgcodecs.Imgcodecs.*;
-import static org.opencv.imgproc.Imgproc.INTER_CUBIC;
-import static org.opencv.imgproc.Imgproc.resize;
-import org.apache.commons.codec.binary.Base64;
 
 /**
  * Class to read titles from books in image
@@ -55,7 +50,7 @@ public class BookOCR {
      * @param mat image
      * @return String
      */
-    public static String getText(Mat mat) {
+    public static String getTextWithTesseract(Mat mat) {
         String result = "";
         BytePointer outText;
         String path = System.getProperty("user.dir");
@@ -120,7 +115,7 @@ public class BookOCR {
         imencode(".jpg", mat, bytemat);
 
         byte[] bytes = bytemat.toArray();
-        
+
         ByteString imgBytes = null;
         try {
             imgBytes = ByteString.readFrom(new ByteArrayInputStream(bytes));
