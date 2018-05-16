@@ -166,7 +166,7 @@ public class OCRPreprocessor {
      * @param y
      * @return
      */
-    public static double getIntensity(Mat image, int x, int y) {
+    private static double getIntensity(Mat image, int x, int y) {
         // check if the pixel index is out of the frame
         if (x >= image.width() || y >= image.height() || x < 0 || y < 0)
             return 0;
@@ -183,7 +183,7 @@ public class OCRPreprocessor {
      * @param image source image
      * @return number of children
      */
-    public static int countChildren(int index, List<MatOfPoint> contours,
+    private static int countChildren(int index, List<MatOfPoint> contours,
                                     Mat hierarchy, Mat image) {
         int count = 0;
         // get the child contour index
@@ -211,7 +211,7 @@ public class OCRPreprocessor {
      * @param image source image
      * @return number of siblings
      */
-    public static int countSiblings(int index, List<MatOfPoint> contours,
+    private static int countSiblings(int index, List<MatOfPoint> contours,
                                     Mat hierarchy, Mat image) {
         int count = 0;
 
@@ -250,7 +250,7 @@ public class OCRPreprocessor {
      * @param image source image
      * @return boolean
      */
-    public static boolean isChild(int index, List<MatOfPoint> contours,
+    private static boolean isChild(int index, List<MatOfPoint> contours,
                                   Mat hierarchy, Mat image) {
         return getParent(index, contours, hierarchy, image) > 0;
     }
@@ -261,7 +261,7 @@ public class OCRPreprocessor {
      * @param image source image
      * @return boolean
      */
-    public static boolean keepContour(MatOfPoint contour, Mat image) {
+    private static boolean keepContour(MatOfPoint contour, Mat image) {
         return keepBox(contour, image) ;
     }
 
@@ -271,7 +271,7 @@ public class OCRPreprocessor {
      * @param image source image
      * @return boolean
      */
-    public static boolean keepBox(MatOfPoint contour, Mat image) {
+    private static boolean keepBox(MatOfPoint contour, Mat image) {
         Rect rect = boundingRect(contour);
         double width = rect.width;
         double height = rect.height;
@@ -301,7 +301,7 @@ public class OCRPreprocessor {
      * @param image     source image
      * @return boolean
      */
-    public static boolean includeBox(int index, List<MatOfPoint> contours, List<MatOfPoint> keepers,
+    private static boolean includeBox(int index, List<MatOfPoint> contours, List<MatOfPoint> keepers,
                                      Mat hierarchy, Mat image) {
         int parent = getParent(index, contours, hierarchy, image);
 
