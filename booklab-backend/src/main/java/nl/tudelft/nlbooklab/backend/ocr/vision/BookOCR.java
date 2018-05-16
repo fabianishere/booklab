@@ -98,6 +98,44 @@ public class BookOCR {
                 }
 
                 TextAnnotation annotation = res.getFullTextAnnotation();
+
+                List<Integer> totalSymbolCounts = annotation.getPagesList().stream()
+                    .map(Page::getBlocksList)
+                    .flatMap(List::stream)
+                    .map(a -> a.getParagraphsList().stream()
+                        .map(Paragraph::getWordsList)
+                        .flatMap(List::stream)
+                        .map(Word::getSymbolsCount)
+                        .reduce(0, Integer::sum)
+                    )
+                    .collect(Collectors.toList());
+
+                List<Block> blocks = annotation.getPagesList().stream()
+                    .map(Page::getBlocksList)
+                    .flatMap(List::stream)
+                    .filter(a -> a.getParagraphsList().stream()
+                        .map(Paragraph::getWordsList)
+                        .flatMap(List::stream)
+                        .map(Word::getSymbolsCount)
+                        .reduce(0, Integer::sum) > 3
+                    )
+                    .collect(Collectors.toList());
+
+                StringBuilder sb = new StringBuilder();
+
+                String text = blocks.stream()
+                    .map(Block::getParagraphsList)
+                    .flatMap(List::stream)
+                    .map(Paragraph::getWordsList)
+                    .flatMap(List::stream)
+                    .map(Word::getSymbolsList)
+                    .flatMap(List::stream)
+                    .map(Symbol::getText)
+                    .collect(Collectors.joining());
+
+//                System.out.println("Symbol counts: " + totalSymbolCounts.toString());
+                System.out.println("Symbols: " + text);
+
                 responseTexts.add(annotation.getText());
             }
         } catch (IOException e) {
