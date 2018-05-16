@@ -47,7 +47,7 @@ public class BookOCR {
      * @param mat image
      * @return String
      */
-    public static String getText(Mat mat) {
+    private static String getText(Mat mat) {
         String result = "";
         BytePointer outText;
         String path = System.getProperty("user.dir");
@@ -55,13 +55,13 @@ public class BookOCR {
         tesseract.TessBaseAPI api = new tesseract.TessBaseAPI();
 
         // Initialize tesseract-ocr with English, without specifying tessdata path
-        if (api.Init(path + "/booklab-backend/tessdata/", "ENG") != 0) {
+        if (api.Init(path + "/tessdata/", "ENG") != 0) {
             System.err.println("Could not initialize tesseract.");
             System.exit(1);
         }
         api.SetVariable("load_system_dawg", "false");
         api.SetVariable("load_freq_dawg", "false");
-        api.ReadConfigFile(path+"/booklab-backend/tessdata/configs/api_config");
+        api.ReadConfigFile(path+"/tessdata/configs/api_config");
 
         // Open input image with leptonica library
         lept.PIX image = ImgProcessHelper.convertMatToPix(mat);
@@ -70,8 +70,6 @@ public class BookOCR {
 
         // Get OCR resultx
         outText = api.GetUTF8Text();
-        String string = outText.getString();
-        System.out.println("OCR output:\n" + string);
 
         // Destroy used object and release memory
         api.End();
@@ -99,7 +97,7 @@ public class BookOCR {
 
         List<Mat> books = BookDetector.detectBooks(image);
 
-        return books.stream().map(BookOCR::getText).collect(Collectors.toList());
+        return books.parallelStream().map(BookOCR::getText).collect(Collectors.toList());
     }
 
 }

@@ -1,3 +1,5 @@
+package nl.tudelft.booklab.backend.ocr.tesseract;
+
 import org.bytedeco.javacpp.*;
 import org.junit.Test;
 
