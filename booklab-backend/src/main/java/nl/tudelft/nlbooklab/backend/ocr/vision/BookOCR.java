@@ -33,15 +33,17 @@ import java.util.stream.Collectors;
 import static org.opencv.imgcodecs.Imgcodecs.*;
 
 /**
- * Class to read titles from books in image
+ * Class to read titles from books in image with use of Google Vision
  */
 public class BookOCR {
 
+    /**
+     * Initialize OpenCV
+     */
     static {
         nu.pattern.OpenCV.loadShared();
         System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
     }
-
 
     /**
      * Retrieve list of books from image
@@ -67,6 +69,11 @@ public class BookOCR {
 
     }
 
+    /**
+     * This method takes a list of images and returns a list with the strings found in those images
+     * @param images list of openCV matrices containining images
+     * @return list of strings found in the images
+     */
     private static List<String> getTextFromVision(List<Mat> images) {
         List<AnnotateImageRequest> requests = images.stream()
             .map(BookOCR::createImageRequest)
@@ -83,6 +90,11 @@ public class BookOCR {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves results from Google Vision for a list of requests
+     * @param requests list of requests
+     * @return list of strings
+     */
     private static List<String> getImageResponseText(List<AnnotateImageRequest> requests) {
         List<String> responseTexts = new ArrayList<>();
 
@@ -107,6 +119,11 @@ public class BookOCR {
         return responseTexts;
     }
 
+    /**
+     * Creates an image request
+     * @param image openCV matrix containing an image
+     * @return AnnotateImageRequest
+     */
     @NotNull
     private static AnnotateImageRequest createImageRequest(Mat image) {
         MatOfByte byteMat = new MatOfByte();
@@ -125,12 +142,4 @@ public class BookOCR {
         Feature feat = Feature.newBuilder().setType(Feature.Type.DOCUMENT_TEXT_DETECTION).build();
         return AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(img).build();
     }
-
-    public static void main(String[] args) throws IOException {
-        String path = System.getProperty("user.dir") + "/booklab-backend/resources/bookshelf.jpg";
-
-        InputStream is = new FileInputStream(path);
-        System.out.println(getBookList(is).toString());
-    }
-
 }
