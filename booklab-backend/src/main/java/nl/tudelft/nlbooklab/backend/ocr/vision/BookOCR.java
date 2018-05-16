@@ -98,7 +98,7 @@ public class BookOCR {
                 }
 
                 TextAnnotation annotation = res.getFullTextAnnotation();
-                responseTexts.add(annotation.getText());
+                responseTexts.add(annotation.getText().replace("\n", " "));
             }
         } catch (IOException e) {
             e.printStackTrace();
