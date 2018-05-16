@@ -19,10 +19,10 @@ package nl.tudelft.nlbooklab.backend.ocr.vision;
 import com.google.cloud.vision.v1.*;
 import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
+import nl.tudelft.nlbooklab.backend.ocr.BookDetector;
 import org.jetbrains.annotations.NotNull;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
-import nl.tudelft.nlbooklab.backend.ocr.BookDetector;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -98,44 +98,6 @@ public class BookOCR {
                 }
 
                 TextAnnotation annotation = res.getFullTextAnnotation();
-
-                List<Integer> totalSymbolCounts = annotation.getPagesList().stream()
-                    .map(Page::getBlocksList)
-                    .flatMap(List::stream)
-                    .map(a -> a.getParagraphsList().stream()
-                        .map(Paragraph::getWordsList)
-                        .flatMap(List::stream)
-                        .map(Word::getSymbolsCount)
-                        .reduce(0, Integer::sum)
-                    )
-                    .collect(Collectors.toList());
-
-                List<Block> blocks = annotation.getPagesList().stream()
-                    .map(Page::getBlocksList)
-                    .flatMap(List::stream)
-                    .filter(a -> a.getParagraphsList().stream()
-                        .map(Paragraph::getWordsList)
-                        .flatMap(List::stream)
-                        .map(Word::getSymbolsCount)
-                        .reduce(0, Integer::sum) > 3
-                    )
-                    .collect(Collectors.toList());
-
-                StringBuilder sb = new StringBuilder();
-
-                String text = blocks.stream()
-                    .map(Block::getParagraphsList)
-                    .flatMap(List::stream)
-                    .map(Paragraph::getWordsList)
-                    .flatMap(List::stream)
-                    .map(Word::getSymbolsList)
-                    .flatMap(List::stream)
-                    .map(Symbol::getText)
-                    .collect(Collectors.joining());
-
-//                System.out.println("Symbol counts: " + totalSymbolCounts.toString());
-                System.out.println("Symbols: " + text);
-
                 responseTexts.add(annotation.getText());
             }
         } catch (IOException e) {
