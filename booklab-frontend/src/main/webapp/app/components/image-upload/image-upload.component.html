@@ -15,8 +15,8 @@
             <div *ngIf="results.length > 0" class="books">
                 <div class="row" [ngClass]="addedToShelf? 'addedToShelf': ''" *ngFor="let book of results">
                     <div class="col-1"><i [ngClass]="addedToShelf? 'fas fa-check-circle okay':'fas fa-trash-alt delete'"></i></div>
-                    <div class="col-5">{{book.title}}</div>
-                    <div class="col-6">{{book.isbn}}</div>
+                    <div class="col-5">{{book.getMainTitle()}}</div>
+                    <div class="col-6">{{book.authors[0]}}</div>
                 </div>
                 <label class="button bookshelf {{addedToShelf? 'disabled' : ''}}">
                     Add to your bookshelf

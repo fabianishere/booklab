@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {UserService} from '../../services/user/user.service';
-import {Book, MockBook} from '../../dataTypes';
+import {Book, Title} from '../../dataTypes';
 import {HttpService} from '../../services/http/http.service';
 
 @Component({
@@ -10,7 +10,7 @@ import {HttpService} from '../../services/http/http.service';
 })
 export class BookshelfComponent implements OnInit {
 
-    public books: MockBook[];
+    public books: Book[];
     public enterBook: boolean;
     public nameInput: string;
     public authorInput: string;
@@ -25,14 +25,14 @@ export class BookshelfComponent implements OnInit {
         this.enterBook = false;
     }
 
-    deleteBook(book: MockBook) {
+    deleteBook(book: Book) {
         this.user.deleteFromBookshelf(book);
     }
 
     findBook() {
-        this.user.addToBookshelf(new MockBook('', '', true));
+        this.user.addToBookshelf(new Book([], [], [],true));
         this.http.findBook(this.nameInput, this.authorInput).subscribe((book: Book[]) => {
-            this.user.bookSearchComplete(new MockBook(book[0].ids[0], book[0].titles[0].value));
+            this.user.bookSearchComplete(Book.getBook(book[0]));
         });
         this.enterBook = false;
         this.authorInput = '';
