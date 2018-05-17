@@ -17,7 +17,6 @@
 package nl.tudelft.booklab.recommender
 
 import nl.tudelft.booklab.catalogue.sru.Book
-import kotlin.math.max
 
 /**
  * A singleton object that is able to recommend a selection of books based
