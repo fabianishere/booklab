@@ -1,7 +1,10 @@
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.11/css/all.css"
       integrity="sha384-p2jx59pefphTFIpeqCcISO9MdVfIm4pNnsL08A6v5vaQc4owkQqxMV8kg4Yvhaw/" crossorigin="anonymous">
-<div class="header">
-    <p>
+<div class="header" [ngClass]="login? 'blur': ''">
+    <p class="logo">
         BookLab
+    </p>
+    <p class="login-link" (click)="login=true">
+        inloggen
     </p>
 </div>

@@ -1,7 +1,9 @@
-<app-header></app-header>
-<div class="left">
+<app-header #header></app-header>
+<div class="left" [ngClass]="header.login? 'blur': ''">
     <app-sidebar ></app-sidebar>
 </div>
-<div class="right">
+<div class="right" [ngClass]="header.login? 'blur': ''">
     <router-outlet></router-outlet>
 </div>
+<app-login *ngIf="header.login" [header]="header"></app-login>
+
