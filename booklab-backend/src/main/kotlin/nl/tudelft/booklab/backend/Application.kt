@@ -32,6 +32,7 @@ import io.ktor.features.CORS
 import io.ktor.features.Compression
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.jackson.jackson
 import io.ktor.routing.route
@@ -76,12 +77,17 @@ fun Application.booklab() {
         // the OAuth authorization server.
         oauth<ClientIdPrincipal, UserIdPrincipal> {
             server = oauth.server
+            scopes = setOf("rest")
         }
     }
 
     // Allow the different hosts to connect to the REST API
     install(CORS) {
         anyHost()
+
+        // Allow the Authorization header to be sent to REST endpoints
+        header(HttpHeaders.Authorization)
+        method(HttpMethod.Post)
         method(HttpMethod.Put)
     }
 
