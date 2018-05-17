@@ -20,8 +20,8 @@ import io.ktor.application.ApplicationCall
 import io.ktor.application.application
 import io.ktor.application.call
 import io.ktor.application.log
+import io.ktor.auth.HttpAuthHeader
 import io.ktor.auth.Principal
-import io.ktor.auth.basicAuthenticationCredentials
 import io.ktor.auth.oauth2.grant.Authorization
 import io.ktor.auth.oauth2.grant.AuthorizationRequest
 import io.ktor.auth.oauth2.grant.Grant
@@ -31,9 +31,11 @@ import io.ktor.auth.oauth2.repository.AccessTokenRepository
 import io.ktor.auth.oauth2.repository.ClientCredential
 import io.ktor.auth.oauth2.repository.ClientRepository
 import io.ktor.auth.oauth2.util.toJson
+import io.ktor.auth.parseAuthorizationHeader
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
+import io.ktor.request.ApplicationRequest
 import io.ktor.request.contentType
 import io.ktor.request.receiveParameters
 import io.ktor.response.respond
@@ -42,6 +44,7 @@ import io.ktor.routing.Route
 import io.ktor.routing.post
 import java.net.URI
 import java.net.URISyntaxException
+import java.util.Base64
 
 /**
  * An OAuth 2.0 authorization server for the Ktor web framework.
@@ -101,8 +104,7 @@ suspend fun <C : Principal, U : Principal> ApplicationCall.oauthGrant(
     val scope = params.scope
 
     // Parse the credentials from either the request or from the Http Authentication header.
-    val credentials = request.basicAuthenticationCredentials()
-        ?.let { ClientCredential(it.name, it.password) }
+    val credentials = request.basicAuthenticationClientCredentials()
         ?: params.clientCredentials()
 
     val principal = credentials?.let { server.clientRepository.validate(it) }
@@ -229,4 +231,38 @@ internal fun Parameters.clientCredentials(): ClientCredential? {
         return ClientCredential(id, secret)
     else
         return null
+}
+
+/**
+ * Parse the client credentials from the Authorization Header in the [ApplicationRequest].
+ */
+fun ApplicationRequest.basicAuthenticationClientCredentials(): ClientCredential? {
+    val parsed = parseAuthorizationHeader()
+    when (parsed) {
+        is HttpAuthHeader.Single -> {
+            // Verify the auth scheme is HTTP Basic. According to RFC 2617, the authorization scheme should not be case
+            // sensitive; thus BASIC, or Basic, or basic are all valid.
+            if (!parsed.authScheme.equals("Basic", ignoreCase = true)) {
+                return null
+            }
+
+            // here we can only use ISO 8859-1 character encoding because there is no character encoding specified as per RFC
+            //     see http://greenbytes.de/tech/webdav/draft-reschke-basicauth-enc-latest.html
+            //      http://tools.ietf.org/html/draft-ietf-httpauth-digest-15
+            //      https://bugzilla.mozilla.org/show_bug.cgi?id=41489
+            //      https://code.google.com/p/chromium/issues/detail?id=25790
+            val userPass = try {
+                Base64.getDecoder().decode(parsed.blob).toString(Charsets.ISO_8859_1)
+            } catch (e: IllegalArgumentException) {
+                return null
+            }
+
+            if (":" !in userPass) {
+                return null
+            }
+
+            return ClientCredential(userPass.substringBefore(":"), userPass.substringAfter(":"))
+        }
+        else -> return null
+    }
 }

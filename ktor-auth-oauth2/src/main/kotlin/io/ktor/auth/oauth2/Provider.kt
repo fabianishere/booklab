@@ -85,6 +85,7 @@ fun <C : Principal, U : Principal> Authentication.Configuration.oauth(
             token.scope?.let { it in provider.scopes } == false -> AuthenticationFailedCause.InvalidCredentials
             else -> null
         }
+
         if (cause != null) {
             context.challenge(OAuthAuthKey, cause) {
                 call.respond(UnauthorizedResponse(HttpAuthHeader.bearerAuthChallenge(provider.realm, provider.schemes)))
