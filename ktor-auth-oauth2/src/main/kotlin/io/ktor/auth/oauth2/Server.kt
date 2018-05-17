@@ -56,7 +56,8 @@ import java.util.Base64
 class OAuthServer<C : Principal, U : Principal>(
     val handlers: Map<String, GrantHandler<C, U>>,
     val clientRepository: ClientRepository<C>,
-    val tokenRepository: AccessTokenRepository<C, U>
+    val tokenRepository: AccessTokenRepository<C, U>,
+    val defaultScopes: Set<String> = emptySet()
 )
 
 /**
@@ -101,7 +102,7 @@ suspend fun <C : Principal, U : Principal> ApplicationCall.oauthGrant(
 ): Grant<C, U> {
     val grantType = params.grantType ?: throw InvalidRequest("The 'grant_type' field is mandatory.")
     val handler = server.handlers[grantType] ?: throw UnsupportedGrantType("The grant type $grantType is not supported.")
-    val scope = params.scope
+    val scopes = params.scopes ?: server.defaultScopes
 
     // Parse the credentials from either the request or from the Http Authentication header.
     val credentials = request.basicAuthenticationClientCredentials()
@@ -118,7 +119,7 @@ suspend fun <C : Principal, U : Principal> ApplicationCall.oauthGrant(
         }
     }
 
-    val request = GrantRequest(server, handler, principal, scope, params.state, params)
+    val request = GrantRequest(server, handler, principal, scopes, params.state, params)
     return handler.run { grant(request) }
 }
 
@@ -149,7 +150,7 @@ suspend fun <C : Principal, U : Principal> ApplicationCall.getAuthorizationReque
     val credential = params.clientCredentials()?.copy(secret = null) ?: throw InvalidRequest("The client credentials are required.")
     val client = server.clientRepository.validate(credential, authorize = true) ?: throw InvalidClient("The client credentials are invalid.")
     val redirectUri = params.redirectUri()
-    val scope = params.scope
+    val scopes = params.scopes ?: server.defaultScopes
     val state = params.state
 
     return when {
@@ -157,10 +158,10 @@ suspend fun <C : Principal, U : Principal> ApplicationCall.getAuthorizationReque
             throw InvalidRequest("The 'redirect_uri' field is mandatory.")
         !server.clientRepository.validateRedirectUri(client, redirectUri) ->
             throw InvalidClient("The redirect uri is invalid.")
-        !server.clientRepository.validateScope(client, scope) ->
-            throw InvalidScope("The requested scope is not accepted.")
+        server.clientRepository.validateScopes(client, scopes) == null ->
+            throw InvalidScope("The requested scopes are not accepted.")
         else ->
-            AuthorizationRequest(server, handler, client, redirectUri, scope, state)
+            AuthorizationRequest(server, handler, client, redirectUri, scopes, state)
     }
 }
 
@@ -206,9 +207,9 @@ val Parameters.grantType: String? get() = getNonBlank("grant_type")
 val Parameters.responseType: String? get() = getNonBlank("response_type")
 
 /**
- * The grant scope from the parameters.
+ * The grant scopes from the parameters.
  */
-val Parameters.scope: String? get() = getNonBlank("scope")
+val Parameters.scopes: Set<String>? get() = getNonBlank("scope")?.split(" ")?.toSet()
 
 /**
  * The optional state parameter.

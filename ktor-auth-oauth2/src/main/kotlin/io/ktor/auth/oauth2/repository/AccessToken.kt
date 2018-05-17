@@ -36,10 +36,10 @@ interface AccessTokenRepository<C : Principal, U : Principal> {
      *
      * @param client The client for which the access token is generated.
      * @param user The user associated with the access token.
-     * @param scope The scope to which the access token applies.
+     * @param scopes The scopes to which the access token applies.
      * @return A pair containing the generated access token and the refresh token.
      */
-    suspend fun generate(client: C, user: U? = null, scope: String? = null): Pair<AccessToken<C, U>, String?>
+    suspend fun generate(client: C, user: U? = null, scopes: Set<String> = emptySet()): Pair<AccessToken<C, U>, String?>
 
     /**
      * Refresh an access token.

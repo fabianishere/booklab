@@ -20,7 +20,6 @@ import io.ktor.application.ApplicationCall
 import io.ktor.auth.Principal
 import io.ktor.auth.oauth2.InvalidScope
 import io.ktor.auth.oauth2.ServerError
-import io.ktor.auth.oauth2.scope
 
 /**
  * The Client Credentials grant is used when applications request an access token to access their own resources, not on
@@ -47,13 +46,10 @@ open class ClientCredentialsGrantHandler<C : Principal, U : Principal> : GrantHa
         val server = request.server
         val client = request.client ?: throw ServerError()
 
-        val scope = request.parameters.scope
-        if (!server.clientRepository.validateScope(client, scope)) {
-            throw InvalidScope("The requested scope is not accepted.")
-        }
+        val scopes = server.clientRepository.validateScopes(client, request.scopes) ?: throw InvalidScope("The requested scopes are not accepted.")
 
         // Generate token based on client principal
-        val (token, refresh) = server.tokenRepository.generate(client, authenticate(client), scope = request.scope)
+        val (token, refresh) = server.tokenRepository.generate(client, authenticate(client), scopes = scopes)
         return Grant(accessToken = token, refreshToken = refresh, state = request.state)
     }
 }

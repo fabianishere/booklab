@@ -20,6 +20,7 @@ import io.ktor.application.ApplicationCall
 import io.ktor.auth.Principal
 import io.ktor.auth.oauth2.InvalidClient
 import io.ktor.auth.oauth2.InvalidRequest
+import io.ktor.auth.oauth2.InvalidScope
 import io.ktor.auth.oauth2.ServerError
 import io.ktor.auth.oauth2.getNonBlank
 import io.ktor.auth.oauth2.redirectUri
@@ -38,7 +39,7 @@ import java.time.Instant
  * @property issuedAt The instant at which the code was issued.
  * @property expiresIn The duration after which the code expires.
  * @property redirectUri The redirect uri specified by the client.
- * @property scope The requested scope.
+ * @property scopes The requested scopes.
  * @property state The additional state property.
  */
 data class AuthorizationCode<out C : Principal, out U : Principal>(
@@ -48,7 +49,7 @@ data class AuthorizationCode<out C : Principal, out U : Principal>(
     val issuedAt: Instant,
     val expiresIn: Duration?,
     val redirectUri: URI,
-    val scope: String? = null,
+    val scopes: Set<String> = emptySet(),
     val state: String? = null
 ) {
     /**
@@ -101,8 +102,10 @@ open class AuthorizationCodeGrantHandler<C : Principal, U : Principal>(
                 throw InvalidClient("The redirect uri's do not match") }
         }
 
+        val scopes = server.clientRepository.validateScopes(client, request.scopes) ?: throw InvalidScope("The requested scopes are not accepted.")
+
         // Generate token based on user principal
-        val (token, refresh) = server.tokenRepository.generate(client, code.user, request.scope)
+        val (token, refresh) = server.tokenRepository.generate(client, code.user, scopes)
         return Grant(accessToken = token, refreshToken = refresh, state = request.state)
     }
 }

@@ -45,7 +45,8 @@ fun <C : Principal, U : Principal> Grant<C, U>.toJson(): String {
     val properties = mutableMapOf(
         "grant_type" to accessToken.type,
         "access_token" to accessToken.token,
-        "created_at" to accessToken.issuedAt.toEpochMilli()
+        "created_at" to accessToken.issuedAt.toEpochMilli(),
+        "scope" to accessToken.scopes.joinToString(" ")
     )
     refreshToken?.let { properties.put("refresh_token", it) }
     accessToken.expiresIn?.let { properties.put("expires_in", it.seconds) }

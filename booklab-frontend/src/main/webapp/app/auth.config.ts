@@ -23,22 +23,17 @@ export const authConfig: AuthConfig = {
     // The endpoint that issues the access tokens
     tokenEndpoint: 'http://localhost:8080/api/auth/token',
 
-    // URL of the SPA to redirect the user to after login
-    redirectUri: window.location.origin + '/index.html',
-
-    // URL of the SPA to redirect the user after silent refresh
-    silentRefreshRedirectUri: window.location.origin + '/silent-refresh.html',
-
     // The SPA's id. The SPA is registered with this id at the auth-server
     clientId: 'test',
 
-    // The client secret send
+    // The client secret to be send to the server
     dummyClientSecret: 'test',
 
-    // Set the scope for the permissions the client should request
-    scope: 'rest',
+    // Set the scopes for the permissions the client should request
+    scope: 'detection',
 
-    showDebugInformation: true,
+    // Flag to enable debugging information
+    showDebugInformation: false,
 
     // Disable OIDC support as it is not supported by the server
     oidc: false

@@ -55,9 +55,9 @@ interface AccessToken<out C : Principal, out U : Principal> : Principal {
     val expiresIn: Duration?
 
     /**
-     * The scope of the access token.
+     * The requested scopes of the access token.
      */
-    val scope: String?
+    val scopes: Set<String>
 
     /**
      * Determine whether the [AccessToken] is expired or not.

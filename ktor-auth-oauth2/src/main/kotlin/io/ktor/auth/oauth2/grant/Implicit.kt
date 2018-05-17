@@ -19,6 +19,7 @@ package io.ktor.auth.oauth2.grant
 import io.ktor.application.ApplicationCall
 import io.ktor.auth.Principal
 import io.ktor.auth.oauth2.InvalidRequest
+import io.ktor.auth.oauth2.InvalidScope
 import io.ktor.http.Parameters
 
 /**
@@ -33,12 +34,13 @@ open class ImplicitGrantHandler<C : Principal, U : Principal> : GrantHandler<C, 
     override val supportsAuthorization: Boolean = true
 
     override suspend fun AuthorizationRequest<C, U>.authorize(user: U): Authorization {
-        val (token, _) = server.tokenRepository.generate(client, user, scope)
+        val scopes = server.clientRepository.validateScopes(client, scopes) ?: throw InvalidScope("The requested scopes are not accepted.")
+        val (token, _) = server.tokenRepository.generate(client, user, scopes)
         return Authorization(parameters = Parameters.build {
             append("token_type", token.type)
             append("access_token", token.token)
+            append("scope", scopes.joinToString(" "))
             token.expiresIn?.let { append("expires_in", it.seconds.toString()) }
-            token.scope?.let { append("scope", it) }
             state?.let { append("state", it) }
         })
     }

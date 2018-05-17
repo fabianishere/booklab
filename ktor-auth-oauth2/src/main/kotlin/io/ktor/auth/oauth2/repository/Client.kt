@@ -68,13 +68,13 @@ interface ClientRepository<C : Principal> : PrincipalRepository<ClientCredential
     suspend fun validateRedirectUri(client: C, redirectUri: URI?): Boolean = true
 
     /**
-     * Validate the given scope for a client principal.
+     * Validate the given scopes for a client principal.
      *
      * @param client The client principal to validate for.
-     * @param scope The scope uri to validate.
-     * @return `true` if the scope is valid, `false` otherwise.
+     * @param scopes The scopes to validate.
+     * @return The scopes that are granted to the client or `null` if the scopes are not accepted.
      */
-    suspend fun validateScope(client: C, scope: String?): Boolean = true
+    suspend fun validateScopes(client: C, scopes: Set<String>): Set<String>? = scopes
 }
 
 /**
@@ -106,13 +106,13 @@ class ClientHashedTableRepository(
         return principal
     }
 
-    override suspend fun validateRedirectUri(client: ClientIdPrincipal, redirectUri: URI?): Boolean {
-        return client.redirectUri == null || client.redirectUri == redirectUri
-    }
+    override suspend fun validateRedirectUri(client: ClientIdPrincipal, redirectUri: URI?): Boolean =
+        client.redirectUri == null || client.redirectUri == redirectUri
 
-    override suspend fun validateScope(client: ClientIdPrincipal, scope: String?): Boolean {
-        return scope in client.scopes
-    }
+    override suspend fun validateScopes(client: ClientIdPrincipal, scopes: Set<String>): Set<String>? =
+        scopes.takeIf { client.scopes.containsAll(it) }
+
+
 }
 
 /**

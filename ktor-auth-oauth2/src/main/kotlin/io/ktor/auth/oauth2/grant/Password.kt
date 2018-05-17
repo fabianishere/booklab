@@ -25,7 +25,6 @@ import io.ktor.auth.oauth2.InvalidScope
 import io.ktor.auth.oauth2.ServerError
 import io.ktor.auth.oauth2.getNonBlank
 import io.ktor.auth.oauth2.repository.PrincipalRepository
-import io.ktor.auth.oauth2.scope
 
 /**
  * The Password grant is used when the application exchanges the user’s username and password for an access token.
@@ -53,15 +52,11 @@ open class PasswordGrantHandler<C : Principal, U : Principal>(
             UserPasswordCredential(username, password)
         }
 
-        val scope = request.parameters.scope
-        if (!server.clientRepository.validateScope(client, scope)) {
-            throw InvalidScope("The requested scope is not accepted.")
-        }
-
+        val scopes = server.clientRepository.validateScopes(client, request.scopes) ?: throw InvalidScope("The requested scopes are not accepted.")
         val user = repository.validate(credentials) ?: throw InvalidGrant("Invalid user credentials")
 
         // Generate token based on user principal
-        val (token, refresh) = server.tokenRepository.generate(client, user, request.scope)
+        val (token, refresh) = server.tokenRepository.generate(client, user, scopes)
         return Grant(accessToken = token, refreshToken = refresh, state = request.state)
     }
 }

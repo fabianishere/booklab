@@ -24,7 +24,7 @@ import io.ktor.routing.route
  * Describe the routes for the REST API of the BookLab backend.
  */
 fun Route.api() {
-    authenticate {
+    authenticate("rest:detection") {
         route("detection") {
             detection()
         }

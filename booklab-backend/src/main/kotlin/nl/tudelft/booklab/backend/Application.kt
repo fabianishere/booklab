@@ -75,9 +75,9 @@ fun Application.booklab() {
 
         // Create an unnamed authentication provider for protecting resources using
         // the OAuth authorization server.
-        oauth<ClientIdPrincipal, UserIdPrincipal> {
+        oauth<ClientIdPrincipal, UserIdPrincipal>("rest:detection") {
             server = oauth.server
-            scopes = setOf("rest")
+            scopes = setOf("detection")
         }
     }
 

@@ -73,11 +73,11 @@ class JwtAccessTokenRepository<C : Principal, U : Principal>(
             override val user: U? = user
             override val issuedAt: Instant = jwt.issuedAt.toInstant()
             override val expiresIn: Duration? = jwt.expiresAt?.toInstant()?.let { Duration.between(issuedAt, it) }
-            override val scope: String? = jwt.getClaim("scope")?.asString()
+            override val scopes: Set<String> = jwt.getClaim("scopes")?.asList(String::class.java)?.toSet() ?: emptySet()
         }
     }
 
-    override suspend fun generate(client: C, user: U?, scope: String?): Pair<AccessToken<C, U>, String?> {
+    override suspend fun generate(client: C, user: U?, scopes: Set<String>): Pair<AccessToken<C, U>, String?> {
         val now = Instant.now()
         val jwt = JWT.create()
             .withIssuer(configuration.issuer)
@@ -90,8 +90,8 @@ class JwtAccessTokenRepository<C : Principal, U : Principal>(
                     withExpiresAt(Date.from(now + validity))
                 if (user != null)
                     withClaim("user", userRepository.run { user.id })
-                if (scope != null)
-                    withClaim("scope", scope)
+                if (scopes.isNotEmpty())
+                    withArrayClaim("scopes", scopes.toTypedArray())
             }
             .sign(configuration.algorithm)
         val token = object : AccessToken<C, U> {
@@ -101,7 +101,7 @@ class JwtAccessTokenRepository<C : Principal, U : Principal>(
             override val user: U? = user
             override val issuedAt: Instant = now
             override val expiresIn: Duration? = validity
-            override val scope: String? = scope
+            override val scopes: Set<String> = scopes
         }
         return Pair(token, refreshTokenRepository?.generate(token))
     }

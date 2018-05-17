@@ -45,9 +45,9 @@ import java.net.URI
  * The authorization endpoint is used to interact with the resource owner and obtain an authorization grant.
  * The authorization server MUST first verify the identity of the resource owner.  The way in which the authorization
  * server authenticates the resource owner (e.g., username and password login, session cookies) is beyond the
- * scope of this specification.
+ * scopes of this specification.
  *
- * The means through which the client obtains the location of the authorization endpoint are beyond the scope of this
+ * The means through which the client obtains the location of the authorization endpoint are beyond the scopes of this
  * specification, but the location is typically provided in the service documentation.
  */
 internal class AuthorizationEndpointTest {
@@ -267,7 +267,7 @@ internal class AuthorizationEndpointTest {
                 append("response_type", "code")
                 append("client_id", "test")
                 append("client_secret", "test")
-                append("scope", "test-a")
+                append("scopes", "test-a")
                 append("redirect_uri", "http://localhost:8080")
             }
             build()
@@ -289,7 +289,7 @@ internal class AuthorizationEndpointTest {
                 append("response_type", "code")
                 append("client_id", "test")
                 append("client_secret", "test")
-                append("scope", "test-a")
+                append("scopes", "test-a")
                 append("state", state)
                 append("redirect_uri", "http://localhost:8080")
             }
@@ -313,7 +313,7 @@ internal class AuthorizationEndpointTest {
                 append("response_type", "code")
                 append("client_id", "test")
                 append("client_secret", "test")
-                append("scope", "test-a")
+                append("scopes", "test-a")
                 append("redirect_uri", "http://localhost:8080")
             }
             build()

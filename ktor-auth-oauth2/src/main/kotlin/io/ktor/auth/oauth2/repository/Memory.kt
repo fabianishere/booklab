@@ -62,7 +62,7 @@ class MemoryAuthorizationCodeRepository<C : Principal, U : Principal>(
             issuedAt = now,
             expiresIn = validity,
             redirectUri = request.redirectUri,
-            scope = request.scope,
+            scopes = request.scopes,
             state = request.state
         ).also {
             active[code] = it

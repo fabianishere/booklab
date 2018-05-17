@@ -56,7 +56,7 @@ fun buildApplication(
             scopes = setOf("test-a")
         }
 
-        oauth<ClientIdPrincipal, UserIdPrincipal>("scope:test") {
+        oauth<ClientIdPrincipal, UserIdPrincipal>("scopes:test") {
             this.server = server
             scopes = setOf("test-b")
         }
@@ -103,7 +103,7 @@ fun buildApplication(
             }
         }
 
-        authenticate("scope:test") {
+        authenticate("scopes:test") {
             get("/protected/b") {
                 call.respond(HttpStatusCode.OK)
             }
@@ -113,7 +113,7 @@ fun buildApplication(
 
 val TestClientRepository = ClientHashedTableRepository(
     digester = { it.toByteArray() },
-    table = mapOf("test" to (ClientIdPrincipal("test", scopes = setOf("test-a")) to "test".toByteArray()))
+    table = mapOf("test" to (ClientIdPrincipal("test", scopes = setOf("test-a", "test-b")) to "test".toByteArray()))
 )
 
 val TestUserRepository = UserHashedTableRepository(

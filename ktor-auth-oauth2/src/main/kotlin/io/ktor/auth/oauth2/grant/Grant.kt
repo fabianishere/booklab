@@ -31,7 +31,7 @@ import java.net.URI
  * @property server The server that has generated the request.
  * @property handler The handler assigned to this request.
  * @property client The client principal that is requesting the grant.
- * @property scope The optional scope of the grant.
+ * @property scopes The requested scopes.
  * @property state The additional state property.
  * @property parameters The additional parameters passed to the server.
  */
@@ -39,7 +39,7 @@ data class GrantRequest<C : Principal, U : Principal>(
     internal val server: OAuthServer<C, U>,
     internal val handler: GrantHandler<C, U>,
     val client: C?,
-    val scope: String? = null,
+    val scopes: Set<String> = emptySet(),
     val state: String? = null,
     val parameters: Parameters = Parameters.Empty
 )
@@ -64,7 +64,7 @@ data class Grant<out C : Principal, out U : Principal>(
  * @property handler The handler assigned to this request.
  * @property client The client that has sent this request.
  * @property redirectUri The uri to redirect to.
- * @property scope The scope of the request.
+ * @property scopes The requested scopes.
  * @property state The state property.
  */
 data class AuthorizationRequest<C : Principal, U : Principal>(
@@ -72,7 +72,7 @@ data class AuthorizationRequest<C : Principal, U : Principal>(
     internal val handler: GrantHandler<C, U>,
     val client: C,
     val redirectUri: URI,
-    val scope: String? = null,
+    val scopes: Set<String> = emptySet(),
     val state: String? = null
 )
 

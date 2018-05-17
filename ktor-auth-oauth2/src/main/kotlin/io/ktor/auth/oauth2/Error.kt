@@ -64,7 +64,7 @@ class UnauthorizedClient(description: String = "") : OAuthError("unauthorized_cl
 class UnsupportedGrantType(description: String = "") : OAuthError("unsupported_grant_type", description)
 
 /**
- * The requested scope is invalid, unknown, malformed, or exceeds the scope granted by the resource owner.
+ * One of the requested scopes is invalid, unknown, malformed, or exceeds the scopes granted by the resource owner.
  */
 class InvalidScope(description: String = "") : OAuthError("invalid_scope", description)
 

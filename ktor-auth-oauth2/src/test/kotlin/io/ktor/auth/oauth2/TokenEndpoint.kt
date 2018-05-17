@@ -366,4 +366,35 @@ internal class TokenEndpointTest {
             assertEquals(HttpStatusCode.Unauthorized, response.status())
         }
     }
+
+    @Test
+    fun `request multiple scopes`() = withTestApplication(buildApplication(server)) {
+        val token = let {
+            val parameters = Parameters.build {
+                append("grant_type", "client_credentials")
+                append("redirect_uri", "http://localhost:8080")
+                append("scope", "test-a test-b")
+            }
+            val request = handleRequest(HttpMethod.Post, "/api/auth/token") {
+                setBody(parameters.formUrlEncode())
+                addHeader("Content-Type", ContentType.Application.FormUrlEncoded.toString())
+                addHeader("Content-Type", ContentType.Application.FormUrlEncoded.toString())
+                val up = "$client:$secret"
+                val encoded = encodeBase64(up.toByteArray(Charsets.ISO_8859_1))
+                addHeader(HttpHeaders.Authorization, "Basic $encoded")
+            }
+            with(request) {
+                val content = JSONValue.parse(response.content!!) as JSONObject
+                assertEquals(HttpStatusCode.OK, response.status())
+                content["access_token"]
+            }
+        }
+
+        val request = handleRequest(HttpMethod.Get, "/protected/b") {
+            addHeader("Authorization", "Bearer $token")
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.OK, response.status())
+        }
+    }
 }

@@ -40,7 +40,7 @@ internal class AuthTest {
             append("grant_type", "password")
             append("client_id", "test")
             append("client_secret", "test")
-            append("scope", "test")
+            append("scopes", "test")
             append("username", "fabianishere@outlook.com")
             append("password", "test")
         }
@@ -59,7 +59,7 @@ internal class AuthTest {
             append("grant_type", "client_credentials")
             append("client_id", "test")
             append("client_secret", "test")
-            append("scope", "test")
+            append("scopes", "test")
         }
         val request = handleRequest(HttpMethod.Post, "/api/auth/token") {
             setBody(parameters.formUrlEncode())
