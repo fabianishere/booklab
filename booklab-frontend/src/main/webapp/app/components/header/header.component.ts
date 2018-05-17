@@ -1,4 +1,4 @@
-import {Component, OnInit, Output} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
     selector: 'app-header',
@@ -6,7 +6,8 @@ import {Component, OnInit, Output} from '@angular/core';
     styleUrls: ['./header.component.less']
 })
 export class HeaderComponent implements OnInit {
-    @Output() public login: boolean = false;
+    //public login: boolean = false;
+    @Input() public app;
 
     constructor() {}
 

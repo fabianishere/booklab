@@ -1,13 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpService } from '../../services/http/http.service';
 import { UserService } from '../../services/user/user.service';
-import {Book} from '../../dataTypes';
-
-interface DetectionResult {
-    results: Book[];
-}
-
-
+import {Book, Title} from '../../dataTypes'
 
 @Component({
     selector: 'app-image',
@@ -36,9 +30,8 @@ export class ImageUploadComponent implements OnInit {
         reader.readAsDataURL(files[0]);
         reader.onload = () => this.img = reader.result;
         this.http.checkHealth();
-        this.http.putImg(null).subscribe((res: DetectionResult) => {
-            res.results.forEach(book => console.log(book.title + ' ' + book.isbn));
-            this.results = res.results;
+        this.http.putImg(null).subscribe((res: any[]) => {
+            this.results = res.map(b => Book.getBook(b));
         });
         this.addedToShelf = false;
 
@@ -49,5 +42,6 @@ export class ImageUploadComponent implements OnInit {
         this.user.addMultToBookshelf(this.results);
         this.addedToShelf = true;
     }
+
 
 }

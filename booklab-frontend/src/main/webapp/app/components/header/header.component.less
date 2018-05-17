@@ -3,20 +3,25 @@
 .header {
     background-color: white;
     height: 10%;
-    color: @booklab-pink;
-    font-family: Arial;
-    text-align: center;
     border-bottom: 2px solid @booklab-yellow;
+    text-align: center;
+    p {
+        margin: auto;
+        color: @booklab-pink;
+        display: inline-block;
+    }
     a {
         color: @booklab-pink;
     }
-    p {
-        display: inline-block;
-    }
+
     .logo {
         font-size: 50px;
+        position: relative;
+        cursor: pointer;
+
     }
     .login-link {
+        padding: 20px;
         float: right;
         cursor: pointer;
 

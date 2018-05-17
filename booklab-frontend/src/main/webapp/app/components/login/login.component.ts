@@ -7,14 +7,14 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class LoginComponent implements OnInit {
 
-   @Input() public header;
+   @Input() public app;
   constructor() { }
 
   ngOnInit() {
   }
 
   goBack() {
-    this.header.login = false;
+    this.app.login = false;
   }
 
 }

@@ -21,4 +21,8 @@ export class HttpService {
     putImg(img: Blob): Observable<Object> {
         return this.http.put('http://localhost:8080/api/detection', img);
     }
+
+    findBook(nameInput: string, authorInput: string): Observable<Object> {
+        return this.http.get('http://localhost:8080/api/search?title=' + nameInput + '&author=' + authorInput);
+    }
 }
