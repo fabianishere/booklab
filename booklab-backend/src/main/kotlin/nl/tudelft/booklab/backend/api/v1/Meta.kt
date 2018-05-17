@@ -16,21 +16,14 @@
 
 package nl.tudelft.booklab.backend.api.v1
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import io.ktor.application.call
-import io.ktor.auth.UserIdPrincipal
-import io.ktor.auth.authenticate
-import io.ktor.auth.authentication
-import io.ktor.http.HttpStatusCode
+import io.ktor.auth.oauth2.oauthTokenEndpoint
 import io.ktor.response.respond
 import io.ktor.routing.Route
+import io.ktor.routing.application
 import io.ktor.routing.get
-import io.ktor.routing.post
 import io.ktor.routing.route
-import nl.tudelft.booklab.backend.jwt
-import java.time.Duration
-import java.time.Instant
-import java.util.Date
+import nl.tudelft.booklab.backend.auth.oauth
 
 /**
  * Define meta endpoints at the current route for the REST api.
@@ -44,40 +37,14 @@ fun Route.meta() {
  * Define the authentication endpoints at the current route of the REST api.
  */
 private fun Route.auth() {
-    // A development endpoint for generating JWT tokens.
-    authenticate("passthrough") {
-        post("/basic") {
-            val user = call.authentication.principal<UserIdPrincipal>()
+    val oauth = application.oauth
 
-            if (user != null) {
-                val validity = call.authentication.jwt.duration
-                val token = call.authentication.jwt.run {
-                    val now = Instant.now()
+    // Define OAuth token endpoint
+    route("/token") { oauthTokenEndpoint(oauth.server) }
 
-                    creator
-                        .withIssuedAt(Date.from(now))
-                        .withExpiresAt(Date.from(Instant.now().plus(duration)))
-                        .withClaim("user", user.name)
-                        .sign(algorithm)
-                }
-                // The validity of the token is represented in seconds
-                call.respond(AuthenticationSuccessful(token, validity))
-            } else {
-                call.respond(HttpStatusCode.Unauthorized)
-            }
-        }
-    }
+    // TODO define proper OAuth authorization endpoint
+    // This is already supported by the ktor-auth-oauth package, but needs some implementation on our side.
 }
-
-/**
- * This class is returned when the authentication was successful.
- */
-data class AuthenticationSuccessful(
-    val token: String,
-
-    @JsonProperty("expires_in")
-    val expiresIn: Duration
-)
 
 /**
  * This class represents the result of a health check.

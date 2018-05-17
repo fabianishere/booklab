@@ -18,9 +18,14 @@ package nl.tudelft.booklab.backend
 
 import com.typesafe.config.ConfigFactory
 import io.ktor.config.HoconApplicationConfig
+import io.ktor.http.HttpHeaders
 import io.ktor.server.testing.TestApplicationEngine
+import io.ktor.server.testing.TestApplicationRequest
 import io.ktor.server.testing.createTestEnvironment
 import io.ktor.server.testing.withApplication
+import nl.tudelft.booklab.backend.auth.JwtConfiguration
+import java.time.Instant
+import java.util.Date
 
 /**
  * Construct a [TestApplicationEngine] from a configuration file and run the given block in its scope.
@@ -32,3 +37,22 @@ fun <R> withTestEngine(test: TestApplicationEngine.() -> R) =
         config = HoconApplicationConfig(ConfigFactory.load("application-test.conf"))
         module { booklab() }
     }, test = test)
+
+/**
+ * Configure the authorization header for calls that require an access token.
+ */
+fun TestApplicationRequest.configureAuthorization() {
+    val token = call.application.attributes[JwtConfiguration.KEY].run {
+        val now = Instant.now()
+
+        creator
+            .withSubject("access-token")
+            .withIssuedAt(Date.from(now))
+            .withExpiresAt(Date.from(Instant.now().plus(validity)))
+            .withClaim("user", "test@example.com")
+            .withClaim("client", "test")
+            .sign(algorithm)
+    }
+
+    addHeader(HttpHeaders.Authorization, "Bearer $token")
+}

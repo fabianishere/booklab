@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.backend
+package nl.tudelft.booklab.backend.auth
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTCreator
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
-import io.ktor.auth.AuthenticationContext
+import io.ktor.application.Application
+import io.ktor.config.ApplicationConfig
 import io.ktor.util.AttributeKey
 import java.time.Duration
 
 /**
  * The configuration for the JWT authentication method.
  */
-class JwtConfiguration(
+data class JwtConfiguration(
     val issuer: String,
     val audience: String,
     val realm: String,
-    val duration: Duration,
+    val validity: Duration,
     val algorithm: Algorithm
 ) {
 
@@ -41,6 +42,7 @@ class JwtConfiguration(
     val verifier: JWTVerifier = JWT.require(algorithm)
         .withAudience(audience)
         .withIssuer(issuer)
+        .withSubject("access-token")
         .build()
 
     /**
@@ -50,6 +52,7 @@ class JwtConfiguration(
         .create()
         .withAudience(audience)
         .withIssuer(issuer)
+        .withSubject("access-token")
 
     companion object {
         /**
@@ -60,6 +63,22 @@ class JwtConfiguration(
 }
 
 /**
- * Extension method for accessing the [JwtConfiguration] instance of the [AuthenticationContext].
+ * Build the [JwtConfiguration] object for the given configuration environment.
+ *
+ * @param config The [ApplicationConfig] object that contains the JWT configuration properties.
+ * @return The [JwtConfiguration] instance that has been built.
  */
-val AuthenticationContext.jwt: JwtConfiguration get() = call.application.attributes[JwtConfiguration.KEY]
+fun buildJwtConfiguration(config: ApplicationConfig): JwtConfiguration {
+    val issuer = config.property("domain").getString()
+    val audience = config.property("audience").getString()
+    val realm = config.property("realm").getString()
+    val passphrase = config.property("passphrase").getString()
+    val validity = Duration.parse(config.property("validity").getString())
+
+    return JwtConfiguration(issuer, audience, realm, validity, Algorithm.HMAC512(passphrase))
+}
+
+/**
+ * Extension method for accessing the [JwtConfiguration] instance of the [Application].
+ */
+val Application.jwt: JwtConfiguration get() = attributes[JwtConfiguration.KEY]

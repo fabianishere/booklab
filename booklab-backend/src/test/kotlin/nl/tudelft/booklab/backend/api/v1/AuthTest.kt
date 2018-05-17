@@ -16,21 +16,16 @@
 
 package nl.tudelft.booklab.backend.api.v1
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.testing.TestApplicationEngine
+import io.ktor.http.Parameters
+import io.ktor.http.formUrlEncode
 import io.ktor.server.testing.handleRequest
-import io.ktor.util.encodeBase64
-import nl.tudelft.booklab.backend.JwtConfiguration
+import io.ktor.server.testing.setBody
 import nl.tudelft.booklab.backend.withTestEngine
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 /**
@@ -39,44 +34,39 @@ import org.junit.jupiter.api.Test
  * @author Fabian Mastenbroek (f.s.mastenbroek@student.tudelft.nl)
  */
 internal class AuthTest {
-    /**
-     * The Jackson mapper class that maps JSON to objects.
-     */
-    lateinit var mapper: ObjectMapper
-
-    @BeforeEach
-    fun setUp() {
-        mapper = jacksonObjectMapper()
-            .registerModule(JavaTimeModule())
-    }
-
     @Test
-    fun `basic authentication should return valid token`() = withTestEngine {
-        val verifier = application.attributes[JwtConfiguration.KEY].verifier
-        with(handleRequestWithBasic(HttpMethod.Post, "/api/auth/basic", "test@example.com", "test")) {
+    fun `authorization via password is allowed`() = withTestEngine {
+        val parameters = Parameters.build {
+            append("grant_type", "password")
+            append("client_id", "test")
+            append("client_secret", "test")
+            append("scope", "test")
+            append("username", "fabianishere@outlook.com")
+            append("password", "test")
+        }
+        val request = handleRequest(HttpMethod.Post, "/api/auth/token") {
+            setBody(parameters.formUrlEncode())
+            addHeader(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+        }
+        with(request) {
             assertEquals(HttpStatusCode.OK, response.status())
-
-            val result: AuthenticationSuccessful? = response.content?.let { mapper.readValue(it) }
-            assertNotNull(result)
-            val token = verifier.verify(result!!.token)
-            assertNotNull(token)
-            assertEquals(token?.getClaim("user")?.asString(), "test@example.com")
         }
     }
 
     @Test
-    fun `basic authentication without credentials should fail`() = withTestEngine {
-        with(handleRequest(HttpMethod.Post, "/api/auth/basic")) {
-            assertEquals(HttpStatusCode.Unauthorized, response.status())
+    fun `authorization via client credentials is allowed`() = withTestEngine {
+        val parameters = Parameters.build {
+            append("grant_type", "client_credentials")
+            append("client_id", "test")
+            append("client_secret", "test")
+            append("scope", "test")
+        }
+        val request = handleRequest(HttpMethod.Post, "/api/auth/token") {
+            setBody(parameters.formUrlEncode())
+            addHeader(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded.toString())
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.OK, response.status())
         }
     }
-
-    private fun TestApplicationEngine.handleRequestWithBasic(method: HttpMethod, url: String, user: String, pass: String) =
-        handleRequest {
-            this.method = method
-            uri = url
-            val up = "$user:$pass"
-            val encoded = encodeBase64(up.toByteArray(Charsets.ISO_8859_1))
-            addHeader(HttpHeaders.Authorization, "Basic $encoded")
-        }
 }

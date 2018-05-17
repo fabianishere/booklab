@@ -19,18 +19,15 @@ package nl.tudelft.booklab.backend.api.v1
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
-import nl.tudelft.booklab.backend.JwtConfiguration
+import nl.tudelft.booklab.backend.configureAuthorization
 import nl.tudelft.booklab.backend.withTestEngine
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.time.Instant
-import java.util.Date
 
 /**
  * Unit test suite for the detection endpoint of the BookLab REST api.
@@ -52,16 +49,7 @@ internal class DetectionTest {
     @Test
     fun `put returns proper interface`() = withTestEngine {
         val request = handleRequest(HttpMethod.Put, "/api/detection") {
-            val token = application.attributes[JwtConfiguration.KEY].run {
-                val now = Instant.now()
-
-                creator
-                    .withIssuedAt(Date.from(now))
-                    .withExpiresAt(Date.from(Instant.now().plus(duration)))
-                    .withClaim("user", "test@example.com")
-                    .sign(algorithm)
-            }
-            addHeader(HttpHeaders.Authorization, "Bearer $token")
+            configureAuthorization()
         }
         with(request) {
             assertEquals(HttpStatusCode.OK, response.status())

@@ -74,7 +74,7 @@ fun <C : Principal, U : Principal> Route.oauthTokenEndpoint(server: OAuthServer<
             val grant = call.oauthGrant(server, parameters)
             call.respondText(grant.toJson(), ContentType.Application.Json)
         } catch (e: OAuthError) {
-            application.log.error("The grant request failed to process", e)
+            application.log.debug("The grant request failed to process", e)
             call.respondText(e.toJson(state), ContentType.Application.Json, e.status)
         }
     }

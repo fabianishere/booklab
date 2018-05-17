@@ -16,16 +16,18 @@
 
 package nl.tudelft.booklab.backend
 
-import com.auth0.jwt.algorithms.Algorithm
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.auth.Authentication
 import io.ktor.auth.UserIdPrincipal
-import io.ktor.auth.basic
-import io.ktor.auth.jwt.JWTPrincipal
-import io.ktor.auth.jwt.jwt
+import io.ktor.auth.oauth2.oauth
+import io.ktor.auth.oauth2.repository.ClientHashedTableRepository
+import io.ktor.auth.oauth2.repository.ClientIdPrincipal
+import io.ktor.auth.oauth2.repository.UserHashedTableRepository
+import io.ktor.auth.oauth2.repository.parseClients
+import io.ktor.auth.oauth2.repository.parseUsers
 import io.ktor.features.CORS
 import io.ktor.features.Compression
 import io.ktor.features.ContentNegotiation
@@ -34,9 +36,11 @@ import io.ktor.http.HttpMethod
 import io.ktor.jackson.jackson
 import io.ktor.routing.route
 import io.ktor.routing.routing
+import io.ktor.util.getDigestFunction
 import nl.tudelft.booklab.backend.api.v1.api
-import java.time.Duration
-import java.time.temporal.ChronoUnit
+import nl.tudelft.booklab.backend.auth.JwtConfiguration
+import nl.tudelft.booklab.backend.auth.OAuthConfiguration
+import nl.tudelft.booklab.backend.auth.buildJwtConfiguration
 
 /**
  * The main entry point of the BookLab web application.
@@ -50,31 +54,28 @@ fun Application.booklab() {
             registerModule(JavaTimeModule())
         }
     }
+
     install(Authentication) {
-        // The JWT authentication method authenticates users for REST calls using tokens
-        jwt {
-            val config = let {
-                val issuer = environment.config.property("jwt.domain").getString()
-                val audience = environment.config.property("jwt.audience").getString()
-                val realm = environment.config.property("jwt.realm").getString()
-                val passphrase = environment.config.property("jwt.passphrase").getString()
-                val duration = Duration.of(environment.config.property("jwt.duration").getString().toLong(),
-                    ChronoUnit.MILLIS)
-
-                JwtConfiguration(issuer, audience, realm, duration, Algorithm.HMAC512(passphrase))
-            }.also { attributes.put(JwtConfiguration.KEY, it) }
-
-            realm = config.realm
-            verifier(config.verifier)
-            validate { credential ->
-                if (credential.payload.audience.contains(config.audience)) JWTPrincipal(credential.payload) else null
-            }
+        // We create an OAuth authorization server for authorizing REST API calls
+        val jwt = buildJwtConfiguration(environment.config.config("auth.jwt")).also {
+            attributes.put(JwtConfiguration.KEY, it)
+        }
+        val clientRepository = ClientHashedTableRepository(
+            digester = getDigestFunction("SHA-256", salt = "ktor"),
+            table = environment.config.config("auth").parseClients()
+        )
+        val userRepository = UserHashedTableRepository(
+            digester = getDigestFunction("SHA-256", salt = "ktor"),
+            table = environment.config.config("auth").parseUsers()
+        )
+        val oauth = OAuthConfiguration(clientRepository, userRepository, jwt).also {
+            attributes.put(OAuthConfiguration.KEY, it)
         }
 
-        // This authentication method is used for testing purposes and accepts all user-password combinations.
-        basic("passthrough") {
-            realm = "Booklab"
-            validate { credentials -> UserIdPrincipal(credentials.name) }
+        // Create an unnamed authentication provider for protecting resources using
+        // the OAuth authorization server.
+        oauth<ClientIdPrincipal, UserIdPrincipal> {
+            server = oauth.server
         }
     }
 
