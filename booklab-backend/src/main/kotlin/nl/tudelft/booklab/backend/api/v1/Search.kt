@@ -17,7 +17,9 @@
 package nl.tudelft.booklab.backend.api.v1
 
 import io.ktor.application.call
+import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
+import io.ktor.response.respondText
 import io.ktor.routing.Route
 import io.ktor.routing.get
 import nl.tudelft.booklab.catalogue.sru.SruClient
@@ -31,7 +33,7 @@ fun Route.search() {
         if (title != null && author != null) {
             call.respond(client.query(client.createQuery(title, author), 5))
         } else {
-            call.respond("failed to query.\nquery is written like this:\n.../search?title=<title>&author=<author> \n")
+            call.respondText("Failed to process query", status = HttpStatusCode.BadRequest)
         }
     }
 }

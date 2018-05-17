@@ -53,8 +53,8 @@ class SruClient(
     }
 
     fun createQuery(title: String, author: String): String {
-        return "dc.title any/fuzzy/ignoreCase/ignoreAccents \"$title\" OR " +
-            "dc.creator any/fuzzy/ignoreCase/ignoreAccents \"$author\""
+        return """dc.title any/fuzzy/ignoreCase/ignoreAccents "$title" OR
+            |dc.creator any/fuzzy/ignoreCase/ignoreAccents "$author"""".trimMargin()
     }
 
     fun createQuery(keywords: String): String {
