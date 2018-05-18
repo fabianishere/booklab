@@ -64,7 +64,6 @@ dependencies {
     compile "org.bytedeco.javacpp-presets:leptonica:1.72-1.1"
     compile "org.bytedeco.javacpp-presets:tesseract:3.04-1.1"
     compile "com.google.cloud:google-cloud-vision:1.28.0"
-    compile "com.google.guava:guava:25.0-jre"
 
     runtime "org.slf4j:slf4j-jdk14:1.7.25"
     runtime "org.bytedeco.javacpp-presets:leptonica:1.72-1.1:$platform"

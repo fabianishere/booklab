@@ -17,15 +17,18 @@
 package nl.tudelft.nlbooklab.backend.ocr.vision;
 
 import com.google.cloud.vision.v1.*;
-import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
+import kotlin.collections.CollectionsKt;
 import nl.tudelft.nlbooklab.backend.ocr.BookDetector;
 import nl.tudelft.nlbooklab.backend.ocr.BookOCR;
 import org.jetbrains.annotations.NotNull;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -80,7 +83,7 @@ public class BookOCRVision implements BookOCR{
             .map(BookOCRVision::createImageRequest)
             .collect(Collectors.toList());
 
-        List<List<AnnotateImageRequest>> requestPartitions = Lists.partition(requests, 16);
+        List<List<AnnotateImageRequest>> requestPartitions = CollectionsKt.chunked(requests, 16);
 
         List<List<String>> responsePartitions = requestPartitions.stream()
             .map(BookOCRVision::getImageResponseText)
