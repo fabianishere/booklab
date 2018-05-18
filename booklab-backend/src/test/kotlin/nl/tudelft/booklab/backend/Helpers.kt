@@ -51,6 +51,7 @@ fun TestApplicationRequest.configureAuthorization() {
             .withExpiresAt(Date.from(Instant.now().plus(validity)))
             .withClaim("user", "test@example.com")
             .withClaim("client", "test")
+            .withArrayClaim("scopes", arrayOf("detection"))
             .sign(algorithm)
     }
 
