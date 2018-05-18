@@ -39,7 +39,7 @@ export class UserService {
         this.bookSub.next(this.bookshelf);
     }
 
-    bookSearchComplete(Book: Book) {
-        this.bookshelf[this.bookshelf.findIndex(b => b.isSearched)] = Book;
+    bookSearchComplete(book: Book) {
+        this.bookshelf[this.bookshelf.findIndex(b => b.isSearched)] = book;
     }
 }

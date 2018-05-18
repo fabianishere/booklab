@@ -51,4 +51,3 @@ fun Route.detection() {
 data class DetectionResult (
     val results: List<Book>
 )
-

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
-import {Book, DetectionResult} from "../../dataTypes";
+import {Book, DetectionResult} from '../../dataTypes';
 
 interface Success {
     success: boolean;
