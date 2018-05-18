@@ -31,8 +31,8 @@ export class BookshelfComponent implements OnInit {
 
     findBook() {
         this.user.addToBookshelf(new Book([], [], [], true));
-        this.http.findBook(this.nameInput, this.authorInput).subscribe((book) => {
-            this.user.bookSearchComplete(Book.getBook(book[0]));
+        this.http.findBook(this.nameInput, this.authorInput).subscribe((result) => {
+            this.user.bookSearchComplete(Book.getBook(result.results[0]));
         });
         this.enterBook = false;
         this.authorInput = '';
