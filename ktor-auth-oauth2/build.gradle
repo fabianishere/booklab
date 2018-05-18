@@ -22,34 +22,28 @@ buildscript {
 
 plugins {
     id "java"
-    id "application"
     id "jacoco"
     id "org.jetbrains.kotlin.jvm" version "1.2.40"
     id "org.jmailen.kotlinter" version "1.11.2"
 }
 
 /* Project configuration */
-group 'nl.tudelft.booklab'
-version '1.0'
+group = 'io.ktor.auth.oauth2'
+version = '1.0'
 sourceCompatibility = 1.8
 
-mainClassName = 'io.ktor.server.netty.DevelopmentEngine'
 
 repositories {
     jcenter()
-    maven { url "https://dl.bintray.com/kotlin/ktor" }
+    maven { url = "https://dl.bintray.com/kotlin/ktor" }
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    compile "io.ktor:ktor-server-netty:$ktor_version"
-    compile "io.ktor:ktor-jackson:$ktor_version"
-    compile "io.ktor:ktor-auth-jwt:$ktor_version"
-    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.+"
-    compile project(":ktor-auth-oauth2")
-    runtime "org.slf4j:slf4j-jdk14:1.7.25"
-
+    compile "io.ktor:ktor-server-core:$ktor_version"
+    compile "io.ktor:ktor-auth:$ktor_version"
+    compile "com.auth0:java-jwt:3.3.0"
 
     testCompile "org.junit.jupiter:junit-jupiter-api:$jupiter_version"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:$jupiter_version"

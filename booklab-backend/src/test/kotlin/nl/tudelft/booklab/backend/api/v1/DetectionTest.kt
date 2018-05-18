@@ -19,12 +19,11 @@ package nl.tudelft.booklab.backend.api.v1
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import io.ktor.application.Application
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
-import io.ktor.server.testing.withTestApplication
-import nl.tudelft.booklab.backend.booklab
+import nl.tudelft.booklab.backend.configureAuthorization
+import nl.tudelft.booklab.backend.withTestEngine
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -34,6 +33,7 @@ import org.junit.jupiter.api.Test
  * Unit test suite for the detection endpoint of the BookLab REST api.
  *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
+ * @author Fabian Mastenbroek (f.s.mastenbroek@student.tudelft.nl)
  */
 internal class DetectionTest {
     /**
@@ -47,11 +47,22 @@ internal class DetectionTest {
     }
 
     @Test
-    fun `put returns proper interface`() = withTestApplication(Application::booklab) {
-        with(handleRequest(HttpMethod.Put, "/api/detection")) {
+    fun `put returns proper interface`() = withTestEngine {
+        val request = handleRequest(HttpMethod.Put, "/api/detection") {
+            configureAuthorization()
+        }
+        with(request) {
             assertEquals(HttpStatusCode.OK, response.status())
             val response: DetectionResult? = response.content?.let { mapper.readValue(it) }
             assertNotNull(response)
+        }
+    }
+
+    @Test
+    fun `put requires authentication`() = withTestEngine {
+        val request = handleRequest(HttpMethod.Put, "/api/detection")
+        with(request) {
+            assertEquals(HttpStatusCode.Unauthorized, response.status())
         }
     }
 }
