@@ -5,6 +5,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.*;
+import java.net.URL;
 import java.util.List;
 
 public class BookOCRTest {
@@ -15,9 +16,12 @@ public class BookOCRTest {
 
     @Test
     public void getBookListTest() throws IOException {
-        String path = System.getProperty("user.dir") + "/src/test/java/nl/tudelft/booklab/backend/ocr/testbookshelf.jpg";
-        InputStream is = new FileInputStream(path);
-        List<String> res = BookOCRTesseract.getBookList(is);
+        URL path = BookOCRTest.class.getResource("/testbookshelf.jpg");
+        String pathstring = path.getPath();
+        pathstring = pathstring.substring(1);
+        InputStream is = new FileInputStream(pathstring);
+        BookOCRTesseract tesseractOCR = new BookOCRTesseract();
+        List<String> res = tesseractOCR.getBookList(is);
         Assert.assertTrue(res.size() > 0);
     }
 }

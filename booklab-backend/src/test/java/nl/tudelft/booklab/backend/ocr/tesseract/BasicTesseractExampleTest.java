@@ -1,7 +1,13 @@
 package nl.tudelft.booklab.backend.ocr.tesseract;
 
+import kotlin.io.ByteStreamsKt;
+import kotlin.io.ConstantsKt;
 import org.bytedeco.javacpp.*;
 import org.junit.Test;
+
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.ByteBuffer;
 
 import static org.bytedeco.javacpp.lept.*;
 import static org.bytedeco.javacpp.tesseract.*;
@@ -21,8 +27,11 @@ public class BasicTesseractExampleTest {
         }
 
         // Open input image with leptonica library
-        String path = System.getProperty("user.dir");
-        PIX image = pixRead(path+"/src/test/java/test.png");
+        URL path = BasicTesseractExampleTest.class.getResource("/test.png");
+        String pathstring = path.getPath();
+        pathstring = pathstring.substring(1);
+        PIX image = pixRead(pathstring);
+
         api.SetImage(image);
         // Get OCR result
         outText = api.GetUTF8Text();
