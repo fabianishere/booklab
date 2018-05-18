@@ -28,3 +28,7 @@ export class Title {
                 public type: string) {
     }
 }
+
+export interface DetectionResult {
+    results: Book[];
+}

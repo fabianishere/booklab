@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpService } from '../../services/http/http.service';
 import { UserService } from '../../services/user/user.service';
-import {Book, Title} from '../../dataTypes'
+import {Book, DetectionResult, Title} from '../../dataTypes'
 
 @Component({
     selector: 'app-image',
@@ -30,8 +30,8 @@ export class ImageUploadComponent implements OnInit {
         reader.readAsDataURL(files[0]);
         reader.onload = () => this.img = reader.result;
         this.http.checkHealth();
-        this.http.putImg(null).subscribe((res: any[]) => {
-            this.results = res.map(b => Book.getBook(b));
+        this.http.putImg(null).subscribe((res) => {
+            this.results = res.results.map(b => Book.getBook(b));
         });
         this.addedToShelf = false;
 

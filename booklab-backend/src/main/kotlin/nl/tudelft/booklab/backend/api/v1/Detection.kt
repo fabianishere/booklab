@@ -32,7 +32,7 @@ fun Route.detection() {
         // We only provide a mocked interface for now.
         // As soon as the book detection algorithm is implemented,
         // we will actually return interesting results.
-        call.respond(listOf(
+        call.respond(DetectionResult(listOf(
             Book(listOf(Title("De Valse Dageraad", TitleType.MAIN), Title("het leven van Hroswithus Wikalensis, wereldreiziger en geleerde.", TitleType.SUB)),
                 listOf("Jan van Aken"),
                 listOf("1234567890")),
@@ -44,7 +44,11 @@ fun Route.detection() {
                 listOf("1234567899")),
             Book(listOf(Title("Het Diner", TitleType.MAIN)),
                 listOf("Herman Koch"),
-                listOf("1134567899"))))
+                listOf("1134567899")))))
     }
 }
+
+data class DetectionResult (
+    val results: List<Book>
+)
 
