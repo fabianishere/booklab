@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { NullValidationHandler, OAuthService } from "angular-oauth2-oidc";
+import { NullValidationHandler, OAuthService } from 'angular-oauth2-oidc';
 
-import { authConfig } from "./auth.config"
+import { authConfig } from './auth.config';
 
 @Component({
     selector: 'app-root',
@@ -28,6 +28,6 @@ export class AppComponent {
       this.oauthService.tokenValidationHandler = new NullValidationHandler();
 
       // TODO Move this to a separate component where we login based on user credentials
-      this.oauthService.fetchTokenUsingPasswordFlow("test@example.com", "test")
+      this.oauthService.fetchTokenUsingPasswordFlow('test@example.com', 'test');
   }
 }

@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 
-import { OAuthModule } from "angular-oauth2-oidc";
+import { OAuthModule } from 'angular-oauth2-oidc';
 
 import { HttpService } from './services/http/http.service';
 import { UserService } from './services/user/user.service';
