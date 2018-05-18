@@ -15,6 +15,7 @@
  */
 package nl.tudelft.nlbooklab.backend.ocr.tesseract;
 import nl.tudelft.nlbooklab.backend.ocr.BookDetector;
+import nl.tudelft.nlbooklab.backend.ocr.BookOCR;
 import nl.tudelft.nlbooklab.backend.ocr.ImgProcessHelper;
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.lept;
@@ -33,7 +34,7 @@ import static org.opencv.imgcodecs.Imgcodecs.imdecode;
 /**
  * Class to read titles from books in image. This class uses Tesseract to provide an open source alternative to Google Vision.
  */
-public class BookOCR {
+public class BookOCRTesseract implements BookOCR {
 
     /**
      * Initialize OpenCV
@@ -85,7 +86,7 @@ public class BookOCR {
      * @return list of titles
      * @throws IOException
      */
-    public static List<String> getBookList(InputStream is) throws IOException {
+    public List<String> getBookList(InputStream is) throws IOException {
         // read stream into mat via buffer
         int nRead;
         byte[] data = new byte[16 * 1024];
@@ -98,7 +99,7 @@ public class BookOCR {
 
         List<Mat> books = BookDetector.detectBooks(image);
 
-        return books.parallelStream().map(BookOCR::getText).collect(Collectors.toList());
+        return books.parallelStream().map(BookOCRTesseract::getText).collect(Collectors.toList());
     }
 
 }

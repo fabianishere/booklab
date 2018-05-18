@@ -16,6 +16,7 @@ public class BookDetectorTest {
     @Test
     public void bookDetectorTest(){
         String path = System.getProperty("user.dir") + "/src/test/java/nl/tudelft/booklab/backend/ocr/testbookshelf.jpg";
+
         Mat img = imread(path);
         List<Mat> books = BookDetector.detectBooks(img);
 

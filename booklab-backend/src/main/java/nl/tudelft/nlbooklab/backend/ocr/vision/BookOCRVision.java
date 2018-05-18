@@ -20,6 +20,7 @@ import com.google.cloud.vision.v1.*;
 import com.google.common.collect.Lists;
 import com.google.protobuf.ByteString;
 import nl.tudelft.nlbooklab.backend.ocr.BookDetector;
+import nl.tudelft.nlbooklab.backend.ocr.BookOCR;
 import org.jetbrains.annotations.NotNull;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
@@ -35,7 +36,7 @@ import static org.opencv.imgcodecs.Imgcodecs.*;
 /**
  * Class to read titles from books in image with use of Google Vision
  */
-public class BookOCR {
+public class BookOCRVision implements BookOCR{
 
     /**
      * Initialize OpenCV
@@ -52,7 +53,7 @@ public class BookOCR {
      * @return list of titles
      * @throws IOException
      */
-    public static List<String> getBookList(InputStream is) throws IOException {
+    public List<String> getBookList(InputStream is) throws IOException {
         // read stream into mat via buffer
         int nRead;
         byte[] data = new byte[16 * 1024];
@@ -76,13 +77,13 @@ public class BookOCR {
      */
     private static List<String> getTextFromVision(List<Mat> images) {
         List<AnnotateImageRequest> requests = images.stream()
-            .map(BookOCR::createImageRequest)
+            .map(BookOCRVision::createImageRequest)
             .collect(Collectors.toList());
 
         List<List<AnnotateImageRequest>> requestPartitions = Lists.partition(requests, 16);
 
         List<List<String>> responsePartitions = requestPartitions.stream()
-            .map(BookOCR::getImageResponseText)
+            .map(BookOCRVision::getImageResponseText)
             .collect(Collectors.toList());
 
         return responsePartitions.stream()

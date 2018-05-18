@@ -1,6 +1,6 @@
 package nl.tudelft.booklab.backend.ocr.tesseract;
 
-import nl.tudelft.nlbooklab.backend.ocr.tesseract.BookOCR;
+import nl.tudelft.nlbooklab.backend.ocr.tesseract.BookOCRTesseract;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,7 +17,7 @@ public class BookOCRTest {
     public void getBookListTest() throws IOException {
         String path = System.getProperty("user.dir") + "/src/test/java/nl/tudelft/booklab/backend/ocr/testbookshelf.jpg";
         InputStream is = new FileInputStream(path);
-        List<String> res = BookOCR.getBookList(is);
+        List<String> res = BookOCRTesseract.getBookList(is);
         Assert.assertTrue(res.size() > 0);
     }
 }
