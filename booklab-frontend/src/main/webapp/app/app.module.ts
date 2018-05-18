@@ -3,9 +3,11 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
+
+import { OAuthModule } from 'angular-oauth2-oidc';
+
 import { HttpService } from './services/http/http.service';
 import { UserService } from './services/user/user.service';
-
 
 import { AppComponent } from './app.component';
 import { ImageUploadComponent } from './components/image-upload/image-upload.component';
@@ -41,7 +43,13 @@ const routes: Routes = [
         RouterModule.forRoot(
             routes,
             { enableTracing: true } // <-- debugging purposes only
-        )
+        ),
+        OAuthModule.forRoot({
+            resourceServer: {
+                allowedUrls: ['http://localhost:8080'],
+                sendAccessToken: true,
+            },
+        })
     ],
     providers: [
         HttpService,

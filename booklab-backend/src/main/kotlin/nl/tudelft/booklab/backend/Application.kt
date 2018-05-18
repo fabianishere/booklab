@@ -17,17 +17,31 @@
 package nl.tudelft.booklab.backend
 
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.ktor.application.Application
 import io.ktor.application.install
+import io.ktor.auth.Authentication
+import io.ktor.auth.UserIdPrincipal
+import io.ktor.auth.oauth2.oauth
+import io.ktor.auth.oauth2.repository.ClientHashedTableRepository
+import io.ktor.auth.oauth2.repository.ClientIdPrincipal
+import io.ktor.auth.oauth2.repository.UserHashedTableRepository
+import io.ktor.auth.oauth2.repository.parseClients
+import io.ktor.auth.oauth2.repository.parseUsers
 import io.ktor.features.CORS
 import io.ktor.features.Compression
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.jackson.jackson
 import io.ktor.routing.route
 import io.ktor.routing.routing
+import io.ktor.util.getDigestFunction
 import nl.tudelft.booklab.backend.api.v1.api
+import nl.tudelft.booklab.backend.auth.JwtConfiguration
+import nl.tudelft.booklab.backend.auth.OAuthConfiguration
+import nl.tudelft.booklab.backend.auth.buildJwtConfiguration
 
 /**
  * The main entry point of the BookLab web application.
@@ -38,15 +52,46 @@ fun Application.booklab() {
     install(ContentNegotiation) {
         jackson {
             configure(SerializationFeature.INDENT_OUTPUT, true)
+            registerModule(JavaTimeModule())
         }
     }
 
+    install(Authentication) {
+        // We create an OAuth authorization server for authorizing REST API calls
+        val jwt = buildJwtConfiguration(environment.config.config("auth.jwt")).also {
+            attributes.put(JwtConfiguration.KEY, it)
+        }
+        val clientRepository = ClientHashedTableRepository(
+            digester = getDigestFunction("SHA-256", salt = "ktor"),
+            table = environment.config.config("auth").parseClients()
+        )
+        val userRepository = UserHashedTableRepository(
+            digester = getDigestFunction("SHA-256", salt = "ktor"),
+            table = environment.config.config("auth").parseUsers()
+        )
+        val oauth = OAuthConfiguration(clientRepository, userRepository, jwt).also {
+            attributes.put(OAuthConfiguration.KEY, it)
+        }
+
+        // Create an unnamed authentication provider for protecting resources using
+        // the OAuth authorization server.
+        oauth<ClientIdPrincipal, UserIdPrincipal>("rest:detection") {
+            server = oauth.server
+            scopes = setOf("detection")
+        }
+    }
+
+    // Allow the different hosts to connect to the REST API
     install(CORS) {
         anyHost()
+
+        // Allow the Authorization header to be sent to REST endpoints
+        header(HttpHeaders.Authorization)
+        method(HttpMethod.Post)
         method(HttpMethod.Put)
     }
+
     routing {
-        // Install the REST api at a versioned endpoint.
         route("/api") {
             api()
         }
