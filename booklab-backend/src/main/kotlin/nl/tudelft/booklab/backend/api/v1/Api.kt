@@ -16,6 +16,7 @@
 
 package nl.tudelft.booklab.backend.api.v1
 
+import io.ktor.auth.authenticate
 import io.ktor.routing.Route
 import io.ktor.routing.route
 
@@ -23,8 +24,10 @@ import io.ktor.routing.route
  * Describe the routes for the REST API of the BookLab backend.
  */
 fun Route.api() {
-    route("detection") {
-        detection()
+    authenticate("rest:detection") {
+        route("detection") {
+            detection()
+        }
     }
     route("search") {
         search()
