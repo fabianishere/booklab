@@ -111,8 +111,6 @@ class ClientHashedTableRepository(
 
     override suspend fun validateScopes(client: ClientIdPrincipal, scopes: Set<String>): Set<String>? =
         scopes.takeIf { client.scopes.containsAll(it) }
-
-
 }
 
 /**

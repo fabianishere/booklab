@@ -81,7 +81,7 @@ fun <C : Principal, U : Principal> Authentication.Configuration.oauth(
         val cause = when {
             header == null -> AuthenticationFailedCause.NoCredentials
             token == null -> AuthenticationFailedCause.InvalidCredentials
-            !token.scopes.any { it in provider.scopes }  -> AuthenticationFailedCause.InvalidCredentials
+            !token.scopes.any { it in provider.scopes } -> AuthenticationFailedCause.InvalidCredentials
             else -> null
         }
 
