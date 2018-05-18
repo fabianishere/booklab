@@ -1,4 +1,4 @@
-package nl.tudelft.nlbooklab.backend.ocr.tesseract;/*
+/*
  * Copyright 2018 The BookLab Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +13,7 @@ package nl.tudelft.nlbooklab.backend.ocr.tesseract;/*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.tudelft.nlbooklab.backend.ocr.tesseract;
 import nl.tudelft.nlbooklab.backend.ocr.BookDetector;
 import nl.tudelft.nlbooklab.backend.ocr.ImgProcessHelper;
 import org.bytedeco.javacpp.BytePointer;

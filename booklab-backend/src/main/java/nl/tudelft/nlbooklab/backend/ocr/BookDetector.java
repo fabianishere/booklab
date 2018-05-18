@@ -1,4 +1,4 @@
-package nl.tudelft.nlbooklab.backend.ocr;/*
+/*
  * Copyright 2018 The BookLab Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +13,7 @@ package nl.tudelft.nlbooklab.backend.ocr;/*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.tudelft.nlbooklab.backend.ocr;
 import org.jetbrains.annotations.NotNull;
 import org.opencv.core.*;
 
@@ -44,7 +45,7 @@ public class BookDetector {
      * @return list of images (openCV matrices)
      */
     public static List<Mat> detectBooks(Mat image) {
-        image = ImgProcessHelper.colorhist_equalize(image);
+        image = ImgProcessHelper.colorhistEqualize(image);
         List<Integer> cropLocations = detectBookLocations(image);
         return cropBooks(image, cropLocations, false);
     }
@@ -60,7 +61,7 @@ public class BookDetector {
         Mat reduced = new Mat();
         List<Point> coordinates = new ArrayList<>();
 
-        image = ImgProcessHelper.colorhist_equalize(image);
+        image = ImgProcessHelper.colorhistEqualize(image);
         cvtColor(image, gray, COLOR_BGR2GRAY);
         Mat edges = ImgProcessHelper.autoCanny(gray);
         dilate(edges, dilation, new Mat());

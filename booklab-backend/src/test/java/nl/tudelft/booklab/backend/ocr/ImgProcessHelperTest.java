@@ -21,7 +21,7 @@ public class ImgProcessHelperTest {
     public void colorhist_equalizeTest(){
         Mat random_image = new Mat(100,100, CvType.CV_8UC3);
         randu(random_image,0, 256);
-        Mat testmat_eq = ImgProcessHelper.colorhist_equalize(random_image);
+        Mat testmat_eq = ImgProcessHelper.colorhistEqualize(random_image);
 
         Assert.assertFalse(Core.sumElems(random_image).equals(Core.sumElems(testmat_eq)));
     }

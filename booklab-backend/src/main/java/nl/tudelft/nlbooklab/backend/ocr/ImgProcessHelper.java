@@ -1,4 +1,4 @@
-package nl.tudelft.nlbooklab.backend.ocr;/*
+/*
  * Copyright 2018 The BookLab Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +13,7 @@ package nl.tudelft.nlbooklab.backend.ocr;/*
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package nl.tudelft.nlbooklab.backend.ocr;
 import org.bytedeco.javacpp.lept;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -35,7 +36,7 @@ public class ImgProcessHelper {
      * @param img openCV matrix containing a BGR image
      * @return openCV matrix containing a BGR image with its color channels equalized
      */
-    public static Mat colorhist_equalize(Mat img){
+    public static Mat colorhistEqualize(Mat img){
         Mat reassemble = new Mat();
 
         List<Mat> lim = new ArrayList<>(3);

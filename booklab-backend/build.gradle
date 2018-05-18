@@ -29,7 +29,6 @@ plugins {
     id "org.jmailen.kotlinter" version "1.11.2"
     id "com.google.osdetector" version "1.4.0"
 }
-apply plugin: 'kotlin'
 
 /* Project configuration */
 group 'nl.tudelft.booklab'
@@ -50,11 +49,6 @@ dependencies {
     compile "io.ktor:ktor-jackson:$ktor_version"
     runtime "org.slf4j:slf4j-jdk14:1.7.25"
 
-
-    testCompile "org.junit.jupiter:junit-jupiter-api:$jupiter_version"
-    testRuntime "org.junit.jupiter:junit-jupiter-engine:$jupiter_version"
-    testRuntime "org.junit.platform:junit-platform-launcher:1.1.1"
-
     compile group: 'org.openpnp', name: 'opencv', version: '3.2.0-1'
 
     compile group: 'org.bytedeco', name: 'javacpp', version: '1.1'
@@ -63,16 +57,16 @@ dependencies {
     compile group: 'org.bytedeco.javacpp-presets', name: 'tesseract', version: '3.04-1.1'
     compile group: 'org.bytedeco.javacpp-presets', name: 'tesseract', version: '3.04-1.1', classifier: osdetector.classifier
 
-    testCompile group: 'junit', name: 'junit', version: '4.11'
-
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-
-    testCompile "io.ktor:ktor-server-test-host:$ktor_version"
 
     compile 'com.google.cloud:google-cloud-vision:1.28.0'
     compile group: 'com.google.guava', name: 'guava', version: '25.0-jre'
 
+    testCompile "io.ktor:ktor-server-test-host:$ktor_version"
 
+    testCompile "org.junit.jupiter:junit-jupiter-api:$jupiter_version"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:$jupiter_version"
+    testRuntime "org.junit.platform:junit-platform-launcher:1.1.1"
 }
 
 compileKotlin {

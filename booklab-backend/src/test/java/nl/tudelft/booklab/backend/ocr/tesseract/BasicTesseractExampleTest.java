@@ -9,10 +9,6 @@ import static org.junit.Assert.assertTrue;
 
 public class BasicTesseractExampleTest {
 
-    static {
-
-    }
-
     @Test
     public void givenTessBaseApi_whenImageOcrd_thenTextDisplayed() throws Exception {
         BytePointer outText;
