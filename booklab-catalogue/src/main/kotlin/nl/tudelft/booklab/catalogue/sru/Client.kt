@@ -19,6 +19,7 @@ package nl.tudelft.booklab.catalogue.sru
 import io.ktor.client.HttpClient
 import io.ktor.client.call.call
 import io.ktor.client.engine.apache.Apache
+import io.ktor.client.engine.config
 import io.ktor.client.request.url
 import io.ktor.http.HttpMethod
 import io.ktor.http.formUrlEncode
@@ -32,7 +33,7 @@ import kotlinx.coroutines.experimental.io.jvm.javaio.toInputStream
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
 class SruClient(
-    private val client: HttpClient = HttpClient(Apache),
+    private val client: HttpClient = HttpClient(Apache.config { socketTimeout = 100000 }),
     private val baseUrl: String = "http://jsru.kb.nl/sru"
 ) {
 
@@ -43,12 +44,21 @@ class SruClient(
      *
      * @return the list of books returned from the query
      */
-    suspend fun query(query: String): List<Book> {
+    suspend fun query(query: String, max: Int = 100): List<Book> {
         val stream = client.call {
-            url(createSruUrl(query))
+            url(createSruUrl(query.toLowerCase(), max))
             method = HttpMethod.Get
         }.response.content.toInputStream()
         return SruParser.parse(stream)
+    }
+
+    fun createQuery(title: String, author: String): String {
+        return """dc.title any/fuzzy/ignoreCase/ignoreAccents "$title" OR
+            |dc.creator any/fuzzy/ignoreCase/ignoreAccents "$author"""".trimMargin()
+    }
+
+    fun createQuery(keywords: String): String {
+        return createQuery(keywords, keywords)
     }
 
     /**
@@ -60,7 +70,7 @@ class SruClient(
      *
      * @return a string representation of the the url
      */
-    private fun createSruUrl(query: String, max: Int = 100): String {
+    fun createSruUrl(query: String, max: Int): String {
         val params = listOf(
             "operation" to "searchRetrieve",
             "version" to "1.2",

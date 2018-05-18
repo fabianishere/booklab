@@ -29,5 +29,8 @@ fun Route.api() {
             detection()
         }
     }
+    route("search") {
+        search()
+    }
     meta()
 }

@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Book} from '../../dataTypes';
 import {Observable} from 'rxjs/Observable';
-import {Subject} from 'rxjs/Subject';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
 @Injectable()
@@ -36,8 +35,11 @@ export class UserService {
 
 
     deleteFromBookshelf(book: Book) {
-        this.bookshelf = this.bookshelf.filter(b => b.isbn !== book.isbn);
+        this.bookshelf = this.bookshelf.filter(b => b.getMainTitle() !== book.getMainTitle());
         this.bookSub.next(this.bookshelf);
     }
 
+    bookSearchComplete(book: Book) {
+        this.bookshelf[this.bookshelf.findIndex(b => b.isSearched)] = book;
+    }
 }
