@@ -12,6 +12,7 @@ export class AppComponent {
   title = 'BookLab';
   login = false;
 
+
   /**
    * Construct a new {@link AppComponent{.
    *
@@ -28,7 +29,5 @@ export class AppComponent {
       this.oauthService.configure(authConfig);
       this.oauthService.tokenValidationHandler = new NullValidationHandler();
 
-      // TODO Move this to a separate component where we login based on user credentials
-      this.oauthService.fetchTokenUsingPasswordFlow('test@example.com', 'test');
   }
 }

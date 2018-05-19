@@ -4,7 +4,8 @@
     <p class="logo" routerLink="">
         BookLab
     </p>
-    <p class="login-link" (click)="app.login=true">
-        inloggen
+    <p class="login-link" (click)="app.login=true" *ngIf="!user.loggedIn">
+        Log in
     </p>
+    <p class="login-link" (click)="user.logout()" *ngIf="user.loggedIn">Log out</p>
 </div>
