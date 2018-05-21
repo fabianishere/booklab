@@ -43,10 +43,14 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile project(":booklab-catalogue")
+    compile project(":booklab-vision")
+    compile project(":ktor-auth-oauth2")
     compile "io.ktor:ktor-server-netty:$ktor_version"
     compile "io.ktor:ktor-jackson:$ktor_version"
-
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.+"
     runtime "org.slf4j:slf4j-jdk14:1.7.25"
+
 
     testCompile "io.ktor:ktor-server-test-host:$ktor_version"
     testCompile "org.junit.jupiter:junit-jupiter-api:$jupiter_version"

@@ -15,7 +15,6 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 
 # IntelliJ files
-.idea
+.idea/
 *.iml
-/out
-/booklab-backend/out
+*/out
