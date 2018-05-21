@@ -22,7 +22,7 @@ import io.ktor.routing.Route
 import io.ktor.routing.put
 
 /**
- * Define detection endpoints at the current route for the REST api.
+ * Define vision endpoints at the current route for the REST api.
  */
 fun Route.detection() {
     put {

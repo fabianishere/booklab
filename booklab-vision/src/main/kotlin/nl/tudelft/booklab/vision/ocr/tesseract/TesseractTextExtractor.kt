@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-rootProject.name = "booklab"
+package nl.tudelft.booklab.vision.ocr.tesseract
 
-include 'booklab-backend'
-include 'booklab-vision'
-include 'booklab-frontend'
+import nl.tudelft.booklab.vision.ocr.TextExtractor
+import org.opencv.core.Mat
+
+/**
+ * A [TextExtractor] using the Tesseract library for OCR purposes.
+ *
+ * @param tesseract The Tesseract API wrapper to use for this text extractor implementation.
+ */
+class TesseractTextExtractor(private val tesseract: Tesseract) : TextExtractor {
+    override fun extract(mat: Mat): List<String> = listOf(tesseract.extract(mat))
+}

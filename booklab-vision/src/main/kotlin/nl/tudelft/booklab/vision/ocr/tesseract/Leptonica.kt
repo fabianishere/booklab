@@ -14,8 +14,21 @@
  * limitations under the License.
  */
 
-rootProject.name = "booklab"
+package nl.tudelft.booklab.vision.ocr.tesseract
 
-include 'booklab-backend'
-include 'booklab-vision'
-include 'booklab-frontend'
+import org.bytedeco.javacpp.lept
+import org.opencv.core.Mat
+import org.opencv.core.MatOfByte
+import org.opencv.imgcodecs.Imgcodecs
+
+/**
+ * Convert an OpenCV matrix into a Leptonica pixel buffer.
+ *
+ * @return The Leptonica pixel buffer.
+ */
+fun Mat.toPix(): lept.PIX {
+    val bytes = MatOfByte()
+    Imgcodecs.imencode(".tiff", this, bytes)
+    val buffer = bytes.toArray()
+    return lept.pixReadMem(buffer, buffer.size.toLong())
+}
