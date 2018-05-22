@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {UserService} from "../../services/user/user.service";
-import {Secure} from "../../dataTypes";
-import {Router} from "@angular/router";
+import {UserService} from '../../services/user/user.service';
+import {Secure} from '../../dataTypes';
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'app-login',
@@ -11,7 +11,7 @@ import {Router} from "@angular/router";
 export class LoginComponent implements OnInit {
 
     @Input() public app;
-    invalid: boolean = false;
+    invalid = false;
 
     constructor(private user: UserService, private router: Router) {
     }
@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit {
     }
 
     login(username: string, password: string) {
-        if(!username || !password) {
+        if (!username || !password) {
             this.invalid = true;
             return;
         }

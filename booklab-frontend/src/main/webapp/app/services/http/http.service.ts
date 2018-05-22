@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 import {Book, DetectionResult, Secure} from '../../dataTypes';
-import {catchError} from "rxjs/operators";
-import {Router} from "@angular/router";
+import {catchError} from 'rxjs/operators';
+import {Router} from '@angular/router';
 
 interface Success {
     success: boolean;
@@ -27,7 +27,7 @@ export class HttpService {
 
     findBook(nameInput: string, authorInput: string): Observable<DetectionResult> {
 
-       return this.http.get<DetectionResult>('http://localhost:8080/api/search?'
+        return this.http.get<DetectionResult>('http://localhost:8080/api/search?'
             + 'title=' + Secure.checkInput(nameInput)
             + '&author=' + Secure.checkInput(authorInput));
 

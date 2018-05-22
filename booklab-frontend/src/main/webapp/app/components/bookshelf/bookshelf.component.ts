@@ -30,7 +30,7 @@ export class BookshelfComponent implements OnInit {
     }
 
     findBook() {
-        if(!this.nameInput || !this.authorInput) {
+        if (!this.nameInput || !this.authorInput) {
             return;
         }
         this.user.addToBookshelf(new Book([], [], [], true));

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Book} from '../../dataTypes';
 import {Observable} from 'rxjs/Observable';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
-import {OAuthService} from "angular-oauth2-oidc";
+import {OAuthService} from 'angular-oauth2-oidc';
 
 @Injectable()
 export class UserService {
@@ -15,7 +15,7 @@ export class UserService {
     constructor(private oauthService: OAuthService) {
         this.bookSub = new BehaviorSubject([]);
         this.bookshelf = [];
-        this.loggedIn = this.oauthService.hasValidAccessToken()
+        this.loggedIn = this.oauthService.hasValidAccessToken();
     }
 
     getBookshelf(): Observable<Book[]> {
@@ -49,7 +49,7 @@ export class UserService {
 
     login(username: string, password: string) {
         this.oauthService.fetchTokenUsingPasswordFlow('test@example.com', 'test').then((resp) => {
-            if(resp) {
+            if (resp) {
                 this.loggedIn = true;
             }
         });

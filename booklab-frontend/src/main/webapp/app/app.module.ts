@@ -14,8 +14,8 @@ import { ImageUploadComponent } from './components/image-upload/image-upload.com
 import { HeaderComponent } from './components/header/header.component';
 import { BookshelfComponent } from './components/bookshelf/bookshelf.component';
 import { SidebarComponent} from './components/sidebar/sidebar.component';
-import { LoginComponent } from "./components/login/login.component";
-import { SorryComponent } from "./components/sorry/sorry.component";
+import { LoginComponent } from './components/login/login.component';
+import { SorryComponent } from './components/sorry/sorry.component';
 
 const routes: Routes = [
     {

@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {UserService} from "../../services/user/user.service";
+import {UserService} from '../../services/user/user.service';
 
 @Component({
     selector: 'app-header',
@@ -7,10 +7,11 @@ import {UserService} from "../../services/user/user.service";
     styleUrls: ['./header.component.less']
 })
 export class HeaderComponent implements OnInit {
-    //public login: boolean = false;
     @Input() public app;
 
-    constructor(public user: UserService) {}
+    constructor(public user: UserService) {
+    }
 
-    ngOnInit() {}
+    ngOnInit() {
+    }
 }
