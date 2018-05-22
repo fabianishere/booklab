@@ -25,7 +25,7 @@ import nl.tudelft.booklab.catalogue.sru.Title
 import nl.tudelft.booklab.catalogue.sru.TitleType
 
 /**
- * Define detection endpoints at the current route for the REST api.
+ * Define vision endpoints at the current route for the REST api.
  */
 fun Route.detection() {
     put {
