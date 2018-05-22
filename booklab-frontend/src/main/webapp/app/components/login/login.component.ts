@@ -31,9 +31,13 @@ export class LoginComponent implements OnInit {
         username = Secure.checkInput(username);
         password = Secure.checkInput(password);
         this.invalid = false;
-        this.user.login(username, password);
-        this.router.navigate(['']);
-        this.goBack();
+        this.user.login(username, password).then((resp) => {
+            if (resp) {
+                this.user.loggedIn = true;
+                this.router.navigate(['']);
+                this.goBack();
+            }
+        }, rejected => this.invalid = true);
     }
 
 }

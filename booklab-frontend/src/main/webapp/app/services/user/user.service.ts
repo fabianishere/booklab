@@ -47,12 +47,8 @@ export class UserService {
         this.bookshelf[this.bookshelf.findIndex(b => b.isSearched)] = book;
     }
 
-    login(username: string, password: string) {
-        this.oauthService.fetchTokenUsingPasswordFlow('test@example.com', 'test').then((resp) => {
-            if (resp) {
-                this.loggedIn = true;
-            }
-        });
+    login(username: string, password: string): Promise<Object> {
+        return this.oauthService.fetchTokenUsingPasswordFlow(username, password);
     }
 
     logout() {
