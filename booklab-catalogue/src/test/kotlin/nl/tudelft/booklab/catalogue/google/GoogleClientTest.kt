@@ -24,6 +24,12 @@ class GoogleClientTest {
     @Test
     fun `default test`() {
         val results = GoogleClient().query("harry potter steen der wijzen")
+        //results.forEach { println(it) }
+    }
+
+    @Test
+    fun `specific book search`() {
+        val results = GoogleClient().query("de ontdekking van de hemel", "harry mullish")
         results.forEach { println(it) }
     }
 }

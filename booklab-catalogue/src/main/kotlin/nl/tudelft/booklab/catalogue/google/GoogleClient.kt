@@ -54,7 +54,7 @@ class GoogleClient : Client {
     }
 
     override fun query(title: String, author: String): List<Book> {
-        
+        return query("intitle:$title+inauthor:$author")
     }
 }
 
