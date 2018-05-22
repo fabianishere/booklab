@@ -29,12 +29,8 @@ data class Book(
     val titles: List<Title>,
     val authors: List<String>,
     val ids: List<String>,
-    val nur: Int
+    val nur: Int?
 )
-
-enum class Nur {
-    UNKNOWN, KNOWN
-}
 
 /**
  * Enumeration representing difference between main title and

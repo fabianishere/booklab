@@ -109,7 +109,7 @@ object SruParser {
         return authors
     }
 
-    private fun parseNur(record: Element): Int {
+    private fun parseNur(record: Element): Int? {
         val nurElements = record.getElementsByTagName("dc:subject")
 
         for (i in 0 until nurElements.length) {
@@ -119,7 +119,7 @@ object SruParser {
             }
         }
 
-        return -1
+        return null
     }
 
     /**

@@ -18,57 +18,6 @@ package nl.tudelft.booklab.recommender
 
 import nl.tudelft.booklab.catalogue.sru.Book
 
-/**
- * A singleton object that is able to recommend a selection of books based
- * on the nur (Nederlandstalige Uniforme Rubrieksindeling) code that is stored
- * in the database
- *
- * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
- */
-object Recommender {
-    private fun tagRecommend(collection: List<Book>, scores: MutableMap<Book, Int>): MutableMap<Book, Int> {
-        val tags = collection
-            .map { it.nur }
-            .groupBy { it }
-            .entries.sortedByDescending { it.value.size }
-            .map { it.key }
-            .filter { it != -1 }
-        val maxScore = tags.size
-        val candidates = scores.map { it.key }.toList()
-        for (i in 0 until tags.size) {
-            val selection = candidates.filter { it.nur == tags[i] }
-            selection.forEach { scores.replace(it, scores.getValue(it) + maxScore - i) }
-        }
-        return scores
-    }
-
-    private fun authorRecommend(collection: List<Book>, scores: MutableMap<Book, Int>): MutableMap<Book, Int> {
-        val authors = collection
-            .map { it.authors }
-            .reduce{ acc, it -> acc.plus(it) }
-            .groupBy { it }
-            .entries.sortedByDescending { it.value.size }
-            .map { it.key }
-        val maxScore = authors.size
-        val candidates = scores.map { it.key }.toList()
-        for (i in 0 until authors.size) {
-            val selection = candidates.filter { it.authors.contains(authors[i]) }
-            selection.forEach { scores.replace(it, scores.getValue(it) + maxScore - i) }
-        }
-        return scores
-    }
-
-    fun recommend(collection: List<Book>, candidates: List<Book>, max: Int = 5): List<Book> {
-        return getRecommendScores(collection, candidates, max)
-            .entries.sortedByDescending { it.value }
-            .map { it.key }
-            .subList(0, max)
-    }
-
-    fun getRecommendScores(collection: List<Book>, candidates: List<Book>, max: Int = 5): Map<Book, Int> {
-        return authorRecommend(collection, tagRecommend(collection, candidates
-            .filter { !collection.contains(it) }
-            .map { it to 0 }
-            .toMap().toMutableMap())).toMap()
-    }
+interface Recommender {
+    fun recommend(collection: List<Book>, candidates: List<Book>): List<Pair<Book, Int>>
 }
