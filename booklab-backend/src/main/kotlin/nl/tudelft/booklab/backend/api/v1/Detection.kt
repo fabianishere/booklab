@@ -16,38 +16,67 @@
 
 package nl.tudelft.booklab.backend.api.v1
 
+import com.fasterxml.jackson.annotation.JsonProperty
+import io.ktor.application.application
 import io.ktor.application.call
+import io.ktor.application.log
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.request.contentType
+import io.ktor.request.receiveStream
 import io.ktor.response.respond
 import io.ktor.routing.Route
-import io.ktor.routing.put
+import io.ktor.routing.application
+import io.ktor.routing.post
+import nl.tudelft.booklab.backend.VisionConfiguration
 import nl.tudelft.booklab.catalogue.sru.Book
-import nl.tudelft.booklab.catalogue.sru.Title
-import nl.tudelft.booklab.catalogue.sru.TitleType
+import nl.tudelft.booklab.vision.toMat
+import org.opencv.core.CvException
 
 /**
  * Define vision endpoints at the current route for the REST api.
  */
 fun Route.detection() {
-    put {
-        // We only provide a mocked interface for now.
-        // As soon as the book detection algorithm is implemented,
-        // we will actually return interesting results.
-        call.respond(DetectionResult(listOf(
-            Book(listOf(Title("De Valse Dageraad", TitleType.MAIN), Title("het leven van Hroswithus Wikalensis, wereldreiziger en geleerde.", TitleType.SUB)),
-                listOf("Jan van Aken"),
-                listOf("1234567890")),
-            Book(listOf(Title("Kaas", TitleType.MAIN)),
-                listOf("Willem Elsschot"),
-                listOf("1235567890")),
-            Book(listOf(Title("Een Schitterend Gebrek", TitleType.MAIN)),
-                listOf("Arthur Japin"),
-                listOf("1234567899")),
-            Book(listOf(Title("Het Diner", TitleType.MAIN)),
-                listOf("Herman Koch"),
-                listOf("1134567899")))))
+    val vision = application.attributes[VisionConfiguration.KEY]
+
+    post {
+        if (!ContentType.Application.OctetStream.match(call.request.contentType())) {
+            call.respond(HttpStatusCode.BadRequest, DetectionFailure("invalid_request", "The content type should be 'application/octet-stream'."))
+            return@post
+        }
+
+        val response = try {
+            call.receiveStream().use { input ->
+                val image = input.toMat()
+                vision.extractor.batch(vision.detector.detect(image)).mapNotNull { part ->
+                    val query = vision.client.createQuery(part.joinToString(" "))
+                    vision.client.query(query, max = 1).firstOrNull()
+                }
+            }
+        } catch (e: CvException) {
+            call.respond(HttpStatusCode.BadRequest, DetectionFailure("invalid_image", "The given image is invalid."))
+            return@post
+        } catch (e: Throwable) {
+            application.log.warn("An error occurred while processing an image", e)
+            call.respond(HttpStatusCode.InternalServerError, DetectionFailure("server_error", "An internal server error occurred."))
+            return@post
+        }
+
+        call.respond(DetectionResult(response.size, response))
     }
 }
 
-data class DetectionResult (
-    val results: List<Book>
+/**
+ * This class defines the shape of the detection results returned by the Detection API.
+ */
+data class DetectionResult(val size: Int, val results: List<Book>)
+
+/**
+ * This class defines the shape of an error that occurred during the detection of books.
+ */
+data class DetectionFailure(
+    @JsonProperty("error")
+    val type: String,
+    @JsonProperty("error_description")
+    val description: String
 )

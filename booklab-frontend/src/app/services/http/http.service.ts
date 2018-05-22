@@ -20,7 +20,7 @@ export class HttpService {
     }
 
     putImg(img: Blob): Observable<DetectionResult> {
-        return this.http.put<DetectionResult>('http://localhost:8080/api/detection', img);
+        return this.http.post<DetectionResult>('http://localhost:8080/api/detection', img);
     }
 
     findBook(nameInput: string, authorInput: string): Observable<DetectionResult> {

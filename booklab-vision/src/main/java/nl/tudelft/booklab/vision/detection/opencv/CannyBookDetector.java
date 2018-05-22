@@ -157,4 +157,9 @@ public class CannyBookDetector implements BookDetector {
                 .rows()), new Scalar(0, 255, 0), 2);
         }
     }
+
+    static  {
+        nu.pattern.OpenCV.loadShared();
+        System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
+    }
 }

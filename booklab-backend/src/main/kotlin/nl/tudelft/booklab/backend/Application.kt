@@ -18,6 +18,7 @@ package nl.tudelft.booklab.backend
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.google.cloud.vision.v1.ImageAnnotatorClient
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.auth.Authentication
@@ -42,6 +43,9 @@ import nl.tudelft.booklab.backend.api.v1.api
 import nl.tudelft.booklab.backend.auth.JwtConfiguration
 import nl.tudelft.booklab.backend.auth.OAuthConfiguration
 import nl.tudelft.booklab.backend.auth.buildJwtConfiguration
+import nl.tudelft.booklab.catalogue.sru.SruClient
+import nl.tudelft.booklab.vision.detection.opencv.CannyBookDetector
+import nl.tudelft.booklab.vision.ocr.gvision.GoogleVisionTextExtractor
 
 /**
  * The main entry point of the BookLab web application.
@@ -90,6 +94,13 @@ fun Application.booklab() {
         method(HttpMethod.Post)
         method(HttpMethod.Put)
     }
+
+    // Configure the vision endpoint
+    VisionConfiguration(
+        detector = CannyBookDetector(),
+        extractor = GoogleVisionTextExtractor(ImageAnnotatorClient.create()),
+        client = SruClient()
+    ).also { attributes.put(VisionConfiguration.KEY, it) }
 
     routing {
         route("/api") {

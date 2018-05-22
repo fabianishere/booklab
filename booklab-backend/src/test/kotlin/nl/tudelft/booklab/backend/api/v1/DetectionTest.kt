@@ -19,9 +19,12 @@ package nl.tudelft.booklab.backend.api.v1
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
+import io.ktor.server.testing.setBody
 import nl.tudelft.booklab.backend.configureAuthorization
 import nl.tudelft.booklab.backend.withTestEngine
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -47,9 +50,12 @@ internal class DetectionTest {
     }
 
     @Test
-    fun `put returns proper interface`() = withTestEngine {
-        val request = handleRequest(HttpMethod.Put, "/api/detection") {
+    fun `post returns proper interface`() = withTestEngine {
+        val image = DetectionTest::class.java.getResourceAsStream("/bookshelf.jpg").readBytes()
+        val request = handleRequest(HttpMethod.Post, "/api/detection") {
             configureAuthorization()
+            setBody(image)
+            addHeader(HttpHeaders.ContentType, ContentType.Application.OctetStream.toString())
         }
         with(request) {
             assertEquals(HttpStatusCode.OK, response.status())
@@ -59,8 +65,18 @@ internal class DetectionTest {
     }
 
     @Test
-    fun `put requires authentication`() = withTestEngine {
-        val request = handleRequest(HttpMethod.Put, "/api/detection")
+    fun `post requires octet-stream`() = withTestEngine {
+        val request = handleRequest(HttpMethod.Post, "/api/detection") {
+            configureAuthorization()
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.BadRequest, response.status())
+        }
+    }
+
+    @Test
+    fun `post requires authentication`() = withTestEngine {
+        val request = handleRequest(HttpMethod.Post, "/api/detection")
         with(request) {
             assertEquals(HttpStatusCode.Unauthorized, response.status())
         }
