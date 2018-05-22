@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-rootProject.name = "booklab"
+package nl.tudelft.booklab.vision.detection
 
-include 'booklab-backend'
-include 'booklab-vision'
-include 'booklab-frontend'
-include 'booklab-catalogue'
-include 'ktor-auth-oauth2'
+import org.opencv.core.Mat
+
+/**
+ * Implementors of this interface provide a strategy for detecting books
+ */
+interface BookDetector {
+    /**
+     * Detect the given book in the image represented as OpenCV matrix.
+     *
+     * @param mat The image represented as matrix to detect the books in.
+     * @return A list of submatrices that contain the detected books.
+     */
+    fun detect(mat: Mat): List<Mat>
+}

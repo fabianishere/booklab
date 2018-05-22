@@ -1,0 +1,4 @@
+tessedit_zero_rejection F
+load_system_dawg F
+load_freq_dawg F
+tessedit_char_whitelist abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890
