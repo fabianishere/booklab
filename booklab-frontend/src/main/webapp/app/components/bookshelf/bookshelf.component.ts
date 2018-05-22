@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {UserService} from '../../services/user/user.service';
-import {Book, Title} from '../../dataTypes';
+import {Book} from '../../dataTypes';
 import {HttpService} from '../../services/http/http.service';
 
 @Component({
@@ -30,10 +30,13 @@ export class BookshelfComponent implements OnInit {
     }
 
     findBook() {
+        if(!this.nameInput || !this.authorInput) {
+            return;
+        }
         this.user.addToBookshelf(new Book([], [], [], true));
         this.http.findBook(this.nameInput, this.authorInput).subscribe((result) => {
             this.user.bookSearchComplete(Book.getBook(result.results[0]));
-        });
+        }, error => this.http.handleError(error));
         this.enterBook = false;
         this.authorInput = '';
         this.nameInput = '';

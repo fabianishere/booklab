@@ -1,5 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {UserService} from "../../services/user/user.service";
+import {Secure} from "../../dataTypes";
+import {Router} from "@angular/router";
 
 @Component({
     selector: 'app-login',
@@ -9,8 +11,9 @@ import {UserService} from "../../services/user/user.service";
 export class LoginComponent implements OnInit {
 
     @Input() public app;
+    invalid: boolean = false;
 
-    constructor(private user: UserService) {
+    constructor(private user: UserService, private router: Router) {
     }
 
     ngOnInit() {
@@ -21,7 +24,15 @@ export class LoginComponent implements OnInit {
     }
 
     login(username: string, password: string) {
+        if(!username || !password) {
+            this.invalid = true;
+            return;
+        }
+        username = Secure.checkInput(username);
+        password = Secure.checkInput(password);
+        this.invalid = false;
         this.user.login(username, password);
+        this.router.navigate(['']);
         this.goBack();
     }
 

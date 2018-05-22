@@ -34,3 +34,15 @@ export class Book {
 export interface DetectionResult {
     results: Book[];
 }
+
+export class Secure {
+
+    static checkInput(input: string):string {
+        let res: string;
+        res = input.replace('%0d%0a', '');
+        return res;
+    }
+
+    constructor () {
+}
+}
