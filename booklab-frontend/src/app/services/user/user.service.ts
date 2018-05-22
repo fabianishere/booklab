@@ -3,42 +3,72 @@ import {Book} from '../../dataTypes';
 import {Observable} from 'rxjs/Observable';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 
+/**
+ * Class to hold the information of the user and to provide an interface for editing this information.
+ */
 @Injectable()
 export class UserService {
 
     private bookshelf: Book[];
     private bookSub: BehaviorSubject<Book[]>;
 
+    /**
+     * Constructor for UserService.
+     */
     constructor() {
         this.bookSub = new BehaviorSubject([]);
         this.bookshelf = [];
     }
 
+    /**
+     * Method to get an subscription to the bookshelf.
+     * @returns {Observable<Book[]>}: observable of the users bookshelf
+     */
     getBookshelf(): Observable<Book[]> {
         return this.bookSub.asObservable();
     }
 
+    /**
+     * Sets the bookshelf of the user.
+     * @param {Book[]} books: new bookshelf of the user
+     */
     setBookshelf(books: Book[]) {
         this.bookshelf = books;
         this.bookSub.next(this.bookshelf);
     }
 
+    /**
+     * Adds a book to the bookshelf of the user.
+     * @param {Book} book: book to be added
+     */
     addToBookshelf(book: Book) {
         this.bookshelf.push(book);
         this.bookSub.next(this.bookshelf);
     }
 
+    /**
+     * Adds multiple books to the bookshelf of the user.
+     * @param {Book[]} books
+     */
     addMultToBookshelf(books: Book[]) {
         this.bookshelf = this.bookshelf.concat(books);
         this.bookSub.next(this.bookshelf);
     }
 
 
+    /**
+     * Deletes a book from the bookshelf.
+     * @param {Book} book: book to be deleted
+     */
     deleteFromBookshelf(book: Book) {
         this.bookshelf = this.bookshelf.filter(b => b.getMainTitle() !== book.getMainTitle());
         this.bookSub.next(this.bookshelf);
     }
 
+    /**
+     * Sets a book that still was being searched to its found values.
+     * @param {Book} book: book that was found.
+     */
     bookSearchComplete(book: Book) {
         this.bookshelf[this.bookshelf.findIndex(b => b.isSearched)] = book;
     }

@@ -12,7 +12,7 @@ export class AppComponent {
   title = 'BookLab';
 
   /**
-   * Construct a new {@link AppComponent{.
+   * Construct a new {@link AppComponent}.
    *
    * @param oauthService {OAuthService} oauthService The services used as OAuth client.
    */
