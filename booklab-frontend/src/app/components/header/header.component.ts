@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {UserService} from '../../services/user/user.service';
 
 @Component({
     selector: 'app-header',
@@ -6,7 +7,11 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./header.component.less']
 })
 export class HeaderComponent implements OnInit {
-    constructor() {}
+    @Input() public app;
 
-    ngOnInit() {}
+    constructor(public user: UserService) {
+    }
+
+    ngOnInit() {
+    }
 }

@@ -16,5 +16,7 @@ gradle-app.setting
 
 # IntelliJ files
 .idea/
+
+booklab-backend/out
 *.iml
 */out
