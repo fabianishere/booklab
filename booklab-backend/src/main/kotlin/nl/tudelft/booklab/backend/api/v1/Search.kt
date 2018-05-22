@@ -22,7 +22,7 @@ import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.Route
 import io.ktor.routing.get
-import nl.tudelft.booklab.catalogue.sru.Book
+import nl.tudelft.booklab.catalogue.Book
 import nl.tudelft.booklab.catalogue.sru.SruClient
 
 /**

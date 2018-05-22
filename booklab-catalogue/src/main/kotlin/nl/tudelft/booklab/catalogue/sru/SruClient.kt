@@ -24,6 +24,7 @@ import io.ktor.client.request.url
 import io.ktor.http.HttpMethod
 import io.ktor.http.formUrlEncode
 import kotlinx.coroutines.experimental.io.jvm.javaio.toInputStream
+import nl.tudelft.booklab.catalogue.Book
 
 /**
  * A SRU client that is used to query books from a SRU database

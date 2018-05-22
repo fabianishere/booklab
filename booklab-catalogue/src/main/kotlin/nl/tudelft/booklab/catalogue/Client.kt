@@ -14,18 +14,9 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.catalogue.google
+package nl.tudelft.booklab.catalogue
 
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.equalTo
-import org.junit.jupiter.api.Test
-
-class ClientTest {
-    @Test
-    fun `default test`() {
-        val results = GoogleClient.query("de spiegel van noord west nederland")
-        results.items.forEach{
-            println("${it.volumeInfo.title} ${it.volumeInfo.authors}")
-        }
-    }
+interface Client {
+    fun query(query: String): List<Book>
+    fun query(title: String, author: String): List<Book>
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.catalogue.sru
+package nl.tudelft.booklab.catalogue
 
 /**
  * A data class representing a book

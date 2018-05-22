@@ -20,9 +20,9 @@ import io.ktor.application.call
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.put
-import nl.tudelft.booklab.catalogue.sru.Book
-import nl.tudelft.booklab.catalogue.sru.Title
-import nl.tudelft.booklab.catalogue.sru.TitleType
+import nl.tudelft.booklab.catalogue.Book
+import nl.tudelft.booklab.catalogue.Title
+import nl.tudelft.booklab.catalogue.TitleType
 
 /**
  * Define vision endpoints at the current route for the REST api.

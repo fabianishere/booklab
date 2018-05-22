@@ -16,6 +16,9 @@
 
 package nl.tudelft.booklab.catalogue.sru
 
+import nl.tudelft.booklab.catalogue.Book
+import nl.tudelft.booklab.catalogue.Title
+import nl.tudelft.booklab.catalogue.TitleType
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import java.io.File

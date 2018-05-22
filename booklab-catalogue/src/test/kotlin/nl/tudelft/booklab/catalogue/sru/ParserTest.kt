@@ -16,6 +16,7 @@
 
 package nl.tudelft.booklab.catalogue.sru
 
+import nl.tudelft.booklab.catalogue.TitleType
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
