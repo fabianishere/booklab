@@ -65,15 +65,14 @@ data class JwtConfiguration(
 /**
  * Build the [JwtConfiguration] object for the given configuration environment.
  *
- * @param config The [ApplicationConfig] object that contains the JWT configuration properties.
  * @return The [JwtConfiguration] instance that has been built.
  */
-fun buildJwtConfiguration(config: ApplicationConfig): JwtConfiguration {
-    val issuer = config.property("domain").getString()
-    val audience = config.property("audience").getString()
-    val realm = config.property("realm").getString()
-    val passphrase = config.property("passphrase").getString()
-    val validity = Duration.parse(config.property("validity").getString())
+fun ApplicationConfig.asJwtConfiguration(): JwtConfiguration {
+    val issuer = property("domain").getString()
+    val audience = property("audience").getString()
+    val realm = property("realm").getString()
+    val passphrase = property("passphrase").getString()
+    val validity = Duration.parse(property("validity").getString())
 
     return JwtConfiguration(issuer, audience, realm, validity, Algorithm.HMAC512(passphrase))
 }

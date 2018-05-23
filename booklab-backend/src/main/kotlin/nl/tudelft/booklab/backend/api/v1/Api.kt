@@ -18,7 +18,10 @@ package nl.tudelft.booklab.backend.api.v1
 
 import io.ktor.auth.authenticate
 import io.ktor.routing.Route
+import io.ktor.routing.application
 import io.ktor.routing.route
+import nl.tudelft.booklab.backend.VisionConfiguration
+import nl.tudelft.booklab.catalogue.sru.SruClient
 
 /**
  * Describe the routes for the REST API of the BookLab backend.
@@ -26,11 +29,11 @@ import io.ktor.routing.route
 fun Route.api() {
     authenticate("rest:detection") {
         route("detection") {
-            detection()
+            detection(application.attributes[VisionConfiguration.KEY])
         }
     }
     route("search") {
-        search()
+        search(SruClient())
     }
     meta()
 }

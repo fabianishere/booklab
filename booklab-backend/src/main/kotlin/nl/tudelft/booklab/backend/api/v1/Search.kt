@@ -27,16 +27,17 @@ import nl.tudelft.booklab.catalogue.sru.SruClient
 
 /**
  * Define catalogue search endpoints at the current route for the REST api.
+ *
+ * @param client The catalogue client to use for searching.
  */
-fun Route.search() {
-    val client = SruClient()
+fun Route.search(client: SruClient) {
     get {
         val title = call.parameters["title"]
         val author = call.parameters["author"]
-        val count = call.parameters["count"]?.toIntOrNull() ?: 5
+        val max = call.parameters["max"]?.toIntOrNull() ?: 5
 
         if (title != null && author != null) {
-            val results = client.query(client.createQuery(title, author), count)
+            val results = client.query(client.createQuery(title, author), max)
             call.respond(SearchResults(results.size, results))
         } else {
             call.respondText("Failed to process query", status = HttpStatusCode.BadRequest)

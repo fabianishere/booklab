@@ -20,42 +20,33 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import io.ktor.application.application
 import io.ktor.application.call
 import io.ktor.application.log
-import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.request.contentType
+import io.ktor.request.header
 import io.ktor.request.receiveStream
 import io.ktor.response.respond
 import io.ktor.routing.Route
-import io.ktor.routing.application
 import io.ktor.routing.post
 import nl.tudelft.booklab.backend.VisionConfiguration
 import nl.tudelft.booklab.catalogue.sru.Book
 import nl.tudelft.booklab.vision.toMat
-import org.opencv.core.CvException
 
 /**
  * Define vision endpoints at the current route for the REST api.
+ *
+ * @param vision The vision configuration to use.
  */
-fun Route.detection() {
-    val vision = application.attributes[VisionConfiguration.KEY]
-
+fun Route.detection(vision: VisionConfiguration) {
     post {
-        if (!ContentType.Application.OctetStream.match(call.request.contentType())) {
-            call.respond(HttpStatusCode.BadRequest, DetectionFailure("invalid_request", "The content type should be 'application/octet-stream'."))
-            return@post
-        }
-
+        val estimated = call.request.header(HttpHeaders.ContentLength)?.toIntOrNull() ?: DEFAULT_BUFFER_SIZE
         val response = try {
             call.receiveStream().use { input ->
-                val image = input.toMat()
+                val image = input.toMat(estimated)
                 vision.extractor.batch(vision.detector.detect(image)).mapNotNull { part ->
-                    val query = vision.client.createQuery(part.joinToString(" "))
+                    val query = vision.client.createQuery(part.joinToString(" ").replace("\n", " "))
                     vision.client.query(query, max = 1).firstOrNull()
                 }
             }
-        } catch (e: CvException) {
-            call.respond(HttpStatusCode.BadRequest, DetectionFailure("invalid_image", "The given image is invalid."))
-            return@post
         } catch (e: Throwable) {
             application.log.warn("An error occurred while processing an image", e)
             call.respond(HttpStatusCode.InternalServerError, DetectionFailure("server_error", "An internal server error occurred."))
@@ -63,6 +54,10 @@ fun Route.detection() {
         }
 
         call.respond(DetectionResult(response.size, response))
+    }
+
+    handle {
+        call.respond(HttpStatusCode.MethodNotAllowed, DetectionFailure("invalid_method", "The requested method is not allowed."))
     }
 }
 
