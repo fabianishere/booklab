@@ -39,7 +39,7 @@ class ParseException : Exception()
  *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
-object SruParser {
+object DublinCoreParser {
 
     /**
      * Using a file with the XML source (can be a temporal file)

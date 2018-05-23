@@ -23,13 +23,13 @@ import io.ktor.response.respondText
 import io.ktor.routing.Route
 import io.ktor.routing.get
 import nl.tudelft.booklab.catalogue.Book
-import nl.tudelft.booklab.catalogue.sru.SruClient
+import nl.tudelft.booklab.catalogue.sru.SruCatalogueClient
 
 /**
  * Define catalogue search endpoints at the current route for the REST api.
  */
 fun Route.search() {
-    val client = SruClient()
+    val client = SruCatalogueClient()
     get {
         val title = call.parameters["title"]
         val author = call.parameters["author"]

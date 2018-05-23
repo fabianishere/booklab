@@ -16,7 +16,24 @@
 
 package nl.tudelft.booklab.catalogue
 
-interface Client {
-    fun query(query: String): List<Book>
-    fun query(title: String, author: String): List<Book>
+import kotlinx.coroutines.experimental.runBlocking
+import nl.tudelft.booklab.catalogue.google.GoogleCatalogueClient
+import org.junit.jupiter.api.Test
+
+class GoogleCatalogueClientTest {
+    @Test
+    fun `default test`() {
+        runBlocking {
+            val results = GoogleCatalogueClient().query("harry potter steen der wijzen", 5)
+            results.forEach { println(it) }
+        }
+    }
+
+    @Test
+    fun `specific book search`() {
+        runBlocking {
+            val results = GoogleCatalogueClient().query("de ontdekking van de hemel", "harry mullish", 5)
+            results.forEach { println(it) }
+        }
+    }
 }

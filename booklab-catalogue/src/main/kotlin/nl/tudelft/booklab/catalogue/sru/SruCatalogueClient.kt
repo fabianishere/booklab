@@ -25,6 +25,7 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.formUrlEncode
 import kotlinx.coroutines.experimental.io.jvm.javaio.toInputStream
 import nl.tudelft.booklab.catalogue.Book
+import nl.tudelft.booklab.catalogue.CatalogueClient
 
 /**
  * A SRU client that is used to query books from a SRU database
@@ -33,45 +34,44 @@ import nl.tudelft.booklab.catalogue.Book
  *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
-class SruClient(
+class SruCatalogueClient (
     private val client: HttpClient = HttpClient(Apache.config { socketTimeout = 100000 }),
     private val baseUrl: String = "http://jsru.kb.nl/sru"
-) {
+) : CatalogueClient {
 
-    /**
-     * Queries the a SRU database using the given query
-     *
-     * @param query the actual query string that would normally be used in browser
-     *
-     * @return the list of books returned from the query
-     */
-    suspend fun query(query: String, max: Int = 100): List<Book> {
-        val stream = client.call {
-            url(createSruUrl(query.toLowerCase(), max))
-            method = HttpMethod.Get
-        }.response.content.toInputStream()
-        return SruParser.parse(stream)
+    override suspend fun query(keywords: String, max: Int): List<Book> {
+        return queryHelper(createQuery(keywords), max)
     }
 
-    fun createQuery(title: String, author: String): String {
+    override suspend fun query(title: String, author: String, max: Int): List<Book> {
+        return queryHelper(createQuery(title, author), max)
+    }
+
+    private suspend fun queryHelper(cqlQuery: String, max: Int): List<Book> {
+        val stream = client.call {
+            url(createSruUrl(cqlQuery.toLowerCase(), max))
+            method = HttpMethod.Get
+        }.response.content.toInputStream()
+        return DublinCoreParser.parse(stream)
+    }
+
+    private fun createQuery(title: String, author: String): String {
         return """dc.title any/fuzzy/ignoreCase/ignoreAccents "$title" OR
             |dc.creator any/fuzzy/ignoreCase/ignoreAccents "$author"""".trimMargin()
     }
 
-    fun createQuery(keywords: String): String {
+    private fun createQuery(keywords: String): String {
         return createQuery(keywords, keywords)
     }
 
     /**
-     * creates a SRU URL query
+     * creates a SRU URL
      *
-     * @param query the actual query used
-     * @param max the maximum number of records that are received.
-     * this value defaults to 100
-     *
+     * @param query the CQL query
+     * @param max the maximum number of records to be received
      * @return a string representation of the the url
      */
-    fun createSruUrl(query: String, max: Int): String {
+    private fun createSruUrl(query: String, max: Int): String {
         val params = listOf(
             "operation" to "searchRetrieve",
             "version" to "1.2",

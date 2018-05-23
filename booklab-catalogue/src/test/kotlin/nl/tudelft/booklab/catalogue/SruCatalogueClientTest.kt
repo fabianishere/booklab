@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.catalogue.sru
+package nl.tudelft.booklab.catalogue
 
 import kotlinx.coroutines.experimental.runBlocking
+import nl.tudelft.booklab.catalogue.sru.SruCatalogueClient
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
 
-internal class ClientTest {
+internal class SruCatalogueClientTest {
     @Test
     fun `smoke test`() {
         runBlocking {
-            val client = SruClient()
-            val books = client.query(client.createQuery("de ontdekking van de hemel harry mullish"))
+            val client = SruCatalogueClient()
+            val books = client.query("de ontdekking van de hemel harry mullish", 5)
             books.forEach { println("${it.authors} ${it.titles}") }
 
-            assertThat(books.size, equalTo(100))
+            assertThat(books.size, equalTo(5))
         }
     }
 }

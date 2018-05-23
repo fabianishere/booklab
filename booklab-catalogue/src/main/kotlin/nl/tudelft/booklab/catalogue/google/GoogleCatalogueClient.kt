@@ -21,11 +21,12 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.books.Books
 import com.google.api.services.books.BooksRequestInitializer
 import nl.tudelft.booklab.catalogue.Book
-import nl.tudelft.booklab.catalogue.Client
+import nl.tudelft.booklab.catalogue.CatalogueClient
 import nl.tudelft.booklab.catalogue.Title
 import nl.tudelft.booklab.catalogue.TitleType
+import kotlin.math.min
 
-class GoogleClient : Client {
+class GoogleCatalogueClient : CatalogueClient {
     private val key = ""
     private val database = Books.Builder(
         GoogleNetHttpTransport.newTrustedTransport(),
@@ -35,13 +36,14 @@ class GoogleClient : Client {
             .setGoogleClientRequestInitializer(BooksRequestInitializer(key))
             .build()
 
-    override fun query(query: String): List<Book> {
-        return database.volumes().list(query).setMaxResults(40).execute().items
+    override suspend fun query(keywords: String, max: Int): List<Book> {
+        return database.volumes().list(keywords).setMaxResults(min(40, max).toLong()).execute().items
             .asSequence()
             .filter { it.volumeInfo.industryIdentifiers != null }
             .filter { it.volumeInfo.authors != null }
             .filter { it.volumeInfo.title != null }
-            .map { Book(
+            .map {
+                Book(
                     listOfNotNull(
                         Title(it.volumeInfo.title, TitleType.MAIN),
                         it.volumeInfo.subtitle?.let { Title(it, TitleType.SUB) }
@@ -53,8 +55,8 @@ class GoogleClient : Client {
         }.toList()
     }
 
-    override fun query(title: String, author: String): List<Book> {
-        return query("intitle:$title+inauthor:$author")
+    override suspend fun query(title: String, author: String, max: Int): List<Book> {
+        return query("intitle:$title+inauthor:$author", max)
     }
 }
 

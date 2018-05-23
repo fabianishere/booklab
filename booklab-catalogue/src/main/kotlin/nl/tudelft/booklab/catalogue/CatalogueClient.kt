@@ -14,22 +14,9 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.catalogue.google
+package nl.tudelft.booklab.catalogue
 
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.equalTo
-import org.junit.jupiter.api.Test
-
-class GoogleClientTest {
-    @Test
-    fun `default test`() {
-        val results = GoogleClient().query("harry potter steen der wijzen")
-        //results.forEach { println(it) }
-    }
-
-    @Test
-    fun `specific book search`() {
-        val results = GoogleClient().query("de ontdekking van de hemel", "harry mullish")
-        results.forEach { println(it) }
-    }
+interface CatalogueClient {
+    suspend fun query(keywords: String, max: Int): List<Book>
+    suspend fun query(title: String, author: String, max: Int): List<Book>
 }
