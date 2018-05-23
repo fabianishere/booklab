@@ -18,22 +18,28 @@ package nl.tudelft.booklab.catalogue
 
 import kotlinx.coroutines.experimental.runBlocking
 import nl.tudelft.booklab.catalogue.google.GoogleCatalogueClient
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Test
 
 class GoogleCatalogueClientTest {
+    private val googleClient = GoogleCatalogueClient()
+
     @Test
-    fun `default test`() {
+    fun `default query test`() {
         runBlocking {
-            val results = GoogleCatalogueClient().query("harry potter steen der wijzen", 5)
-            results.forEach { println(it) }
+            val results = googleClient.query("harry potter steen der wijzen", 5)
+
+            assertThat(results.size, equalTo(4))
         }
     }
 
     @Test
     fun `specific book search`() {
         runBlocking {
-            val results = GoogleCatalogueClient().query("de ontdekking van de hemel", "harry mullish", 5)
-            results.forEach { println(it) }
+            val results = googleClient.query("de ontdekking van de hemel", "harry mullish", 5)
+
+            assertThat(results.size, equalTo(5))
         }
     }
 }

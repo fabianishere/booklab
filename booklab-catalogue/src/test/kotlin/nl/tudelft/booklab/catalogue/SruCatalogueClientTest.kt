@@ -23,12 +23,12 @@ import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test
 
 internal class SruCatalogueClientTest {
+    private val sruClient = SruCatalogueClient()
+
     @Test
     fun `smoke test`() {
         runBlocking {
-            val client = SruCatalogueClient()
-            val books = client.query("de ontdekking van de hemel harry mullish", 5)
-            books.forEach { println("${it.authors} ${it.titles}") }
+            val books = sruClient.query("de ontdekking van de hemel harry mullish", 5)
 
             assertThat(books.size, equalTo(5))
         }
