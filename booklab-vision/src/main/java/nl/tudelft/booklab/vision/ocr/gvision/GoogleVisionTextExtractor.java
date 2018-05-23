@@ -98,7 +98,7 @@ public class GoogleVisionTextExtractor implements TextExtractor {
      * @param image openCV matrix containing an image
      * @return AnnotateImageRequest
      */
-    private static AnnotateImageRequest createImageRequest(Mat image) {
+    public static AnnotateImageRequest createImageRequest(Mat image) {
         MatOfByte byteMat = new MatOfByte();
         imencode(".jpg", image.clone(), byteMat);
         ByteString imgBytes = ByteString.copyFrom(byteMat.toArray());
