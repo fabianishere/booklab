@@ -52,7 +52,9 @@ dependencies {
     runtime "org.slf4j:slf4j-jdk14:1.7.25"
 
 
-    testCompile "io.ktor:ktor-server-test-host:$ktor_version"
+    testCompile("io.ktor:ktor-server-test-host:$ktor_version") {
+        exclude group: 'ch.qos.logback', module: 'logback-classic'
+    }
     testCompile "org.junit.jupiter:junit-jupiter-api:$jupiter_version"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:$jupiter_version"
     testRuntime "org.junit.platform:junit-platform-launcher:1.1.1"
