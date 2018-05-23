@@ -19,6 +19,7 @@ build:
     policy: push
     paths:
       - build
+      - "*/build"
       - .gradle
 
 
@@ -30,4 +31,5 @@ test:
     policy: pull
     paths:
       - build
+      - "*/build"
       - .gradle
