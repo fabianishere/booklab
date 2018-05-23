@@ -75,6 +75,10 @@ public class VisionBookDetector extends AbstractBookDetector {
                 List<MatOfPoint> textBoxes = annotation.getPagesList().stream()
                     .map(Page::getBlocksList)
                     .flatMap(List::stream)
+                    .map(Block::getParagraphsList)
+                    .flatMap(List::stream)
+                    .map(Paragraph::getWordsList)
+                    .flatMap(List::stream)
                     .map(VisionBookDetector::getBoundingBoxPoints)
                     .map(VisionBookDetector::toMatOfPoint)
                     .collect(Collectors.toList());
@@ -96,9 +100,34 @@ public class VisionBookDetector extends AbstractBookDetector {
             .collect(Collectors.toList());
     }
 
+    private static List<Point> getBoundingBoxPoints(Paragraph paragraph) {
+        return paragraph.getBoundingBox()
+            .getVerticesList()
+            .stream()
+            .map(vertex -> new Point(vertex.getX(), vertex.getY()))
+            .collect(Collectors.toList());
+    }
+
+    private static List<Point> getBoundingBoxPoints(Word word) {
+        return word.getBoundingBox()
+            .getVerticesList()
+            .stream()
+            .map(vertex -> new Point(vertex.getX(), vertex.getY()))
+            .collect(Collectors.toList());
+    }
+
+    private static List<Point> getBoundingBoxPoints(Symbol symbol) {
+        return symbol.getBoundingBox()
+            .getVerticesList()
+            .stream()
+            .map(vertex -> new Point(vertex.getX(), vertex.getY()))
+            .collect(Collectors.toList());
+    }
+
     private static MatOfPoint toMatOfPoint(List<Point> points) {
         MatOfPoint matOfPoint = new MatOfPoint();
         matOfPoint.fromList(points);
         return matOfPoint;
     }
+
 }
