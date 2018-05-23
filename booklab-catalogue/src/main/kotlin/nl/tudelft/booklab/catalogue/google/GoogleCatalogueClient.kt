@@ -16,10 +16,7 @@
 
 package nl.tudelft.booklab.catalogue.google
 
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
-import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.books.Books
-import com.google.api.services.books.BooksRequestInitializer
 import nl.tudelft.booklab.catalogue.Book
 import nl.tudelft.booklab.catalogue.CatalogueClient
 import nl.tudelft.booklab.catalogue.Title
@@ -36,16 +33,7 @@ import kotlin.math.min
  *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
-class GoogleCatalogueClient(
-    private val apiKey: String = "",
-    private val catalogue: Books = Books.Builder(
-        GoogleNetHttpTransport.newTrustedTransport(),
-        JacksonFactory.getDefaultInstance(),
-        null)
-        .setApplicationName("booklab")
-        .setGoogleClientRequestInitializer(BooksRequestInitializer(apiKey))
-        .build()
-) : CatalogueClient {
+class GoogleCatalogueClient(private val catalogue: Books) : CatalogueClient {
 
     override suspend fun query(keywords: String, max: Int): List<Book> {
         return catalogue.volumes().list(keywords).setMaxResults(min(40, max).toLong()).execute().items

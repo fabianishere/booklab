@@ -16,6 +16,10 @@
 
 package nl.tudelft.booklab.catalogue
 
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
+import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.services.books.Books
+import com.google.api.services.books.BooksRequestInitializer
 import kotlinx.coroutines.experimental.runBlocking
 import nl.tudelft.booklab.catalogue.google.GoogleCatalogueClient
 import org.hamcrest.CoreMatchers.equalTo
@@ -23,7 +27,13 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Test
 
 class GoogleCatalogueClientTest {
-    private val googleClient = GoogleCatalogueClient()
+    private val googleClient = GoogleCatalogueClient(Books.Builder(
+        GoogleNetHttpTransport.newTrustedTransport(),
+        JacksonFactory.getDefaultInstance(),
+        null)
+        .setApplicationName("booklab")
+        .setGoogleClientRequestInitializer(BooksRequestInitializer(""))
+        .build())
 
     @Test
     fun `default query test`() {
