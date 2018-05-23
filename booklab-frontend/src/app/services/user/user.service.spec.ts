@@ -1,15 +1,18 @@
-import { TestBed, inject } from '@angular/core/testing';
+import {TestBed, inject} from '@angular/core/testing';
 
-import { UserService } from './user.service';
+import {UserService} from './user.service';
+import {OAuthService} from "angular-oauth2-oidc";
+
 
 describe('UserService', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [UserService]
+    let authSpy: jasmine.SpyObj<OAuthService>;
+    beforeEach(() => {
+        authSpy = jasmine.createSpyObj('OAuthService', ['hasValidAccessToken'])
+        authSpy.hasValidAccessToken.and.returnValue(true);
     });
-  });
 
-  it('should be created', inject([UserService], (service: UserService) => {
-    expect(service).toBeTruthy();
-  }));
+
+    it('should be created', () => {
+        expect(new UserService(authSpy)).toBeTruthy();
+    });
 });

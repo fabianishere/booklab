@@ -1,11 +1,15 @@
 import {TestBed, inject} from '@angular/core/testing';
 
 import {HttpService} from './http.service';
+import {Router} from "@angular/router";
+import {HttpClient} from "@angular/common/http";
 
 describe('HttpServiceService', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [HttpService]
+            providers: [HttpService,
+                {provide: Router, usevalue: jasmine.createSpy('Router')},
+                {provide: HttpClient, usevalue: jasmine.createSpy('HttpClient')}]
         });
     });
 

@@ -12,6 +12,8 @@ import {OAuthModule} from "angular-oauth2-oidc";
 import {HttpService} from "./services/http/http.service";
 import {UserService} from "./services/user/user.service";
 import {APP_BASE_HREF} from "@angular/common";
+import {LoginComponent} from "./components/login/login.component";
+import {SorryComponent} from "./components/sorry/sorry.component";
 
 describe('AppComponent', () => {
     beforeEach(async(() => {
@@ -21,7 +23,9 @@ describe('AppComponent', () => {
                 ImageUploadComponent,
                 HeaderComponent,
                 BookshelfComponent,
-                SidebarComponent
+                SidebarComponent,
+                LoginComponent,
+                SorryComponent
             ],
             imports: [
                 BrowserModule,

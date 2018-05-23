@@ -1,6 +1,8 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ImageUploadComponent } from './image-upload.component';
+import {ImageUploadComponent} from './image-upload.component';
+import {HttpService} from "../../services/http/http.service";
+import {UserService} from '../../services/user/user.service';
 
 describe('ImageUploadComponent', () => {
     let component: ImageUploadComponent;
@@ -8,9 +10,12 @@ describe('ImageUploadComponent', () => {
 
     beforeEach(async(() => {
         TestBed.configureTestingModule({
-            declarations: [ ImageUploadComponent ]
+            declarations: [ImageUploadComponent],
+            providers: [{provide: UserService, usevalue: jasmine.createSpyObj('UserService', ['getBookshelf'])},
+                {provide: HttpService, usevalue: jasmine.createSpyObj('HttpService', ['findBook'])}]
+
         })
-        .compileComponents();
+            .compileComponents();
     }));
 
     beforeEach(() => {
