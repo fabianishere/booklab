@@ -26,30 +26,25 @@ import java.io.InputStream
 import javax.xml.parsers.DocumentBuilderFactory
 
 /**
- * A exception thrown when for whatever reason the parser fails
- * @see Exception
+ * A [Exception] thrown when for whatever reason the parser fails
  *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
 class ParseException : Exception()
 
 /**
- * A parser that parses XML results into a list of books
- * @see Book
+ * A parser that parses Dublin Core XML results into a list of [Book]s
  *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
 object DublinCoreParser {
 
     /**
-     * Using a file with the XML source (can be a temporal file)
-     * creates a document that can be parsed
-     * @see Document
-     * @see File
+     * Using a [File] with the XML source (can be a temporary file)
+     * creates a [Document] that can be parsed
      *
-     * @param file the file containing the XML
-     *
-     * @return the document
+     * @param file the [File] containing the XML
+     * @return the [Document]
      */
     private fun createDocument(stream: InputStream): Document {
         val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(stream)
@@ -60,11 +55,8 @@ object DublinCoreParser {
     /**
      * parses a list of titles from a record
      *
-     * @param record the record containing the title elements
-     * @see Element
-     *
-     * @return a list of titles
-     * @see Title
+     * @param record the record containing the title [Element]s
+     * @return a list of [Title]s
      */
     private fun parseTitles(record: Element): List<Title> {
         val titleElements = record.getElementsByTagName("dc:title")
@@ -81,11 +73,9 @@ object DublinCoreParser {
 
     /**
      * parses a list of isbn identifiers from a record
-     * all identifiers that are not a isbn id are skipped
+     * all identifiers that are not a isbn id are discarded
      *
-     * @param record the record the be parsed
-     * @see Element
-     *
+     * @param record the record [Element] the be parsed
      * @return list of isbn numbers
      */
     private fun parseIds(record: Element): List<String> {
@@ -105,10 +95,8 @@ object DublinCoreParser {
     /**
      * parses a list of author names from a record
      *
-     * @param record the record to be parsed
-     * @see Element
-     *
-     * @return a list of names
+     * @param record the record [Element] to be parsed
+     * @return a list of author names
      */
     private fun parseAuthors(record: Element): List<String> {
         val authorElements = record.getElementsByTagName("dc:creator")
@@ -122,11 +110,10 @@ object DublinCoreParser {
     }
 
     /**
-     * parses XML to a list of [Book]s.
-     * the source is passed using a file
+     * parses Dublin Core XML to a list of [Book]s.
+     * the source is passed using a [InputStream]
      *
-     * @param stream the [InputStream] containing the xml source
-     *
+     * @param stream the [InputStream] containing the XML source
      * @return the list of books
      */
     fun parse(stream: InputStream): List<Book> {

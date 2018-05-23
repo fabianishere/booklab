@@ -28,9 +28,13 @@ import nl.tudelft.booklab.catalogue.Book
 import nl.tudelft.booklab.catalogue.CatalogueClient
 
 /**
- * A SRU client that is used to query books from a SRU database
+ * A SRU client that is used to query lists of [Book]s from a SRU catalogue.
+ * it implements the [CatalogueClient] interface
  *
- * @param client the client used to send a HTTP request to the database
+ * @property client the HTTP client used to send requests to the catalogue.
+ * the default client uses Apache
+ * @property baseUrl the base url to the sru catalogue. the value defaults
+ * to http://jsru.kb.nl/sru the SRU catalogue of the Koninklijke Bibliotheek
  *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
@@ -40,13 +44,22 @@ class SruCatalogueClient (
 ) : CatalogueClient {
 
     override suspend fun query(keywords: String, max: Int): List<Book> {
-        return queryHelper(createQuery(keywords), max)
+        return queryHelper(createCqlQuery(keywords), max)
     }
 
     override suspend fun query(title: String, author: String, max: Int): List<Book> {
-        return queryHelper(createQuery(title, author), max)
+        return queryHelper(createCqlQuery(title, author), max)
     }
 
+    /**
+     * helper method used to avoid code duplication. this method actually queries
+     * the catalogue and parses it to the list of [Book]s
+     *
+     * @param cqlQuery a CQL query. see the following link for the specification
+     * http://www.loc.gov/standards/sru/cql/index.html
+     * @param max the maximum amount of results
+     * @return the list of matching [Book]s
+     */
     private suspend fun queryHelper(cqlQuery: String, max: Int): List<Book> {
         val stream = client.call {
             url(createSruUrl(cqlQuery.toLowerCase(), max))
@@ -55,13 +68,29 @@ class SruCatalogueClient (
         return DublinCoreParser.parse(stream)
     }
 
-    private fun createQuery(title: String, author: String): String {
+    /**
+     * creates a CQL query based on the authors name and the
+     * book title
+     *
+     * @param title keywords matching the title
+     * @param author keywords matching the author name
+     * @return a string represented CQL query
+     */
+    private fun createCqlQuery(title: String, author: String): String {
+        // CQL version 1.2 is used see the link below for more info
+        // http://www.loc.gov/standards/sru/cql/contextSets/cql-context-set-v1-2.html
         return """dc.title any/fuzzy/ignoreCase/ignoreAccents "$title" OR
             |dc.creator any/fuzzy/ignoreCase/ignoreAccents "$author"""".trimMargin()
     }
 
-    private fun createQuery(keywords: String): String {
-        return createQuery(keywords, keywords)
+    /**
+     * creates a CQL query based on keywords
+     *
+     * @param keywords some keywords matching the book
+     * @return a string represented CQl query
+     */
+    private fun createCqlQuery(keywords: String): String {
+        return createCqlQuery(keywords, keywords)
     }
 
     /**
