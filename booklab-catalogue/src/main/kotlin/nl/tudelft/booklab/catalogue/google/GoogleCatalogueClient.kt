@@ -70,4 +70,3 @@ class GoogleCatalogueClient(
         return query("intitle:$title+inauthor:$author", max)
     }
 }
-

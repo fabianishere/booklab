@@ -36,7 +36,7 @@ fun Route.search() {
         val count = call.parameters["count"]?.toIntOrNull() ?: 5
 
         if (title != null && author != null) {
-            val results = client.query(client.createQuery(title, author), count)
+            val results = client.query(title, author, count)
             call.respond(SearchResults(results.size, results))
         } else {
             call.respondText("Failed to process query", status = HttpStatusCode.BadRequest)
