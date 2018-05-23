@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpService } from '../../services/http/http.service';
-import { UserService } from '../../services/user/user.service';
+import {Component, OnInit} from '@angular/core';
+import {HttpService} from '../../services/http/http.service';
+import {UserService} from '../../services/user/user.service';
 import {Book, DetectionResult, Title} from '../../dataTypes';
 
 @Component({
