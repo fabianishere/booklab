@@ -36,5 +36,5 @@ interface TextExtractor {
      * @param matrices The matrices to extract the text from.
      * @return A list of strings that have been extract per image.
      */
-    fun batch(matrices: List<Mat>): List<List<String>> = matrices.map { extract(it) }
+    fun batch(matrices: List<Mat>): List<String>
 }

@@ -116,10 +116,7 @@ public class GoogleVisionTextExtractor implements TextExtractor {
 
     @NotNull
     @Override
-    public List<List<String>> batch(@NotNull List<? extends Mat> matrices) {
-        return getTextFromVision(matrices)
-            .stream()
-            .map(Collections::singletonList)
-            .collect(Collectors.toList());
+    public List<String> batch(@NotNull List<? extends Mat> matrices) {
+        return getTextFromVision(matrices);
     }
 }
