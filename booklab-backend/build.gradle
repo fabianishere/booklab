@@ -20,6 +20,7 @@ plugins {
     id "jacoco"
     id "org.jetbrains.kotlin.jvm" version "1.2.40"
     id "org.jmailen.kotlinter" version "1.11.2"
+    id "com.bmuschko.docker-java-application" version "3.2.9"
 }
 
 ext {
@@ -94,5 +95,21 @@ jacocoTestReport {
     reports {
         csv.enabled true
         html.enabled true
+    }
+}
+
+/* Docker build setup */
+docker {
+    if (System.env["GITLAB_CI"] != null) {
+        registryCredentials {
+            url = System.env["CI_REGISTRY"]
+            username = System.env["CI_REGISTRY_USER"]
+            password = System.env["CI_REGISTRY_PASSWORD"]
+        }
+    }
+
+    javaApplication {
+        maintainer = 'Fabian Mastenbroek "f.s.mastenbroek@student.tudelft.nl"'
+        ports = [8080]
     }
 }
