@@ -3,8 +3,6 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BookshelfComponent } from './bookshelf.component';
 import {UserService} from "../../services/user/user.service";
 import {FormsModule} from "@angular/forms";
-import {OAuthService} from "angular-oauth2-oidc";
-import {HttpClient} from "@angular/common/http";
 import {HttpService} from "../../services/http/http.service";
 
 describe('BookshelfComponent', () => {
