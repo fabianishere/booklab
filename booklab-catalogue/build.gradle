@@ -28,13 +28,11 @@ plugins {
 }
 
 /* Project configuration */
-group 'nl.tudelft.booklab'
-version '1.0'
 sourceCompatibility = 1.8
 
 repositories {
     jcenter()
-    maven { url "https://dl.bintray.com/kotlin/ktor" }
+    maven { url = "https://dl.bintray.com/kotlin/ktor" }
 }
 
 dependencies {

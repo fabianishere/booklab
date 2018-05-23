@@ -29,10 +29,7 @@ ext {
 }
 
 /* Project configuration */
-group = 'nl.tudelft.booklab'
-version = '1.0'
 sourceCompatibility = 1.8
-
 mainClassName = 'io.ktor.server.netty.DevelopmentEngine'
 
 repositories {
@@ -89,4 +86,11 @@ test {
     }
 
     finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    reports {
+        csv.enabled true
+        html.enabled true
+    }
 }
