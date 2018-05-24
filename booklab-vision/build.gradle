@@ -41,8 +41,6 @@ ext {
 }
 
 /* Project configuration */
-group = 'nl.tudelft.booklab'
-version = '1.0'
 sourceCompatibility = 1.8
 
 repositories {
@@ -57,6 +55,9 @@ dependencies {
     compile "org.bytedeco.javacpp-presets:leptonica:1.72-1.1"
     compile "org.bytedeco.javacpp-presets:tesseract:3.04-1.1"
     compile "com.google.cloud:google-cloud-vision:1.28.0"
+    /* Fix for https://stackoverflow.com/questions/35157642 */
+    compile "com.google.guava:guava:20.0"
+
 
     runtime "org.bytedeco.javacpp-presets:leptonica:1.72-1.1:$platform"
     runtime "org.bytedeco.javacpp-presets:tesseract:3.04-1.1:$platform"

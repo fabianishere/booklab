@@ -24,53 +24,83 @@ import io.ktor.client.request.url
 import io.ktor.http.HttpMethod
 import io.ktor.http.formUrlEncode
 import kotlinx.coroutines.experimental.io.jvm.javaio.toInputStream
+import nl.tudelft.booklab.catalogue.Book
+import nl.tudelft.booklab.catalogue.CatalogueClient
 
 /**
- * A SRU client that is used to query books from a SRU database
+ * A SRU client that is used to query lists of [Book]s from a SRU catalogue.
+ * it implements the [CatalogueClient] interface
  *
- * @param client the client used to send a HTTP request to the database
+ * @property client the HTTP client used to send requests to the catalogue.
+ * the default client uses Apache
+ * @property baseUrl the base url to the sru catalogue. the value defaults
+ * to http://jsru.kb.nl/sru the SRU catalogue of the Koninklijke Bibliotheek
  *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
-class SruClient(
+class SruCatalogueClient (
     private val client: HttpClient = HttpClient(Apache.config { socketTimeout = 100000 }),
     private val baseUrl: String = "http://jsru.kb.nl/sru"
-) {
+) : CatalogueClient {
+
+    override suspend fun query(keywords: String, max: Int): List<Book> {
+        return queryHelper(createCqlQuery(keywords), max)
+    }
+
+    override suspend fun query(title: String, author: String, max: Int): List<Book> {
+        return queryHelper(createCqlQuery(title, author), max)
+    }
 
     /**
-     * Queries the a SRU database using the given query
+     * helper method used to avoid code duplication. this method actually queries
+     * the catalogue and parses it to the list of [Book]s
      *
-     * @param query the actual query string that would normally be used in browser
-     *
-     * @return the list of books returned from the query
+     * @param cqlQuery a CQL query. see the following link for the specification
+     * http://www.loc.gov/standards/sru/cql/index.html
+     * @param max the maximum amount of results
+     * @return the list of matching [Book]s
      */
-    suspend fun query(query: String, max: Int = 100): List<Book> {
+    private suspend fun queryHelper(cqlQuery: String, max: Int): List<Book> {
         val stream = client.call {
-            url(createSruUrl(query.toLowerCase(), max))
+            url(createSruUrl(cqlQuery.toLowerCase(), max))
             method = HttpMethod.Get
         }.response.content.toInputStream()
         return SruParser.parse(stream)
     }
 
-    fun createQuery(title: String, author: String): String {
+    /**
+     * creates a CQL query based on the authors name and the
+     * book title
+     *
+     * @param title keywords matching the title
+     * @param author keywords matching the author name
+     * @return a string represented CQL query
+     */
+    private fun createCqlQuery(title: String, author: String): String {
+        // CQL version 1.2 is used see the link below for more info
+        // http://www.loc.gov/standards/sru/cql/contextSets/cql-context-set-v1-2.html
         return """dc.title any/fuzzy/ignoreCase/ignoreAccents "$title" OR
             |dc.creator any/fuzzy/ignoreCase/ignoreAccents "$author"""".trimMargin()
     }
 
-    fun createQuery(keywords: String): String {
-        return createQuery(keywords, keywords)
+    /**
+     * creates a CQL query based on keywords
+     *
+     * @param keywords some keywords matching the book
+     * @return a string represented CQl query
+     */
+    private fun createCqlQuery(keywords: String): String {
+        return createCqlQuery(keywords, keywords)
     }
 
     /**
-     * creates a SRU URL query
+     * creates a SRU URL
      *
-     * @param query the actual query used
-     * @param max the maximum number of records that are received.
-     * this value defaults to 100
-     *
+     * @param query the CQL query
+     * @param max the maximum number of records to be received
      * @return a string representation of the the url
      */
-    fun createSruUrl(query: String, max: Int): String {
+    private fun createSruUrl(query: String, max: Int): String {
         val params = listOf(
             "operation" to "searchRetrieve",
             "version" to "1.2",

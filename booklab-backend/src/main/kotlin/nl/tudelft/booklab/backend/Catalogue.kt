@@ -17,21 +17,16 @@
 package nl.tudelft.booklab.backend
 
 import io.ktor.util.AttributeKey
-import nl.tudelft.booklab.vision.detection.BookDetector
-import nl.tudelft.booklab.vision.ocr.TextExtractor
+import nl.tudelft.booklab.catalogue.CatalogueClient
 
 /**
- * The configuration used for detecting and identifying books.
- *
- * @property detector The detector to detect the books in an image.
- * @property extractor The extractor to extract the text from the image.
- * @property catalogue The catalogue configuration to cross match the books.
+ * The configuration used for looking up books in a catalogue.
  */
-data class VisionConfiguration(val detector: BookDetector, val extractor: TextExtractor, val catalogue: CatalogueConfiguration) {
+data class CatalogueConfiguration(val client: CatalogueClient) {
     companion object {
         /**
-         * The attribute key that allows the user to access the [VisionConfiguration] object within an application.
+         * The attribute key that allows the user to access the [CatalogueConfiguration] object within an application.
          */
-        val KEY = AttributeKey<VisionConfiguration>("VisionConfiguration")
+        val KEY = AttributeKey<CatalogueConfiguration>("CatalogueConfiguration")
     }
 }

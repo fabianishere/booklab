@@ -18,14 +18,28 @@ package nl.tudelft.booklab.vision.ocr.gvision
 
 import com.google.cloud.vision.v1.ImageAnnotatorClient
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assumptions.assumeTrue
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.opencv.core.MatOfByte
 import org.opencv.imgcodecs.Imgcodecs
 
 class VisionTextExtractorTest {
+    lateinit var client: ImageAnnotatorClient
+
+    @BeforeEach
+    fun setUp() {
+        client = try {
+            ImageAnnotatorClient.create()
+        } catch (e: Throwable) {
+            assumeTrue(false, "No Google Cloud credentials available for running the Google Vision tests.")
+            throw e
+        }
+    }
+
     // I have disabled this test for now until we can integrate the Google Cloud Vision tests into the CI/CD pipeline.
-    // @Test
+    @Test
     fun `smoke test`() {
-        val client = ImageAnnotatorClient.create()
         val stream = GoogleVisionTextExtractor::class.java.getResourceAsStream("/bookshelf.jpg")
         val image = Imgcodecs.imdecode(MatOfByte(*stream.readBytes()), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED)
         val visionOCR = GoogleVisionTextExtractor(client)

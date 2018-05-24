@@ -21,6 +21,10 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
+import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.services.books.Books
+import com.google.api.services.books.BooksRequestInitializer
 import com.google.cloud.vision.v1.ImageAnnotatorClient
 import com.typesafe.config.ConfigFactory
 import io.ktor.application.Application
@@ -38,8 +42,9 @@ import io.ktor.server.testing.createTestEnvironment
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withApplication
+import nl.tudelft.booklab.backend.CatalogueConfiguration
 import nl.tudelft.booklab.backend.VisionConfiguration
-import nl.tudelft.booklab.catalogue.sru.SruClient
+import nl.tudelft.booklab.catalogue.google.GoogleCatalogueClient
 import nl.tudelft.booklab.vision.detection.opencv.VisionBookDetector
 import nl.tudelft.booklab.vision.ocr.gvision.GoogleVisionTextExtractor
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -102,7 +107,20 @@ internal class RetrievalTest {
                     VisionConfiguration(
                         detector = VisionBookDetector(),
                         extractor = GoogleVisionTextExtractor(ImageAnnotatorClient.create()),
-                        client = SruClient()
+                        catalogue = CatalogueConfiguration(
+                            client = GoogleCatalogueClient(
+                                Books.Builder(
+                                    GoogleNetHttpTransport.newTrustedTransport(),
+                                    JacksonFactory.getDefaultInstance(),
+                                    null
+                                )
+                                    .setApplicationName("booklab")
+                                    .setGoogleClientRequestInitializer(BooksRequestInitializer(""))
+                                    .build()
+                            )
+                        ).also {
+                            attributes.put(CatalogueConfiguration.KEY, it)
+                        }
                     )
                 )
             }

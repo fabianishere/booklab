@@ -33,7 +33,7 @@ export class ImageUploadComponent implements OnInit {
             this.http.checkHealth();
             this.http.putImg(ImageUploadComponent.toBlob(this.img)).subscribe((res) => {
                 this.results = res.results.map(b => Book.getBook(b));
-            });
+            }, error => this.http.handleError(error));
         };
         this.addedToShelf = false;
 
