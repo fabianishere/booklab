@@ -43,7 +43,7 @@ fun Route.detection(vision: VisionConfiguration) {
             call.receiveStream().use { input ->
                 val image = input.toMat(estimated)
                 vision.extractor.batch(vision.detector.detect(image)).mapNotNull { part ->
-                    val query = vision.client.createQuery(part.joinToString(" ").replace("\n", " "))
+                    val query = vision.client.createQuery(part)
                     vision.client.query(query, max = 1).firstOrNull()
                 }
             }
