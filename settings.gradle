@@ -18,6 +18,5 @@ rootProject.name = "booklab"
 
 include 'booklab-backend'
 include 'booklab-vision'
-include 'booklab-frontend'
 include 'booklab-catalogue'
 include 'ktor-auth-oauth2'
