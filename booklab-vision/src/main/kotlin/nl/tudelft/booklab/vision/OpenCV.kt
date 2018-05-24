@@ -14,26 +14,17 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.backend.api.v1
+package nl.tudelft.booklab.vision
 
-import io.ktor.auth.authenticate
-import io.ktor.routing.Route
-import io.ktor.routing.application
-import io.ktor.routing.route
-import nl.tudelft.booklab.backend.VisionConfiguration
-import nl.tudelft.booklab.catalogue.sru.SruClient
+import org.opencv.core.MatOfByte
+import org.opencv.imgcodecs.Imgcodecs.CV_LOAD_IMAGE_UNCHANGED
+import org.opencv.imgcodecs.Imgcodecs.imdecode
+import java.io.InputStream
 
 /**
- * Describe the routes for the REST API of the BookLab backend.
+ * Convert the given [InputStream] to an OpenCV matrix.
+ *
+ * @param estimatedSize The estimated size of input stream.
  */
-fun Route.api() {
-    authenticate("rest:detection") {
-        route("detection") {
-            detection(application.attributes[VisionConfiguration.KEY])
-        }
-    }
-    route("search") {
-        search(SruClient())
-    }
-    meta()
-}
+fun InputStream.toMat(estimatedSize: Int = DEFAULT_BUFFER_SIZE) =
+    imdecode(MatOfByte(*readBytes(estimatedSize)), CV_LOAD_IMAGE_UNCHANGED)

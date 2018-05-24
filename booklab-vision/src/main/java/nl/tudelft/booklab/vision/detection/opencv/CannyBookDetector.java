@@ -64,6 +64,4 @@ public class CannyBookDetector extends AbstractBookDetector {
 
         return findCropLocations(dilation);
     }
-
-
 }

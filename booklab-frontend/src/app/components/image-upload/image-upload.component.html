@@ -1,0 +1,28 @@
+<div class="container-fluid top-container">
+    <div class="row row-top-container">
+        <div class="col-5 input">
+            <label class="button upload">
+                Upload your image
+                <input type="file" (change)="onSubmit($event)" accept="image/*"/>
+            </label>
+        </div>
+        <div class="col-7 results">
+            <img *ngIf="img!=null" class="image" src="{{img}}">
+            <svg *ngIf="img==null" class="image">
+                <rect class="rect"></rect>
+            </svg>
+            <p *ngIf="results.length == 0 && img!= null">No books were found</p>
+            <div *ngIf="results.length > 0" class="books">
+                <div class="row" [ngClass]="addedToShelf? 'addedToShelf': ''" *ngFor="let book of results">
+                    <div class="col-1"><i [ngClass]="addedToShelf? 'fas fa-check-circle okay':'fas fa-trash-alt delete'"></i></div>
+                    <div class="col-5">{{book.getMainTitle()}}</div>
+                    <div class="col-6">{{book.authors[0]}}</div>
+                </div>
+                <label class="button bookshelf {{addedToShelf? 'disabled' : ''}}">
+                    Add to your bookshelf
+                    <input type="button" (click)="addToBookShelf($event)" disabled="{{addedToShelf? 'disabled' : ''}}">
+                </label>
+            </div>
+        </div>
+    </div>
+</div>

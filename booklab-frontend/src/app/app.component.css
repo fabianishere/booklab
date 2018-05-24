@@ -1,0 +1,23 @@
+@import "theme.less";
+
+body {
+    padding: 0;
+    margin: 0;
+}
+
+.left {
+    position: absolute;
+    width: 160px;
+    height: 90%;
+}
+
+.right {
+    position: absolute;
+    margin-left: 160px;
+    height: 90%;
+    width: calc(100% - 160px);
+}
+
+app-login {
+    position: absolute;
+}

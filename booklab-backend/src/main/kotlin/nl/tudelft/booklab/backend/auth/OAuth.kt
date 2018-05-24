@@ -21,11 +21,17 @@ import io.ktor.auth.UserIdPrincipal
 import io.ktor.auth.oauth2.OAuthServer
 import io.ktor.auth.oauth2.grant.ClientCredentialsGrantHandler
 import io.ktor.auth.oauth2.grant.PasswordGrantHandler
+import io.ktor.auth.oauth2.repository.ClientHashedTableRepository
 import io.ktor.auth.oauth2.repository.ClientIdPrincipal
 import io.ktor.auth.oauth2.repository.ClientRepository
 import io.ktor.auth.oauth2.repository.JwtAccessTokenRepository
+import io.ktor.auth.oauth2.repository.UserHashedTableRepository
 import io.ktor.auth.oauth2.repository.UserRepository
+import io.ktor.auth.oauth2.repository.parseClients
+import io.ktor.auth.oauth2.repository.parseUsers
+import io.ktor.config.ApplicationConfig
 import io.ktor.util.AttributeKey
+import io.ktor.util.getDigestFunction
 import io.ktor.auth.oauth2.repository.JwtConfiguration as JwtOAuthConfiguration
 
 /**
@@ -62,6 +68,24 @@ data class OAuthConfiguration(
          */
         val KEY = AttributeKey<OAuthConfiguration>("OAuthConfiguration")
     }
+}
+
+/**
+ * Build the [OAuthConfiguration] object for the given configuration environment.
+ *
+ * @return The [OAuthConfiguration] instance that has been built.
+ */
+fun ApplicationConfig.asOAuthConfiguration(): OAuthConfiguration {
+    val jwt = config("jwt").asJwtConfiguration()
+    val clientRepository = ClientHashedTableRepository(
+        digester = getDigestFunction("SHA-256", salt = "ktor"),
+        table = parseClients()
+    )
+    val userRepository = UserHashedTableRepository(
+        digester = getDigestFunction("SHA-256", salt = "ktor"),
+        table = parseUsers()
+    )
+    return OAuthConfiguration(clientRepository, userRepository, jwt)
 }
 
 /**

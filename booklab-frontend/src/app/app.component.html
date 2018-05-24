@@ -1,0 +1,9 @@
+<app-header [app]="this" ></app-header>
+<div class="left" [ngClass]="login? 'blur': ''">
+    <app-sidebar ></app-sidebar>
+</div>
+<div class="right" [ngClass]="login? 'blur': ''">
+    <router-outlet></router-outlet>
+</div>
+<app-login *ngIf="login" [app]="this"></app-login>
+
