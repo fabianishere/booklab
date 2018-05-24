@@ -22,21 +22,21 @@ import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.Route
 import io.ktor.routing.get
-import nl.tudelft.booklab.catalogue.sru.Book
-import nl.tudelft.booklab.catalogue.sru.SruClient
+import nl.tudelft.booklab.catalogue.Book
+import nl.tudelft.booklab.catalogue.sru.SruCatalogueClient
 
 /**
  * Define catalogue search endpoints at the current route for the REST api.
  */
 fun Route.search() {
-    val client = SruClient()
+    val client = SruCatalogueClient()
     get {
         val title = call.parameters["title"]
         val author = call.parameters["author"]
         val count = call.parameters["count"]?.toIntOrNull() ?: 5
 
         if (title != null && author != null) {
-            val results = client.query(client.createQuery(title, author), count)
+            val results = client.query(title, author, count)
             call.respond(SearchResults(results.size, results))
         } else {
             call.respondText("Failed to process query", status = HttpStatusCode.BadRequest)
