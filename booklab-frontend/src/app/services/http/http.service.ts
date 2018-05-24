@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
-import {Book, DetectionResult, Secure} from '../../dataTypes';
-import {catchError} from 'rxjs/operators';
+import {DetectionResult, Secure} from '../../dataTypes';
 import {Router} from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 /**
  * Interface to model health response from api.
@@ -28,7 +28,7 @@ export class HttpService {
      * Checks if the backend is running.
      */
     checkHealth() {
-        this.http.get('http://localhost:8080/api/health').subscribe((res: Success) => {
+        this.http.get(`${environment.apiUrl}/health`).subscribe((res: Success) => {
             console.log(res.success);
         });
     }
@@ -39,7 +39,7 @@ export class HttpService {
      * @returns {Observable<DetectionResult>}: result of the backend processing
      */
     putImg(img: Blob): Observable<DetectionResult> {
-        return this.http.post<DetectionResult>('http://localhost:8080/api/detection', img);
+        return this.http.post<DetectionResult>(`${environment.apiUrl}/detection`, img);
     }
 
     /**
@@ -50,7 +50,7 @@ export class HttpService {
      */
     findBook(nameInput: string, authorInput: string): Observable<DetectionResult> {
 
-        return this.http.get<DetectionResult>('http://localhost:8080/api/search?'
+        return this.http.get<DetectionResult>(`${environment.apiUrl}/health/search?`
             + 'title=' + Secure.checkInput(nameInput)
             + '&author=' + Secure.checkInput(authorInput));
 

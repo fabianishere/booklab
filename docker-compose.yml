@@ -19,7 +19,7 @@ services:
   proxy:
     image: "booklab-proxy:${TAG-latest}"
     ports:
-      - "80"
+      - "80:80"
     networks:
       - frontend
       - backend
