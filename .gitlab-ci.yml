@@ -19,15 +19,18 @@ build:
     policy: push
     paths:
       - build
+      - "*/build"
       - .gradle
 
 
 test:
   stage: test
   script: ./gradlew check
+  coverage: '/booklab:\s*(\d+(?:\.\d+)?%)/'
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
     paths:
       - build
+      - "*/build"
       - .gradle

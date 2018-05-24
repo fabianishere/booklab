@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpService } from '../../services/http/http.service';
-import { UserService } from '../../services/user/user.service';
+import {Component, OnInit} from '@angular/core';
+import {HttpService} from '../../services/http/http.service';
+import {UserService} from '../../services/user/user.service';
 import {Book, DetectionResult, Title} from '../../dataTypes';
 
 @Component({
@@ -33,7 +33,7 @@ export class ImageUploadComponent implements OnInit {
             this.http.checkHealth();
             this.http.putImg(ImageUploadComponent.toBlob(this.img)).subscribe((res) => {
                 this.results = res.results.map(b => Book.getBook(b));
-            });
+            }, error => this.http.handleError(error));
         };
         this.addedToShelf = false;
 

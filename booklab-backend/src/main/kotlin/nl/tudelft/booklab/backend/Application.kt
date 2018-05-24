@@ -18,6 +18,10 @@ package nl.tudelft.booklab.backend
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
+import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.services.books.Books
+import com.google.api.services.books.BooksRequestInitializer
 import com.google.cloud.vision.v1.ImageAnnotatorClient
 import io.ktor.application.Application
 import io.ktor.application.install
@@ -37,7 +41,7 @@ import io.ktor.routing.routing
 import nl.tudelft.booklab.backend.api.v1.api
 import nl.tudelft.booklab.backend.auth.OAuthConfiguration
 import nl.tudelft.booklab.backend.auth.asOAuthConfiguration
-import nl.tudelft.booklab.catalogue.sru.SruClient
+import nl.tudelft.booklab.catalogue.google.GoogleCatalogueClient
 import nl.tudelft.booklab.vision.detection.opencv.CannyBookDetector
 import nl.tudelft.booklab.vision.ocr.gvision.GoogleVisionTextExtractor
 
@@ -67,12 +71,28 @@ fun Application.booklab() {
         method(HttpMethod.Post)
     }
 
+    // Define the catalogue configuration
+    val catalogue = CatalogueConfiguration(
+        client = GoogleCatalogueClient(
+            Books.Builder(
+                GoogleNetHttpTransport.newTrustedTransport(),
+                JacksonFactory.getDefaultInstance(),
+                null
+            )
+                .setApplicationName("booklab")
+                .setGoogleClientRequestInitializer(BooksRequestInitializer(environment.config.property("catalogue.key").getString()))
+                .build()
+        )
+    ).also {
+        attributes.put(CatalogueConfiguration.KEY, it)
+    }
+
     // Define the vision configuration
     // TODO Implement a way to make this configuration configurable via the application.conf file
     VisionConfiguration(
             detector = CannyBookDetector(),
             extractor = GoogleVisionTextExtractor(ImageAnnotatorClient.create()),
-            client = SruClient()
+            catalogue = catalogue
     ).also {
         attributes.put(VisionConfiguration.KEY, it)
     }

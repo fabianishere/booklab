@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.catalogue.sru
+package nl.tudelft.booklab.catalogue
 
+import nl.tudelft.booklab.catalogue.sru.SruParser
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Test

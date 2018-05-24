@@ -37,8 +37,12 @@ import io.ktor.server.testing.createTestEnvironment
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withApplication
+import nl.tudelft.booklab.backend.CatalogueConfiguration
 import nl.tudelft.booklab.backend.VisionConfiguration
-import nl.tudelft.booklab.catalogue.sru.SruClient
+import nl.tudelft.booklab.catalogue.Book
+import nl.tudelft.booklab.catalogue.CatalogueClient
+import nl.tudelft.booklab.catalogue.Title
+import nl.tudelft.booklab.catalogue.TitleType
 import nl.tudelft.booklab.vision.detection.BookDetector
 import nl.tudelft.booklab.vision.ocr.TextExtractor
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -105,7 +109,13 @@ internal class DetectionTest {
                     VisionConfiguration(
                         detector = DummyBookDetector(),
                         extractor = DummyTextExtractor(listOf("De ontdekking van", "Harry Mulisch")),
-                        client = SruClient()
+                        catalogue = CatalogueConfiguration(DummyCatalogueClient(listOf(
+                            Book(
+                                titles = listOf(Title("The ontdekking van de hemel", TitleType.MAIN)),
+                                authors = listOf("Harry Mulisch"),
+                                ids = emptyList()
+                            )
+                        )))
                     )
                 )
             }
@@ -118,6 +128,12 @@ internal class DetectionTest {
 
     internal class DummyTextExtractor(val values: List<String>) : TextExtractor {
         override fun extract(mat: Mat): List<String> = values
+    }
+
+    internal class DummyCatalogueClient(val values: List<Book>) : CatalogueClient {
+        override suspend fun query(keywords: String, max: Int): List<Book> = values
+
+        override suspend fun query(title: String, author: String, max: Int): List<Book> = values
     }
 
     companion object {

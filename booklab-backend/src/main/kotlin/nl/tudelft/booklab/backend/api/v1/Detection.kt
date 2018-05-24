@@ -27,8 +27,9 @@ import io.ktor.request.receiveStream
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.post
+import kotlinx.coroutines.experimental.async
 import nl.tudelft.booklab.backend.VisionConfiguration
-import nl.tudelft.booklab.catalogue.sru.Book
+import nl.tudelft.booklab.catalogue.Book
 import nl.tudelft.booklab.vision.toMat
 
 /**
@@ -42,10 +43,16 @@ fun Route.detection(vision: VisionConfiguration) {
         val response = try {
             call.receiveStream().use { input ->
                 val image = input.toMat(estimated)
-                vision.extractor.batch(vision.detector.detect(image)).mapNotNull { part ->
-                    val query = vision.client.createQuery(part.joinToString(" ").replace("\n", " "))
-                    vision.client.query(query, max = 1).firstOrNull()
-                }
+                vision.extractor.batch(vision.detector.detect(image))
+                    .map { part ->
+                        async {
+                            part
+                                .joinToString(" ")
+                                .takeUnless { it.isBlank() }
+                                ?.let { vision.catalogue.client.query(it, max = 1).firstOrNull() }
+                        }
+                    }
+                    .mapNotNull { it.await() }
             }
         } catch (e: Throwable) {
             application.log.warn("An error occurred while processing an image", e)
