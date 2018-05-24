@@ -24,21 +24,28 @@ import kotlinx.coroutines.experimental.runBlocking
 import nl.tudelft.booklab.catalogue.google.GoogleCatalogueClient
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
+import org.junit.jupiter.api.Assumptions.assumeTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class GoogleCatalogueClientTest {
-    private val googleClient = GoogleCatalogueClient(Books.Builder(
-        GoogleNetHttpTransport.newTrustedTransport(),
-        JacksonFactory.getDefaultInstance(),
-        null)
-        .setApplicationName("booklab")
-        .setGoogleClientRequestInitializer(BooksRequestInitializer(""))
-        .build())
+    lateinit var client: CatalogueClient
+
+    @BeforeEach
+    fun setUp() {
+        val key = System.getenv()["GOOGLE_BOOKS_API_KEY"]
+        assumeTrue(key != null, "No Google Books API key given for running the Google Books tests (key GOOGLE_BOOKS_API_KEY)")
+        val books = Books.Builder(GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance(), null)
+            .setApplicationName("booklab")
+            .setGoogleClientRequestInitializer(BooksRequestInitializer(key))
+            .build()
+        client = GoogleCatalogueClient(books)
+    }
 
     @Test
     fun `default query test`() {
         runBlocking {
-            val results = googleClient.query("harry potter steen der wijzen", 5)
+            val results = client.query("harry potter steen der wijzen", 5)
 
             assertThat(results.size, equalTo(4))
         }
@@ -47,7 +54,7 @@ class GoogleCatalogueClientTest {
     @Test
     fun `specific book search`() {
         runBlocking {
-            val results = googleClient.query("de ontdekking van de hemel", "harry mullish", 5)
+            val results = client.query("de ontdekking van de hemel", "harry mullish", 5)
 
             assertThat(results.size, equalTo(5))
         }
