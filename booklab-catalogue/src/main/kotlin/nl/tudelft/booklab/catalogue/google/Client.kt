@@ -36,6 +36,10 @@ class GoogleCatalogueClient(private val catalogue: Books) : CatalogueClient {
     override suspend fun query(keywords: String, max: Int): List<Book> {
         val response = catalogue.volumes().list(keywords).setMaxResults(min(40, max).toLong()).execute()
 
+        // BUG: The items field is null when no items could be found, return null instead
+        if (response.totalItems == 0) {
+            return emptyList()
+        }
         return response.items
             .asSequence()
             .filter { it.volumeInfo.industryIdentifiers != null }
