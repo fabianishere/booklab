@@ -19,6 +19,12 @@ package nl.tudelft.booklab.recommender
 import nl.tudelft.booklab.catalogue.sru.Book
 import java.util.*
 
+/**
+ * a [Recommender] that recommends randomly
+ * [RandomRecommender] implements the [Recommender] interface
+ *
+ * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
+ */
 class RandomRecommender(private val random: Random = Random()) : Recommender {
     override fun recommend(collection: List<Book>, candidates: List<Book>): List<Pair<Book, Int>> {
         return candidates

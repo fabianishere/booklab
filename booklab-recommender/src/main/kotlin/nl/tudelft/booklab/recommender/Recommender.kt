@@ -18,6 +18,22 @@ package nl.tudelft.booklab.recommender
 
 import nl.tudelft.booklab.catalogue.sru.Book
 
+/**
+ * an interface that standardizes the different types of recommenders
+ *
+ * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
+ */
 interface Recommender {
+    /**
+     * the default recommend function
+     *
+     * @param collection a list of [Book]s that represents the collection
+     * of the user
+     * @param candidates a list of [Book]s that represents the domain out
+     * of which a recommendation needs to be made
+     * @return a list of [Pair]s that of [Book]s and a accompanying score.
+     * the list is sorted decreasingly and does not contain any books that
+     * are already in the collection
+     */
     fun recommend(collection: List<Book>, candidates: List<Book>): List<Pair<Book, Int>>
 }

@@ -18,6 +18,12 @@ package nl.tudelft.booklab.recommender
 
 import nl.tudelft.booklab.catalogue.sru.Book
 
+/**
+ * a [Recommender] that recommends solely based on the authors
+ * [AuthorRecommender] implements the [Recommender] interface
+ *
+ * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
+ */
 class AuthorRecommender : Recommender {
     override fun recommend(collection: List<Book>, candidates: List<Book>): List<Pair<Book, Int>> {
         val authors = collection
