@@ -1,5 +1,5 @@
 Software Construction and Data structures with ADA 95
-The C programming language
+C Programming Language
 The C++ programming language
 The Dylan Reference Manual
 The Java Programming Language

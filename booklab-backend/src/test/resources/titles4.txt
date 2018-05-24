@@ -1,5 +1,5 @@
 The Designer's Graphic Stew
-Universal Principles of Design
+Universal Principles of Design, Revised and Updated
 Typography Essentials
 The Information Design Handbook
 Undercover user experience design
@@ -8,7 +8,7 @@ Sass for web designers
 The smashing book
 Cover Story
 A is for armageddon
-The weekend artist
+The Weekend Artist
 Chip Kidd
 Sayonara home run!
 Workbook illustration
