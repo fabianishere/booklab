@@ -1,0 +1,14 @@
+Software Construction and Data structures with ADA 95
+The C programming language
+The C++ programming language
+The Dylan Reference Manual
+The Java Programming Language
+The Little MLer
+Elements of ML Programming. ML97 edition
+Miranda: The craft of functional programming
+Programming Perl
+Learning Python
+Systems programming with modula-3
+The scheme programming language: ansi scheme
+Squeak. Open personal computer and multimedia
+The pi-calculus a theory of mobile processes
