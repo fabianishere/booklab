@@ -65,7 +65,7 @@ class SruCatalogueClient (
             url(createSruUrl(cqlQuery.toLowerCase(), max))
             method = HttpMethod.Get
         }.response.content.toInputStream()
-        return DublinCoreParser.parse(stream)
+        return SruParser.parse(stream)
     }
 
     /**
