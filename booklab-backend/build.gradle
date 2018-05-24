@@ -99,6 +99,11 @@ jacocoTestReport {
 }
 
 /* Docker build setup */
+dockerDistTar {
+    volume "/config"
+    environmentVariable('GOOGLE_APPLICATION_CREDENTIALS', '/config/keys.json')
+}
+
 docker {
     if (System.env["GITLAB_CI"] != null) {
         registryCredentials {
@@ -111,5 +116,6 @@ docker {
     javaApplication {
         maintainer = 'Fabian Mastenbroek "f.s.mastenbroek@student.tudelft.nl"'
         ports = [8080]
+        tag = "booklab-backend:${project.version}"
     }
 }

@@ -27,17 +27,8 @@ task createDockerfile(type: Dockerfile) {
     group = DockerRemoteApiPlugin.DEFAULT_TASK_GROUP
     description = 'Create Dockerfile for project'
 
-    from 'node:8.6 as node'
-    maintainer 'Fabian Mastenbroek "f.s.mastenbroek@student.tudelft.nl"'
-    workingDir '/app'
-    copyFile 'package.json', '/app/'
-    runCommand 'npm install'
-    copyFile './',  '/app/'
-    environmentVariable 'env', 'prod'
-    runCommand 'npm run build -- --prod --environment $env'
-
     from 'nginx'
-    instruction 'COPY --from=node /app/build/angular/ /usr/share/nginx/html'
+    maintainer 'Fabian Mastenbroek "f.s.mastenbroek@student.tudelft.nl"'
     copyFile './nginx.conf', '/etc/nginx/conf.d/default.conf'
 }
 
@@ -55,6 +46,5 @@ createDockerfile.dependsOn dockerSyncResources
 task dockerBuildImage(type: DockerBuildImage) {
     dependsOn createDockerfile
     inputDir = createDockerfile.destFile.parentFile
-
-    tag = "booklab-frontend:${project.version}"
+    tag = "booklab-proxy:${project.version}"
 }
