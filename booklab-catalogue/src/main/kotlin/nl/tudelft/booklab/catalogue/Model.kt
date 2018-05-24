@@ -28,8 +28,7 @@ package nl.tudelft.booklab.catalogue
 data class Book(
     val titles: List<Title>,
     val authors: List<String>,
-    val ids: List<String>,
-    val nur: Int?
+    val ids: List<String>
 )
 
 /**

@@ -22,19 +22,21 @@ class AuthorRecommender : Recommender {
     override fun recommend(collection: List<Book>, candidates: List<Book>): List<Pair<Book, Int>> {
         val authors = collection
             .map { it.authors }
-            .reduce{ acc, it -> acc.plus(it) }
+            .fold(emptyList<String>()) { list, it -> list.plus(it) }
             .groupBy { it }
             .entries.sortedByDescending { it.value.size } // what if equal amount of books?
             .map { it.key }
         val maxScore = authors.size
         val scores = candidates
-            .filter { !collection.contains(it) }
             .map { it to 0 }
             .toMap().toMutableMap()
         for (i in 0 until authors.size) {
             val selection = candidates.filter { it.authors.contains(authors[i]) }
             selection.forEach { scores.replace(it, scores.getValue(it) + maxScore - i) }
         }
-        return scores.toList().sortedByDescending { it.second }
+        return scores
+            .toList()
+            .filter { !collection.contains(it.first) }
+            .sortedByDescending { it.second }
     }
 }
