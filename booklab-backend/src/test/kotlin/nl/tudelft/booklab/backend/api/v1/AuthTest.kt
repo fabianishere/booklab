@@ -16,15 +16,26 @@
 
 package nl.tudelft.booklab.backend.api.v1
 
+import com.typesafe.config.ConfigFactory
+import io.ktor.application.Application
+import io.ktor.application.install
+import io.ktor.auth.Authentication
+import io.ktor.config.HoconApplicationConfig
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.http.formUrlEncode
+import io.ktor.routing.route
+import io.ktor.routing.routing
+import io.ktor.server.testing.createTestEnvironment
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
-import nl.tudelft.booklab.backend.withTestEngine
+import io.ktor.server.testing.withApplication
+import nl.tudelft.booklab.backend.auth.OAuthConfiguration
+import nl.tudelft.booklab.backend.auth.asOAuthConfiguration
+import nl.tudelft.booklab.backend.configureOAuth
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
@@ -35,7 +46,7 @@ import org.junit.jupiter.api.Test
  */
 internal class AuthTest {
     @Test
-    fun `authorization via password is allowed`() = withTestEngine {
+    fun `authorization via password is allowed`() = withApplication(authEnvironment()) {
         val parameters = Parameters.build {
             append("grant_type", "password")
             append("client_id", "test")
@@ -54,7 +65,7 @@ internal class AuthTest {
     }
 
     @Test
-    fun `authorization via client credentials is allowed`() = withTestEngine {
+    fun `authorization via client credentials is allowed`() = withApplication(authEnvironment()) {
         val parameters = Parameters.build {
             append("grant_type", "client_credentials")
             append("client_id", "test")
@@ -67,6 +78,27 @@ internal class AuthTest {
         }
         with(request) {
             assertEquals(HttpStatusCode.OK, response.status())
+        }
+    }
+
+    private fun authEnvironment() = createTestEnvironment {
+        config = HoconApplicationConfig(ConfigFactory.load("application-test.conf"))
+        module { authModule() }
+    }
+
+    private fun Application.authModule() {
+        install(Authentication) {
+            val oauth = environment.config.config("auth").asOAuthConfiguration().also {
+                attributes.put(OAuthConfiguration.KEY, it)
+            }
+            configureOAuth(oauth)
+        }
+
+        routing {
+            val oauth = application.attributes[OAuthConfiguration.KEY]
+            route("/api/auth") {
+                auth(oauth)
+            }
         }
     }
 }

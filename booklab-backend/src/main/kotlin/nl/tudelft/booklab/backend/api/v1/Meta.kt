@@ -23,22 +23,22 @@ import io.ktor.routing.Route
 import io.ktor.routing.application
 import io.ktor.routing.get
 import io.ktor.routing.route
-import nl.tudelft.booklab.backend.auth.oauth
+import nl.tudelft.booklab.backend.auth.OAuthConfiguration
 
 /**
  * Define meta endpoints at the current route for the REST api.
  */
 fun Route.meta() {
-    route("/auth") { auth() }
+    route("/auth") { auth(application.attributes[OAuthConfiguration.KEY]) }
     get("/health") { call.respond(HealthCheck(true)) }
 }
 
 /**
  * Define the authentication endpoints at the current route of the REST api.
+ *
+ * @param oauth The oauth configuration to use.
  */
-private fun Route.auth() {
-    val oauth = application.oauth
-
+internal fun Route.auth(oauth: OAuthConfiguration) {
     // Define OAuth token endpoint
     route("/token") { oauthTokenEndpoint(oauth.server) }
 

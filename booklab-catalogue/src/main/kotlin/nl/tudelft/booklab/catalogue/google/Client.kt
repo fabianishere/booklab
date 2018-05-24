@@ -27,16 +27,20 @@ import kotlin.math.min
  * A [CatalogueClient] that uses the Google Books API to query lists of [Book]s.
  * it implements the [CatalogueClient] interface
  *
- * @property apiKey the key is used by Google and is required for every query
  * @property catalogue where the books are queried from. it defaults to the entire
  * Google Books database
- *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
 class GoogleCatalogueClient(private val catalogue: Books) : CatalogueClient {
 
     override suspend fun query(keywords: String, max: Int): List<Book> {
-        return catalogue.volumes().list(keywords).setMaxResults(min(40, max).toLong()).execute().items
+        val response = catalogue.volumes().list(keywords).setMaxResults(min(40, max).toLong()).execute()
+
+        // BUG: The items field is null when no items could be found, return null instead
+        if (response.totalItems == 0) {
+            return emptyList()
+        }
+        return response.items
             .asSequence()
             .filter { it.volumeInfo.industryIdentifiers != null }
             .filter { it.volumeInfo.authors != null }

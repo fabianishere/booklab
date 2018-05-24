@@ -18,16 +18,17 @@ package nl.tudelft.booklab.backend
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
+import com.google.api.client.json.jackson2.JacksonFactory
+import com.google.api.services.books.Books
+import com.google.api.services.books.BooksRequestInitializer
+import com.google.cloud.vision.v1.ImageAnnotatorClient
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.auth.Authentication
 import io.ktor.auth.UserIdPrincipal
 import io.ktor.auth.oauth2.oauth
-import io.ktor.auth.oauth2.repository.ClientHashedTableRepository
 import io.ktor.auth.oauth2.repository.ClientIdPrincipal
-import io.ktor.auth.oauth2.repository.UserHashedTableRepository
-import io.ktor.auth.oauth2.repository.parseClients
-import io.ktor.auth.oauth2.repository.parseUsers
 import io.ktor.features.CORS
 import io.ktor.features.Compression
 import io.ktor.features.ContentNegotiation
@@ -37,11 +38,12 @@ import io.ktor.http.HttpMethod
 import io.ktor.jackson.jackson
 import io.ktor.routing.route
 import io.ktor.routing.routing
-import io.ktor.util.getDigestFunction
 import nl.tudelft.booklab.backend.api.v1.api
-import nl.tudelft.booklab.backend.auth.JwtConfiguration
 import nl.tudelft.booklab.backend.auth.OAuthConfiguration
-import nl.tudelft.booklab.backend.auth.buildJwtConfiguration
+import nl.tudelft.booklab.backend.auth.asOAuthConfiguration
+import nl.tudelft.booklab.catalogue.google.GoogleCatalogueClient
+import nl.tudelft.booklab.vision.detection.opencv.CannyBookDetector
+import nl.tudelft.booklab.vision.ocr.gvision.GoogleVisionTextExtractor
 
 /**
  * The main entry point of the BookLab web application.
@@ -50,35 +52,14 @@ fun Application.booklab() {
     install(DefaultHeaders)
     install(Compression)
     install(ContentNegotiation) {
-        jackson {
-            configure(SerializationFeature.INDENT_OUTPUT, true)
-            registerModule(JavaTimeModule())
-        }
+        configureJackson()
     }
 
     install(Authentication) {
-        // We create an OAuth authorization server for authorizing REST API calls
-        val jwt = buildJwtConfiguration(environment.config.config("auth.jwt")).also {
-            attributes.put(JwtConfiguration.KEY, it)
-        }
-        val clientRepository = ClientHashedTableRepository(
-            digester = getDigestFunction("SHA-256", salt = "ktor"),
-            table = environment.config.config("auth").parseClients()
-        )
-        val userRepository = UserHashedTableRepository(
-            digester = getDigestFunction("SHA-256", salt = "ktor"),
-            table = environment.config.config("auth").parseUsers()
-        )
-        val oauth = OAuthConfiguration(clientRepository, userRepository, jwt).also {
+        val oauth = environment.config.config("auth").asOAuthConfiguration().also {
             attributes.put(OAuthConfiguration.KEY, it)
         }
-
-        // Create an unnamed authentication provider for protecting resources using
-        // the OAuth authorization server.
-        oauth<ClientIdPrincipal, UserIdPrincipal>("rest:detection") {
-            server = oauth.server
-            scopes = setOf("detection")
-        }
+        configureOAuth(oauth)
     }
 
     // Allow the different hosts to connect to the REST API
@@ -88,12 +69,61 @@ fun Application.booklab() {
         // Allow the Authorization header to be sent to REST endpoints
         header(HttpHeaders.Authorization)
         method(HttpMethod.Post)
-        method(HttpMethod.Put)
+    }
+
+    // Define the catalogue configuration
+    val catalogue = CatalogueConfiguration(
+        client = GoogleCatalogueClient(
+            Books.Builder(
+                GoogleNetHttpTransport.newTrustedTransport(),
+                JacksonFactory.getDefaultInstance(),
+                null
+            )
+                .setApplicationName("booklab")
+                .setGoogleClientRequestInitializer(BooksRequestInitializer(environment.config.property("catalogue.key").getString()))
+                .build()
+        )
+    ).also {
+        attributes.put(CatalogueConfiguration.KEY, it)
+    }
+
+    // Define the vision configuration
+    // TODO Implement a way to make this configuration configurable via the application.conf file
+    VisionConfiguration(
+            detector = CannyBookDetector(),
+            extractor = GoogleVisionTextExtractor(ImageAnnotatorClient.create()),
+            catalogue = catalogue
+    ).also {
+        attributes.put(VisionConfiguration.KEY, it)
     }
 
     routing {
         route("/api") {
             api()
         }
+    }
+}
+
+/**
+ * Configure the Jackson support for the [ContentNegotiation] feature.
+ */
+fun ContentNegotiation.Configuration.configureJackson() {
+    jackson {
+        configure(SerializationFeature.INDENT_OUTPUT, true)
+        registerModule(JavaTimeModule())
+    }
+}
+
+/**
+ * Configure the OAuth authentication providers for an application.
+ *
+ * @param oauth The [OAuthConfiguration] to use for the authentication provider.
+ */
+fun Authentication.Configuration.configureOAuth(oauth: OAuthConfiguration) {
+    // Create an unnamed authentication provider for protecting resources using
+    // the OAuth authorization server.
+    oauth<ClientIdPrincipal, UserIdPrincipal>("rest:detection") {
+        server = oauth.server
+        scopes = setOf("detection")
     }
 }
