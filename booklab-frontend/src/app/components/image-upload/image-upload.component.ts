@@ -42,11 +42,11 @@ export class ImageUploadComponent implements OnInit {
         reader.readAsDataURL(files[0]);
         reader.onload = () => {
             this.img = reader.result;
-            this.http.checkHealth();
-            this.http.putImg(ImageUploadComponent.toBlob(this.img)).subscribe((res) => {
-                this.results = res.results.map(b => Book.getBook(b));
-            }, error => this.http.handleError(error));
         };
+        this.http.checkHealth();
+        this.http.putImg(files[0]).subscribe((res) => {
+            this.results = res.results.map(b => Book.getBook(b));
+        }, error => this.http.handleError(error));
         this.addedToShelf = false;
 
     }
@@ -68,29 +68,5 @@ export class ImageUploadComponent implements OnInit {
     deleteBook(book: Book) {
         this.results = this.addedToShelf? this.results :
             this.results.filter(b => b.getMainTitle()!=book.getMainTitle());
-    }
-
-    /**
-     * Helper method to convert the given data URI to a blob.
-     *
-     * @param uri The data uri to convert.
-     * @returns {Blob} The resulting binary blob.
-     */
-    private static toBlob(uri) {
-        // convert base64 to raw binary data held in a string
-        const byteString = atob(uri.split(',')[1]);
-
-        // separate out the mime component
-        const mimeString = uri.split(',')[0].split(':')[1].split(';')[0];
-
-        // write the bytes of the string to an ArrayBuffer
-        const arrayBuffer = new ArrayBuffer(byteString.length);
-        const _ia = new Uint8Array(arrayBuffer);
-        for (let i = 0; i < byteString.length; i++) {
-            _ia[i] = byteString.charCodeAt(i);
-        }
-
-        const dataView = new DataView(arrayBuffer);
-        return new Blob([dataView], { type: mimeString });
     }
 }
