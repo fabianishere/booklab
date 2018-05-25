@@ -84,14 +84,13 @@ public class GoogleVisionBookDetector extends AbstractBookDetector {
     }
 
     private static boolean isHorizontal(List<MatOfPoint> boxes) {
-        double averageRatio = boxes.stream()
+        long horizontalBoxes = boxes.stream()
             .map(Imgproc::boundingRect)
-            .mapToDouble(a -> (double) a.width / (double) a.height)
-            .average().getAsDouble();
+            .filter(rect -> rect.width > rect.height)
+            .count();
 
-        System.out.println(averageRatio);
-
-        return averageRatio > 1;
+        double ratio = (double) horizontalBoxes / (double) boxes.size();
+        return ratio > 0.5;
     }
 
     /**
