@@ -16,7 +16,7 @@
 
 package nl.tudelft.booklab.recommender
 
-import nl.tudelft.booklab.catalogue.sru.Book
+import nl.tudelft.booklab.catalogue.Book
 
 /**
  * a [Recommender] that recommends solely based on the authors

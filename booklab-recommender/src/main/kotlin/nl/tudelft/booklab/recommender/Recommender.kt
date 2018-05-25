@@ -16,7 +16,7 @@
 
 package nl.tudelft.booklab.recommender
 
-import nl.tudelft.booklab.catalogue.sru.Book
+import nl.tudelft.booklab.catalogue.Book
 
 /**
  * an interface that standardizes the different types of recommenders

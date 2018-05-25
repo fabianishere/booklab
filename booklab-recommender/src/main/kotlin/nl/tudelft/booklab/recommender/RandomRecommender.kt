@@ -16,8 +16,8 @@
 
 package nl.tudelft.booklab.recommender
 
-import nl.tudelft.booklab.catalogue.sru.Book
-import java.util.*
+import nl.tudelft.booklab.catalogue.Book
+import java.util.Random
 
 /**
  * a [Recommender] that recommends randomly

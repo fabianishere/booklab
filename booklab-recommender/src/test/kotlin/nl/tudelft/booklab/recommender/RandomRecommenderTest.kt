@@ -16,14 +16,14 @@
 
 package nl.tudelft.booklab.recommender
 
-import nl.tudelft.booklab.catalogue.sru.Book
-import nl.tudelft.booklab.catalogue.sru.Title
-import nl.tudelft.booklab.catalogue.sru.TitleType
+import nl.tudelft.booklab.catalogue.Book
+import nl.tudelft.booklab.catalogue.Title
+import nl.tudelft.booklab.catalogue.TitleType
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import java.util.*
+import java.util.Random
 
 class RandomRecommenderTest {
     private val recommender = RandomRecommender(Random(123))
