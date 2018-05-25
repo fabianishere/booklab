@@ -115,7 +115,6 @@ docker {
 
     javaApplication {
         maintainer = 'Fabian Mastenbroek "f.s.mastenbroek@student.tudelft.nl"'
-        ports = [8080]
         tag = "booklab-backend:${project.version}"
     }
 }

@@ -14,7 +14,7 @@ services:
     volumes:
       - ./config:/config:ro
     environment:
-      - GOOGLE_APPLICATION_CREDENTIALS=/config/keys.json
+      - PORT=80
 
   proxy:
     image: "booklab-proxy:${TAG-latest}"
