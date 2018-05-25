@@ -1,7 +1,9 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
-import {DetectionResult} from '../../dataTypes';
+import {Book, DetectionResult, Secure} from '../../dataTypes';
+import {catchError} from 'rxjs/operators';
+import {Router} from '@angular/router';
 
 /**
  * Interface to model health response from api.
@@ -18,11 +20,10 @@ export class HttpService {
 
     /**
      * Constructor for HttpService
-     * @param {HttpClient} http
+     * @param {HttpClient} http The HTTP client to use.
+     * @param {Router} router The Angular router to use.
      */
-    constructor(private http: HttpClient) {
-    }
-
+    constructor(private http: HttpClient, private router: Router) {}
     /**
      * Checks if the backend is running.
      */
@@ -38,7 +39,7 @@ export class HttpService {
      * @returns {Observable<DetectionResult>}: result of the backend processing
      */
     putImg(img: Blob): Observable<DetectionResult> {
-        return this.http.put<DetectionResult>('http://localhost:8080/api/detection', img);
+        return this.http.post<DetectionResult>('http://localhost:8080/api/detection', img);
     }
 
     /**
@@ -48,6 +49,14 @@ export class HttpService {
      * @returns {Observable<DetectionResult>}: result of the backend search
      */
     findBook(nameInput: string, authorInput: string): Observable<DetectionResult> {
-        return this.http.get<DetectionResult>('http://localhost:8080/api/search?title=' + nameInput + '&author=' + authorInput);
+
+        return this.http.get<DetectionResult>('http://localhost:8080/api/search?'
+            + 'title=' + Secure.checkInput(nameInput)
+            + '&author=' + Secure.checkInput(authorInput));
+
+    }
+
+    handleError(error) {
+        this.router.navigate(['/sorry']);
     }
 }

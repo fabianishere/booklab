@@ -14,26 +14,19 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.backend.api.v1
+package nl.tudelft.booklab.backend
 
-import io.ktor.auth.authenticate
-import io.ktor.routing.Route
-import io.ktor.routing.application
-import io.ktor.routing.route
-import nl.tudelft.booklab.backend.CatalogueConfiguration
-import nl.tudelft.booklab.backend.VisionConfiguration
+import io.ktor.util.AttributeKey
+import nl.tudelft.booklab.catalogue.CatalogueClient
 
 /**
- * Describe the routes for the REST API of the BookLab backend.
+ * The configuration used for looking up books in a catalogue.
  */
-fun Route.api() {
-    authenticate("rest:detection") {
-        route("detection") {
-            detection(application.attributes[VisionConfiguration.KEY])
-        }
+data class CatalogueConfiguration(val client: CatalogueClient) {
+    companion object {
+        /**
+         * The attribute key that allows the user to access the [CatalogueConfiguration] object within an application.
+         */
+        val KEY = AttributeKey<CatalogueConfiguration>("CatalogueConfiguration")
     }
-    route("search") {
-        search(application.attributes[CatalogueConfiguration.KEY])
-    }
-    meta()
 }

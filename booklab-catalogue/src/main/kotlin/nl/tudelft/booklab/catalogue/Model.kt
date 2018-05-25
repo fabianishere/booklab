@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.catalogue.sru
+package nl.tudelft.booklab.catalogue
 
 /**
  * A data class representing a book
  *
- * @property titles is a list of titles
- * @see Title
+ * @property titles is a list of all [Title]s and subtitles
  * @property authors is a list of author names
  * @property ids is a list of isbn identifiers
  *
@@ -33,8 +32,8 @@ data class Book(
 )
 
 /**
- * Enumeration representing different types of titles
- * as of yet only the main-title and sub-title types exist
+ * Enumeration representing difference between main title and
+ * a subtitle
  *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
@@ -43,11 +42,10 @@ enum class TitleType {
 }
 
 /**
- * Data class that represents a title
+ * A data class that represents a book title
  *
  * @property value the actual title
- * @property type the type of the title
- * @see TitleType
+ * @property type the [TitleType]
  *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */

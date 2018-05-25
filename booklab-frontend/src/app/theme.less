@@ -8,6 +8,23 @@ a {
     font-size: 20px;
 }
 
+.flex {
+    display: flex;
+    flex-direction: row;
+}
+
+app-login {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+}
+
+.blur {
+    -webkit-filter: blur(5px);
+}
+
 p {
     color: black;
     font-family: Arial, sans-serif;
@@ -42,6 +59,11 @@ p {
         display: none;
         -webkit-appearance: none;
     }
+}
+
+input[type="text"], input[type="password"] {
+    width: 350px;
+    border: 1px solid @booklab-yellow;
 }
 
 .flex {
