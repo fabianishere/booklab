@@ -6,11 +6,17 @@ import {UserService} from '../../services/user/user.service';
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.less']
 })
+
+/**
+ * Class for header component.
+ */
 export class HeaderComponent implements OnInit {
     @Input() public app;
 
-    constructor(public user: UserService) {
-    }
+    /**
+     * Constructor for HeaderComponent.
+     */
+    constructor(public user: UserService) {}
 
     ngOnInit() {
     }

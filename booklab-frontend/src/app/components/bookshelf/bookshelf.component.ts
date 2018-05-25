@@ -8,6 +8,7 @@ import {HttpService} from '../../services/http/http.service';
     templateUrl: './bookshelf.component.html',
     styleUrls: ['./bookshelf.component.less']
 })
+
 export class BookshelfComponent implements OnInit {
 
     public books: Book[];
@@ -15,6 +16,12 @@ export class BookshelfComponent implements OnInit {
     public nameInput: string;
     public authorInput: string;
 
+    /**
+     * Constructor for bookshelf component, handles user-input to the bookshelf.
+     *
+     * @param {UserService} user
+     * @param {HttpService} http
+     */
     constructor(private user: UserService, private http: HttpService) {
     }
 
@@ -25,10 +32,17 @@ export class BookshelfComponent implements OnInit {
         this.enterBook = false;
     }
 
+    /**
+     * Deletes book from the users bookshelf.
+     * @param {Book} book: book to be deleted
+     */
     deleteBook(book: Book) {
         this.user.deleteFromBookshelf(book);
     }
 
+    /**
+     * Finds a book in the api with best corresponding title and author and adds it to the bookshelf.
+     */
     findBook() {
         if (!this.nameInput || !this.authorInput) {
             return;
