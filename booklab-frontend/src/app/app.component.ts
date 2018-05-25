@@ -16,7 +16,7 @@ export class AppComponent {
   /**
    * Construct a new {@link AppComponent}.
    *
-   * @param oauthService {OAuthService} oauthService The services used as OAuth client.
+   * @param oauthService {OAuthService} The services used as OAuth client.
    */
   constructor(private oauthService: OAuthService) {
       this.configureAuthorization();
@@ -28,6 +28,5 @@ export class AppComponent {
   private configureAuthorization() {
       this.oauthService.configure(authConfig);
       this.oauthService.tokenValidationHandler = new NullValidationHandler();
-
   }
 }

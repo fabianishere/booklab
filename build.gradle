@@ -17,10 +17,10 @@
 plugins {
     id "base"
     id "jacoco"
-    id 'com.github.ksoichiro.console.reporter' version '0.5.0'
+    id "com.github.ksoichiro.console.reporter" version "0.5.0"
 }
 
-subprojects {
+allprojects {
     group = 'nl.tudelft.booklab'
     version = '1.0'
 }
@@ -32,12 +32,13 @@ repositories {
 evaluationDependsOnChildren()
 
 task jacocoTestReport(type: JacocoReport) {
-    dependsOn subprojects*.test
-
     executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
 
     subprojects.each {
-        sourceSets it.sourceSets.main
+        if (it.plugins.hasPlugin("java") || it.plugins.hasPlugin("kotlin")) {
+            sourceSets it.sourceSets.main
+            dependsOn it.test
+        }
     }
 
     reports {
