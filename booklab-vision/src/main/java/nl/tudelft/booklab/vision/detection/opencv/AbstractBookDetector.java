@@ -4,13 +4,10 @@ import nl.tudelft.booklab.vision.detection.BookDetector;
 import org.jetbrains.annotations.NotNull;
 import org.opencv.core.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.opencv.core.Core.REDUCE_MAX;
-import static org.opencv.core.Core.reduce;
+import static org.opencv.core.Core.*;
 import static org.opencv.imgproc.Imgproc.GaussianBlur;
 import static org.opencv.imgproc.Imgproc.line;
 
@@ -19,6 +16,11 @@ public abstract class AbstractBookDetector implements BookDetector {
     static {
         nu.pattern.OpenCV.loadShared();
         System.loadLibrary(org.opencv.core.Core.NATIVE_LIBRARY_NAME);
+    }
+
+    static List<Mat> findBooks(Mat shelf, Mat mask) {
+        List<Integer> cropLocations = findCropLocations(mask);
+        return cropBooks(shelf, cropLocations, false);
     }
 
     /**
@@ -63,6 +65,70 @@ public abstract class AbstractBookDetector implements BookDetector {
         return new Mat(image, roi);
     }
 
+
+    static Map<Mat, Mat> findShelves(Mat image, Mat mask) {
+        Mat rotatedMask = new Mat();
+        rotate(mask, rotatedMask, ROTATE_90_COUNTERCLOCKWISE);
+
+        List<Integer> cropLocations = findCropLocations(rotatedMask);
+        Map<Integer, Integer> locations = findShelfLocations(image, cropLocations);
+        List<Mat> shelves = cropShelves(image, locations);
+        List<Mat> shelfMasks = cropShelves(mask, locations);
+
+        Map<Mat, Mat> shelfMaskMap = new HashMap<>();
+        for (int i = 0; i < shelves.size(); i++) {
+            shelfMaskMap.put(shelves.get(i), shelfMasks.get(i));
+        }
+        
+        return shelfMaskMap;
+    }
+
+    @NotNull
+    static Map<Integer, Integer> findShelfLocations(Mat image, List<Integer> cropLocations) {
+        Map<Integer, Integer> locations = new HashMap<>();
+
+        for (int i = 1; i < cropLocations.size(); i++) {
+            int distance = cropLocations.get(i) - cropLocations.get(i - 1);
+
+            if (distance > 0.2 * image.width()) {
+                locations.put(cropLocations.get(i - 1), cropLocations.get(i));
+            }
+        }
+        return locations;
+    }
+
+
+    static List<Mat> cropShelves(Mat image, Map<Integer, Integer> locations) {
+        List<Mat> shelves = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry : locations.entrySet()) {
+            int y = entry.getKey();
+            int height = entry.getValue() - y;
+            Mat shelf = cropShelf(image, y, height);
+            shelves.add(shelf);
+        }
+
+        return shelves;
+    }
+
+    /**
+     * Crops a segment from the image
+     *
+     * @param image      openCV matrix containing an image
+     * @param y          y-coordinate
+     * @param height     height of segment
+     * @return cropped image
+     */
+    @NotNull
+    static Mat cropShelf(Mat image, int y, int height) {
+        if (y + height > image.rows()) {
+            height = height - (y + height - image.rows());
+        }
+
+        Rect roi = new Rect(0, y, image.cols(), height);
+        return new Mat(image, roi);
+    }
+
+
     @NotNull
     static List<Integer> findCropLocations(Mat image) {
         Mat reduced = new Mat();
@@ -76,12 +142,10 @@ public abstract class AbstractBookDetector implements BookDetector {
         }
 
         List<Integer> localMinima = findLocalMinima(coordinates, 5);
+        localMinima.add(0, 0);
+        localMinima.add(image.cols());
 
-        List<Integer> cropLocations = new ArrayList<>(localMinima);
-        cropLocations.add(0, 0);
-        cropLocations.add(image.cols());
-
-        return cropLocations;
+        return localMinima;
     }
 
     /**

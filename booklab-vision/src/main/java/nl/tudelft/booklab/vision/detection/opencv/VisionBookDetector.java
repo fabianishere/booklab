@@ -7,12 +7,16 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
+import org.opencv.imgproc.Imgproc;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.opencv.core.Core.ROTATE_90_CLOCKWISE;
+import static org.opencv.core.Core.rotate;
 import static org.opencv.imgproc.Imgproc.fillPoly;
 
 public class VisionBookDetector extends AbstractBookDetector {
@@ -31,28 +35,46 @@ public class VisionBookDetector extends AbstractBookDetector {
      */
     private static List<Mat> detectBooks(Mat image) {
         image = ImageProcessingHelper.colorhistEqualize(image);
-        List<Integer> cropLocations = detectBookLocations(image);
-        return cropBooks(image, cropLocations, false);
+        List<Mat> books = new ArrayList<>();
+
+        Mat mask = findTextRegions(image);
+        Map<Mat, Mat> shelfMaskMap = findShelves(image, mask);
+
+        for (Map.Entry<Mat, Mat> entry : shelfMaskMap.entrySet()) {
+            books.addAll(findBooks(entry.getKey(), entry.getValue()));
+        }
+
+        return books;
     }
 
-    /**
-     * Find the locations of the books in the image
-     *
-     * @param image openCV matrix containing an image
-     * @return list of x coordinates of each book-segement
-     */
-    private static List<Integer> detectBookLocations(Mat image) {
+    private static Mat findTextRegions(Mat image) {
         List<AnnotateImageRequest> requests = new ArrayList<>();
         requests.add(GoogleVisionTextExtractor.createImageRequest(image));
 
-        List<MatOfPoint> points = getImageResponseTextBoxes(requests);
+        List<MatOfPoint> textBoxes = getImageResponseTextBoxes(requests);
 
         Mat mask = new Mat(image.size(), image.type());
         mask.setTo(new Scalar(0, 0, 0));
 
-        fillPoly(mask, points, new Scalar(255, 255, 255));
+        fillPoly(mask, textBoxes, new Scalar(255, 255, 255));
 
-        return findCropLocations(mask);
+        if (isHorizontal(textBoxes)) {
+            rotate(mask, mask, ROTATE_90_CLOCKWISE);
+            rotate(image, image, ROTATE_90_CLOCKWISE);
+        }
+
+        return mask;
+    }
+
+    private static boolean isHorizontal(List<MatOfPoint> boxes) {
+        double averageRatio = boxes.stream()
+            .map(Imgproc::boundingRect)
+            .mapToDouble(a -> (double) a.width / (double) a.height)
+            .average().getAsDouble();
+
+        System.out.println(averageRatio);
+
+        return averageRatio > 1;
     }
 
     /**
