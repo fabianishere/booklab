@@ -27,7 +27,7 @@ build:
 
 test:
   stage: test
-  script: ./gradlew check
+  script: ./gradlew --build-cache check
   coverage: '/booklab:\s*(\d+(?:\.\d+)?%)/'
   cache:
     key: "$CI_COMMIT_REF_NAME"
