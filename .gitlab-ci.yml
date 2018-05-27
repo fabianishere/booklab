@@ -13,7 +13,7 @@ before_script:
   - export GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud-service.key.json
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
-build:
+build:backend:
   stage: build
   script: ./gradlew --build-cache assemble
   cache:
@@ -24,11 +24,26 @@ build:
       - "*/build"
       - .gradle
 
+build:frontend:
+   image: node:8
+   stage: build
+   script:
+    - cd booklab-frontend
+    - npm install
+    - npm run build
+   cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - booklab-frontend/node_modules
+      - booklab-frontend/build
 
-test:
+test:backend:
   stage: test
   script: ./gradlew check
   coverage: '/booklab:\s*(\d+(?:\.\d+)?%)/'
+  dependencies:
+    - build:backend
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
@@ -36,3 +51,39 @@ test:
       - build
       - "*/build"
       - .gradle
+
+test:frontend:
+  image: alekzonder/puppeteer
+  stage: test
+  script:
+    - cd booklab-frontend
+    - npm install
+    - npm run ng test -- --browsers ChromeCI --code-coverage --watch false
+  coverage: '/Branches\s*:\s*(\d+(?:\.\d+)?%)/'
+  dependencies:
+    - build:frontend
+  cache:
+      key: "$CI_COMMIT_REF_NAME"
+      policy: pull
+      paths:
+        - booklab-frontend/node_modules
+        - booklab-frontend/build
+
+test:frontend:e2e:
+  image: alekzonder/puppeteer
+  stage: test
+  variables:
+    HEADLESS: "TRUE"
+  script:
+    - cd booklab-frontend
+    - npm install
+    - npm run ng e2e
+  dependencies:
+    - build:frontend
+  cache:
+      key: "$CI_COMMIT_REF_NAME"
+      policy: pull
+      paths:
+        - booklab-frontend/node_modules
+        - booklab-frontend/build
+  allow_failure: true
