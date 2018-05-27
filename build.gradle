@@ -17,7 +17,6 @@
 plugins {
     id "base"
     id "jacoco"
-    id "com.github.ksoichiro.console.reporter" version "0.5.0"
 }
 
 allprojects {
@@ -53,8 +52,31 @@ task jacocoTestReport(type: JacocoReport) {
         xml.destination file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")
         html.enabled = true
         html.destination file("${buildDir}/reports/jacoco/test/html")
-        csv.enabled = false
     }
 }
 
 check.dependsOn jacocoTestReport
+
+/* A task for computing and printing a branch coverage summary */
+jacocoTestReport.doLast {
+    logger.lifecycle('Branch coverage summary:')
+
+    def slurper = new XmlSlurper()
+    slurper.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
+    slurper.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
+
+    def spacing = allprojects*.name.max().length() + 2
+    allprojects.each {
+        if (!it.plugins.hasPlugin("jacoco"))  {
+            return
+        }
+
+        def res = slurper.parse it.jacocoTestReport.reports.xml.destination
+        def counter = res.counter.find { it.@type == 'BRANCH' }
+        def covered = counter.@covered.toInteger()
+        def missed = counter.@missed.toInteger()
+        def total = covered + missed
+
+        logger.lifecycle(String.format("%-${spacing}s %,.1f%%", it.name + ':', (covered / total) * 100))
+    }
+}
