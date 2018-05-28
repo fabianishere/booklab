@@ -30,6 +30,7 @@ plugins {
     id "java"
     id "jacoco"
     id "org.jetbrains.kotlin.jvm" version "1.2.41"
+    id "org.jetbrains.dokka" version "0.9.17"
     id "org.jmailen.kotlinter" version "1.12.0"
 }
 

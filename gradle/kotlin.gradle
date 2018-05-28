@@ -60,3 +60,8 @@ task benchmark(type: Test) {
         includeTags 'benchmark'
     }
 }
+
+/* Documentation generation */
+dokka {
+    jdkVersion = 8
+}
