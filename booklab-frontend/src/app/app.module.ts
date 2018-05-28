@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
+import {APP_BASE_HREF} from '@angular/common';
 
 import { OAuthModule } from 'angular-oauth2-oidc';
 
@@ -17,21 +18,7 @@ import { SidebarComponent} from './components/sidebar/sidebar.component';
 import { LoginComponent } from './components/login/login.component';
 import { SorryComponent } from './components/sorry/sorry.component';
 import { environment } from "../environments/environment";
-
-const routes: Routes = [
-    {
-        path: '',
-        component: ImageUploadComponent
-    },
-    {
-        path: 'bookshelf',
-        component: BookshelfComponent
-    },
-    {
-        path: 'sorry',
-        component: SorryComponent
-    }
-];
+import {AppRoutes} from "./app.routing";
 
 @NgModule({
     declarations: [
@@ -47,10 +34,7 @@ const routes: Routes = [
         BrowserModule,
         FormsModule,
         HttpClientModule,
-        RouterModule.forRoot(
-            routes,
-            { enableTracing: true } // <-- debugging purposes only
-        ),
+        AppRoutes,
         OAuthModule.forRoot({
             resourceServer: {
                 allowedUrls: [environment.apiUrl],
@@ -60,7 +44,8 @@ const routes: Routes = [
     ],
     providers: [
         HttpService,
-        UserService
+        UserService,
+        {provide: APP_BASE_HREF, useValue : '/' }
     ],
     bootstrap: [AppComponent]
 })
