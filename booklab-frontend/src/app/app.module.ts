@@ -16,6 +16,8 @@ import { BookshelfComponent } from './components/bookshelf/bookshelf.component';
 import { SidebarComponent} from './components/sidebar/sidebar.component';
 import { LoginComponent } from './components/login/login.component';
 import { SorryComponent } from './components/sorry/sorry.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
 
 const routes: Routes = [
     {
@@ -55,12 +57,14 @@ const routes: Routes = [
                 allowedUrls: ['http://localhost:8080'],
                 sendAccessToken: true,
             },
-        })
+        }),
+        NgbModule.forRoot()
     ],
     providers: [
         HttpService,
         UserService
     ],
-    bootstrap: [AppComponent]
+    bootstrap: [AppComponent],
+    entryComponents: [LoginComponent]
 })
 export class AppModule { }

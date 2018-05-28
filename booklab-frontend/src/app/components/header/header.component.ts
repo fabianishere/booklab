@@ -1,5 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {UserService} from '../../services/user/user.service';
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {LoginComponent} from "../login/login.component";
 
 @Component({
     selector: 'app-header',
@@ -16,8 +18,12 @@ export class HeaderComponent implements OnInit {
     /**
      * Constructor for HeaderComponent.
      */
-    constructor(public user: UserService) {}
+    constructor(public user: UserService, public modal: NgbModal) {}
 
     ngOnInit() {
+    }
+
+    login() {
+        this.modal.open(LoginComponent);
     }
 }

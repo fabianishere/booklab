@@ -11,6 +11,7 @@ import { authConfig } from './auth.config';
 export class AppComponent {
   title = 'BookLab';
   login = false;
+  menuCollapse = true;
 
 
   /**

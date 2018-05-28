@@ -6,18 +6,23 @@ body {
 }
 
 .left {
-    position: absolute;
-    width: 160px;
-    height: 90%;
+    height: 100%;
 }
 
 .right {
-    position: absolute;
-    margin-left: 160px;
-    height: 90%;
-    width: calc(100% - 160px);
+    height: 100%;
 }
 
 app-login {
     position: absolute;
+}
+
+.top {
+    display: flex;
+    flex-flow: column nowrap;
+    height: 100%;
+}
+
+.main {
+    flex-grow: 1;
 }
