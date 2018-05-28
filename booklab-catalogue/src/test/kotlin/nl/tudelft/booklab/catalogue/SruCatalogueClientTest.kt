@@ -18,8 +18,7 @@ package nl.tudelft.booklab.catalogue
 
 import kotlinx.coroutines.experimental.runBlocking
 import nl.tudelft.booklab.catalogue.sru.SruCatalogueClient
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.equalTo
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 internal class SruCatalogueClientTest {
@@ -30,7 +29,7 @@ internal class SruCatalogueClientTest {
         runBlocking {
             val books = sruClient.query("de ontdekking van de hemel harry mullish", 5)
 
-            assertThat(books.size, equalTo(5))
+            assertEquals(5, books.size)
         }
     }
 }

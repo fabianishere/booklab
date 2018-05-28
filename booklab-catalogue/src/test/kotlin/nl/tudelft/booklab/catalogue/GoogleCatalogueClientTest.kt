@@ -22,8 +22,7 @@ import com.google.api.services.books.Books
 import com.google.api.services.books.BooksRequestInitializer
 import kotlinx.coroutines.experimental.runBlocking
 import nl.tudelft.booklab.catalogue.google.GoogleCatalogueClient
-import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.MatcherAssert.assertThat
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -47,7 +46,7 @@ class GoogleCatalogueClientTest {
         runBlocking {
             val results = client.query("harry potter steen der wijzen", 5)
 
-            assertThat(results.size, equalTo(4))
+            assertEquals(4, results.size)
         }
     }
 
@@ -56,7 +55,7 @@ class GoogleCatalogueClientTest {
         runBlocking {
             val results = client.query("de ontdekking van de hemel", "harry mullish", 5)
 
-            assertThat(results.size, equalTo(5))
+            assertEquals(5, results.size)
         }
     }
 }

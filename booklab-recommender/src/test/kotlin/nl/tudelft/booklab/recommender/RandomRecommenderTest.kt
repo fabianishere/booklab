@@ -19,14 +19,19 @@ package nl.tudelft.booklab.recommender
 import nl.tudelft.booklab.catalogue.Book
 import nl.tudelft.booklab.catalogue.Title
 import nl.tudelft.booklab.catalogue.TitleType
-import org.hamcrest.CoreMatchers.equalTo
-import org.hamcrest.MatcherAssert.assertThat
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.Random
 
 class RandomRecommenderTest {
-    private val recommender = RandomRecommender(Random(123))
+    private lateinit var recommender: Recommender
+
+    @BeforeEach
+    fun setUp() {
+        recommender = RandomRecommender(Random(123))
+    }
 
     @Test
     fun `default test`() {
@@ -46,9 +51,9 @@ class RandomRecommenderTest {
 
         val results = recommender.recommend(collection, candidates)
 
-        assertThat(results[0].first, equalTo(candidates[1]))
-        assertThat(results[1].first, equalTo(candidates[0]))
-        assertThat(results[2].first, equalTo(candidates[2]))
+        assertEquals(candidates[1], results[0].first)
+        assertEquals(candidates[0], results[1].first)
+        assertEquals(candidates[2], results[2].first)
     }
 
     @Test
@@ -69,7 +74,7 @@ class RandomRecommenderTest {
 
         val results = recommender.recommend(collection, candidates)
 
-        assertThat(results.size, equalTo(2))
+        assertEquals(2, results.size)
     }
 
     @Test
@@ -82,8 +87,8 @@ class RandomRecommenderTest {
 
         val results = recommender.recommend(emptyList(), candidates)
 
-        assertThat(results.size, equalTo(3))
-        results.forEach { assertThat(it.second, equalTo(0)) }
+        assertEquals(3, results.size)
+        results.forEach { assertEquals(0, it.second) }
     }
 
     @Test
