@@ -65,6 +65,7 @@ internal class RetrievalTest {
      */
     private lateinit var mapper: ObjectMapper
     private lateinit var client: CatalogueClient
+    private lateinit var imageAnnotatorClient: ImageAnnotatorClient
 
     @BeforeEach
     fun setUp() {
@@ -75,8 +76,8 @@ internal class RetrievalTest {
             Books.Builder(GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance(), null)
                 .setApplicationName("booklab")
                 .setGoogleClientRequestInitializer(BooksRequestInitializer(key))
-                .build()
-        )
+                .build())
+        imageAnnotatorClient = ImageAnnotatorClient.create()
     }
 
     @ParameterizedTest
@@ -115,8 +116,8 @@ internal class RetrievalTest {
             route("/api/detection") {
                 detection(
                     VisionConfiguration(
-                        detector = VisionBookDetector(),
-                        extractor = GoogleVisionTextExtractor(ImageAnnotatorClient.create()),
+                        detector = VisionBookDetector(imageAnnotatorClient),
+                        extractor = GoogleVisionTextExtractor(imageAnnotatorClient),
                         catalogue = CatalogueConfiguration(client)
                             .also {
                                 attributes.put(CatalogueConfiguration.KEY, it)

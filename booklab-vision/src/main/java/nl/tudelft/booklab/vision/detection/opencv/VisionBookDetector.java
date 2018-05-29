@@ -8,7 +8,6 @@ import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +15,12 @@ import java.util.stream.Collectors;
 import static org.opencv.imgproc.Imgproc.fillPoly;
 
 public class VisionBookDetector extends AbstractBookDetector {
+
+    private final ImageAnnotatorClient client;
+
+    public VisionBookDetector(ImageAnnotatorClient client) {
+        this.client = client;
+    }
 
     @NotNull
     @Override
@@ -29,7 +34,7 @@ public class VisionBookDetector extends AbstractBookDetector {
      * @param image openCV matrix containing an image
      * @return list of images (openCV matrices)
      */
-    private static List<Mat> detectBooks(Mat image) {
+    private List<Mat> detectBooks(Mat image) {
         image = ImageProcessingHelper.colorhistEqualize(image);
         List<Integer> cropLocations = detectBookLocations(image);
         return cropBooks(image, cropLocations, false);
@@ -39,9 +44,9 @@ public class VisionBookDetector extends AbstractBookDetector {
      * Find the locations of the books in the image
      *
      * @param image openCV matrix containing an image
-     * @return list of x coordinates of each book-segement
+     * @return list of x coordinates of each book-segment
      */
-    private static List<Integer> detectBookLocations(Mat image) {
+    private List<Integer> detectBookLocations(Mat image) {
         List<AnnotateImageRequest> requests = new ArrayList<>();
         requests.add(GoogleVisionTextExtractor.createImageRequest(image));
 
@@ -61,32 +66,28 @@ public class VisionBookDetector extends AbstractBookDetector {
      * @param requests list of requests
      * @return list of strings
      */
-    private static List<MatOfPoint> getImageResponseTextBoxes(List<AnnotateImageRequest> requests) {
+    private List<MatOfPoint> getImageResponseTextBoxes(List<AnnotateImageRequest> requests) {
         List<MatOfPoint> result = new ArrayList<>();
 
-        try (ImageAnnotatorClient client = ImageAnnotatorClient.create()) {
-            BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
-            List<AnnotateImageResponse> responses = response.getResponsesList();
-            client.close();
+        BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
+        List<AnnotateImageResponse> responses = response.getResponsesList();
+        client.close();
 
-            for (AnnotateImageResponse res : responses) {
-                TextAnnotation annotation = res.getFullTextAnnotation();
+        for (AnnotateImageResponse res : responses) {
+            TextAnnotation annotation = res.getFullTextAnnotation();
 
-                List<MatOfPoint> textBoxes = annotation.getPagesList().stream()
-                    .map(Page::getBlocksList)
-                    .flatMap(List::stream)
-                    .map(Block::getParagraphsList)
-                    .flatMap(List::stream)
-                    .map(Paragraph::getWordsList)
-                    .flatMap(List::stream)
-                    .map(VisionBookDetector::getBoundingBoxPoints)
-                    .map(VisionBookDetector::toMatOfPoint)
-                    .collect(Collectors.toList());
+            List<MatOfPoint> textBoxes = annotation.getPagesList().stream()
+                .map(Page::getBlocksList)
+                .flatMap(List::stream)
+                .map(Block::getParagraphsList)
+                .flatMap(List::stream)
+                .map(Paragraph::getWordsList)
+                .flatMap(List::stream)
+                .map(VisionBookDetector::getBoundingBoxPoints)
+                .map(VisionBookDetector::toMatOfPoint)
+                .collect(Collectors.toList());
 
-                result.addAll(textBoxes);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+            result.addAll(textBoxes);
         }
 
         return result;
