@@ -20,6 +20,7 @@ plugins {
     id "jacoco"
     id "org.jetbrains.kotlin.jvm" version "1.2.40"
     id "org.jmailen.kotlinter" version "1.11.2"
+    id "com.bmuschko.docker-java-application" version "3.2.9"
 }
 
 ext {
@@ -53,6 +54,7 @@ dependencies {
         exclude group: 'ch.qos.logback', module: 'logback-classic'
     }
     testCompile "org.junit.jupiter:junit-jupiter-api:$jupiter_version"
+    testCompile "org.junit.jupiter:junit-jupiter-params:$jupiter_version"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:$jupiter_version"
     testRuntime "org.junit.platform:junit-platform-launcher:1.1.1"
 }
@@ -77,7 +79,9 @@ kotlin {
 
 /* Configure test setup */
 test {
-    useJUnitPlatform {}
+    useJUnitPlatform {
+        excludeTags 'benchmark'
+    }
 
     testLogging {
         events 'passed', 'skipped', 'failed'
@@ -90,9 +94,39 @@ test {
     finalizedBy jacocoTestReport
 }
 
+task benchmark(type: Test) {
+    group = "verification"
+    description = "Run benchmark evaluation tests"
+
+    useJUnitPlatform {
+        includeTags 'benchmark'
+    }
+}
+
 jacocoTestReport {
     reports {
         csv.enabled true
         html.enabled true
+    }
+}
+
+/* Docker build setup */
+dockerDistTar {
+    volume "/config"
+    environmentVariable('GOOGLE_APPLICATION_CREDENTIALS', '/config/keys.json')
+}
+
+docker {
+    if (System.env["GITLAB_CI"] != null) {
+        registryCredentials {
+            url = System.env["CI_REGISTRY"]
+            username = System.env["CI_REGISTRY_USER"]
+            password = System.env["CI_REGISTRY_PASSWORD"]
+        }
+    }
+
+    javaApplication {
+        maintainer = 'Fabian Mastenbroek "f.s.mastenbroek@student.tudelft.nl"'
+        tag = "booklab-backend:${project.version}"
     }
 }

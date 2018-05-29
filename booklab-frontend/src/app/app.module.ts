@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
+import {APP_BASE_HREF} from '@angular/common';
 
 import { OAuthModule } from 'angular-oauth2-oidc';
 
@@ -16,6 +17,8 @@ import { BookshelfComponent } from './components/bookshelf/bookshelf.component';
 import { SidebarComponent} from './components/sidebar/sidebar.component';
 import { LoginComponent } from './components/login/login.component';
 import { SorryComponent } from './components/sorry/sorry.component';
+import { environment } from "../environments/environment";
+import {AppRoutes} from "./app.routing";
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
@@ -34,6 +37,7 @@ const routes: Routes = [
     }
 ];
 
+
 @NgModule({
     declarations: [
         AppComponent,
@@ -48,13 +52,10 @@ const routes: Routes = [
         BrowserModule,
         FormsModule,
         HttpClientModule,
-        RouterModule.forRoot(
-            routes,
-            { enableTracing: true } // <-- debugging purposes only
-        ),
+        AppRoutes,
         OAuthModule.forRoot({
             resourceServer: {
-                allowedUrls: ['http://localhost:8080'],
+                allowedUrls: [environment.apiUrl],
                 sendAccessToken: true,
             },
         }),
@@ -62,7 +63,8 @@ const routes: Routes = [
     ],
     providers: [
         HttpService,
-        UserService
+        UserService,
+        {provide: APP_BASE_HREF, useValue : '/' }
     ],
     bootstrap: [AppComponent],
     entryComponents: [LoginComponent]

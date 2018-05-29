@@ -15,13 +15,14 @@
  */
 
 import { AuthConfig } from 'angular-oauth2-oidc';
+import { environment } from "../environments/environment";
 
 /**
  * The OAuth 2 authorization configuration for the angular-oauth2-oidc package.
  */
 export const authConfig: AuthConfig = {
     // The endpoint that issues the access tokens
-    tokenEndpoint: 'http://localhost:8080/api/auth/token',
+    tokenEndpoint: `${environment.apiUrl}/auth/token`,
 
     // The SPA's id. The SPA is registered with this id at the auth-server
     clientId: 'test',

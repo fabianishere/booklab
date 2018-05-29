@@ -1,27 +1,54 @@
-import { TestBed, async } from '@angular/core/testing';
-import { AppComponent } from './app.component';
+import {TestBed, async} from '@angular/core/testing';
+import {AppComponent} from './app.component';
+import {SidebarComponent} from "./components/sidebar/sidebar.component";
+import {BookshelfComponent} from "./components/bookshelf/bookshelf.component";
+import {HeaderComponent} from './components/header/header.component';
+import {ImageUploadComponent} from "./components/image-upload/image-upload.component";
+import {BrowserModule} from "@angular/platform-browser";
+import {FormsModule} from "@angular/forms";
+import {HttpClientModule} from "@angular/common/http";
+import {AppRoutes} from "./app.routing";
+import {OAuthModule} from "angular-oauth2-oidc";
+import {HttpService} from "./services/http/http.service";
+import {UserService} from "./services/user/user.service";
+import {APP_BASE_HREF} from "@angular/common";
+import {LoginComponent} from "./components/login/login.component";
+import {SorryComponent} from "./components/sorry/sorry.component";
+
 describe('AppComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [
-                AppComponent
+                AppComponent,
+                ImageUploadComponent,
+                HeaderComponent,
+                BookshelfComponent,
+                SidebarComponent,
+                LoginComponent,
+                SorryComponent
             ],
+            imports: [
+                BrowserModule,
+                FormsModule,
+                HttpClientModule,
+                AppRoutes,
+                OAuthModule.forRoot({
+                    resourceServer: {
+                        allowedUrls: ['http://localhost:8080'],
+                        sendAccessToken: true,
+                    },
+                })
+            ],
+            providers: [
+                HttpService,
+                UserService,
+                {provide: APP_BASE_HREF, useValue : '/' }
+            ]
         }).compileComponents();
     }));
     it('should create the app', async(() => {
         const fixture = TestBed.createComponent(AppComponent);
         const app = fixture.debugElement.componentInstance;
         expect(app).toBeTruthy();
-    }));
-    it(`should have as title 'app'`, async(() => {
-        const fixture = TestBed.createComponent(AppComponent);
-        const app = fixture.debugElement.componentInstance;
-        expect(app.title).toEqual('app');
-    }));
-    it('should render title in a h1 tag', async(() => {
-        const fixture = TestBed.createComponent(AppComponent);
-        fixture.detectChanges();
-        const compiled = fixture.debugElement.nativeElement;
-        expect(compiled.querySelector('h1').textContent).toContain('Welcome to app!');
     }));
 });
