@@ -78,7 +78,9 @@ kotlin {
 
 /* Configure test setup */
 test {
-    useJUnitPlatform {}
+    useJUnitPlatform {
+        excludeTags 'benchmark'
+    }
 
     testLogging {
         events 'passed', 'skipped', 'failed'
@@ -89,6 +91,15 @@ test {
     }
 
     finalizedBy jacocoTestReport
+}
+
+task benchmark(type: Test) {
+    group = "verification"
+    description = "Run benchmark evaluation tests"
+
+    useJUnitPlatform {
+        includeTags 'benchmark'
+    }
 }
 
 jacocoTestReport {

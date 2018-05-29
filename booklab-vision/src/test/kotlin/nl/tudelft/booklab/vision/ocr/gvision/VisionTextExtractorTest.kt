@@ -17,7 +17,7 @@
 package nl.tudelft.booklab.vision.ocr.gvision
 
 import com.google.cloud.vision.v1.ImageAnnotatorClient
-import nl.tudelft.booklab.vision.detection.opencv.VisionBookDetector
+import nl.tudelft.booklab.vision.detection.opencv.GoogleVisionBookDetector
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.junit.jupiter.api.BeforeEach
@@ -56,7 +56,7 @@ class VisionTextExtractorTest {
         val image = Imgcodecs.imdecode(MatOfByte(*stream.readBytes()), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED)
         val textExtractor = GoogleVisionTextExtractor(client)
 
-        val books = VisionBookDetector(client).detect(image)
+        val books = GoogleVisionBookDetector(client).detect(image)
         val bookText = textExtractor.batch(books)
 
         bookText.forEach(System.out::println)

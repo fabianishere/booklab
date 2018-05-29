@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 
 import static org.opencv.imgproc.Imgproc.fillPoly;
 
-public class VisionBookDetector extends AbstractBookDetector {
+public class GoogleVisionBookDetector extends AbstractBookDetector {
 
     private final ImageAnnotatorClient client;
 
-    public VisionBookDetector(ImageAnnotatorClient client) {
+    public GoogleVisionBookDetector(ImageAnnotatorClient client) {
         this.client = client;
     }
 
@@ -83,8 +83,8 @@ public class VisionBookDetector extends AbstractBookDetector {
                 .flatMap(List::stream)
                 .map(Paragraph::getWordsList)
                 .flatMap(List::stream)
-                .map(VisionBookDetector::getBoundingBoxPoints)
-                .map(VisionBookDetector::toMatOfPoint)
+                .map(GoogleVisionBookDetector::getBoundingBoxPoints)
+                .map(GoogleVisionBookDetector::toMatOfPoint)
                 .collect(Collectors.toList());
 
             result.addAll(textBoxes);

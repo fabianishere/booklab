@@ -46,52 +46,72 @@ import nl.tudelft.booklab.backend.CatalogueConfiguration
 import nl.tudelft.booklab.backend.VisionConfiguration
 import nl.tudelft.booklab.catalogue.CatalogueClient
 import nl.tudelft.booklab.catalogue.google.GoogleCatalogueClient
-import nl.tudelft.booklab.vision.detection.opencv.VisionBookDetector
+import nl.tudelft.booklab.vision.detection.BookDetector
+import nl.tudelft.booklab.vision.detection.opencv.GoogleVisionBookDetector
+import nl.tudelft.booklab.vision.ocr.TextExtractor
 import nl.tudelft.booklab.vision.ocr.gvision.GoogleVisionTextExtractor
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
-import kotlin.test.assertTrue
 
 /**
- * Integration test suite for the detection and retrieval of books
+ * This class provides a benchmark for the book recognition algorithms which we use to evaluate the
+ * accuracy of the algorithms.
  *
+ * In the future, we should extend this benchmark to the other available algorithms, not only the Google
+ * algorithms.
  */
-@Tag("integration-test")
-internal class DetectionIntegrationTest {
+@Tag("benchmark")
+internal class DetectionBenchmark {
     /**
      * The Jackson mapper class that maps JSON to objects.
      */
     private lateinit var mapper: ObjectMapper
-    private lateinit var client: CatalogueClient
-    private lateinit var imageAnnotatorClient: ImageAnnotatorClient
+
+    private lateinit var catalogue: CatalogueClient
+    private lateinit var detector: BookDetector
+    private lateinit var extractor: TextExtractor
 
     @BeforeEach
     fun setUp() {
         mapper = jacksonObjectMapper()
+
+        // Setup Google Books catalogue
         val key = System.getenv()["GOOGLE_BOOKS_API_KEY"]
         assumeTrue(key != null, "No Google Books API key given for running the Google Books tests (key GOOGLE_BOOKS_API_KEY)")
-        client = GoogleCatalogueClient(
+        catalogue = GoogleCatalogueClient(
             Books.Builder(GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance(), null)
                 .setApplicationName("booklab")
                 .setGoogleClientRequestInitializer(BooksRequestInitializer(key))
-                .build())
-        imageAnnotatorClient = try {
-            ImageAnnotatorClient.create()
-        } catch (e: Throwable) {
-            assumeTrue(false, "No Google Cloud credentials available for running the Google Vision tests.")
-            throw e
-        }
+                .build()
+        )
+
+        // XXX We cannot share the [ImageAnnotatorClient] across these classes as it will cause issues with jobs being rejected
+        detector = GoogleVisionBookDetector(setUpVision())
+        extractor = GoogleVisionTextExtractor(setUpVision())
+    }
+
+    /**
+     * Create a Google Vision [ImageAnnotatorClient].
+     */
+    private fun setUpVision(): ImageAnnotatorClient = try {
+        ImageAnnotatorClient.create()
+    } catch (e: Throwable) {
+        e.printStackTrace()
+        assumeTrue(false, "No Google Cloud credentials available for running the Google Vision tests.")
+        throw e
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = ["/test-data.csv"])
+    @CsvFileSource(resources = ["/benchmark/detection/configurations.csv"])
     fun `some correct books are retrieved`(bookshelf: String, bookTitles: String, authors: String) = withApplication(detectionEnvironment()) {
-        val titles = DetectionIntegrationTest::class.java.getResourceAsStream(bookTitles).reader().useLines { it }
-        val image = DetectionIntegrationTest::class.java.getResourceAsStream(bookshelf).readBytes()
+        val titles = DetectionBenchmark::class.java.getResourceAsStream(bookTitles).reader().useLines { it.toList() }
+        val image = DetectionBenchmark::class.java.getResourceAsStream(bookshelf).readBytes()
+
         val request = handleRequest(HttpMethod.Post, "/api/detection") {
             setBody(image)
             addHeader(HttpHeaders.ContentType, ContentType.Application.OctetStream.toString())
@@ -100,7 +120,7 @@ internal class DetectionIntegrationTest {
             assertEquals(HttpStatusCode.OK, response.status())
             val response: DetectionResult? = response.content?.let { mapper.readValue(it) }
             val responseTitles = response?.results?.map { book -> book.titles[0].value }
-            val intersection = titles.asIterable().intersect(responseTitles!!.asIterable())
+            val intersection = titles.intersect(responseTitles!!)
 
             assertTrue(intersection.isNotEmpty())
         }
@@ -123,9 +143,9 @@ internal class DetectionIntegrationTest {
             route("/api/detection") {
                 detection(
                     VisionConfiguration(
-                        detector = VisionBookDetector(imageAnnotatorClient),
-                        extractor = GoogleVisionTextExtractor(imageAnnotatorClient),
-                        catalogue = CatalogueConfiguration(client)
+                        detector = detector,
+                        extractor = extractor,
+                        catalogue = CatalogueConfiguration(catalogue)
                             .also {
                                 attributes.put(CatalogueConfiguration.KEY, it)
                             }
