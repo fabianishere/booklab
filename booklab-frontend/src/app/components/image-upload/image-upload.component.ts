@@ -53,9 +53,8 @@ export class ImageUploadComponent implements OnInit {
 
     /**
      * Adds the books found in the picture to the bookshelf.
-     * @param {Event} event
      */
-    addToBookShelf(event: Event) {
+    addToBookShelf() {
         console.log('click!');
         this.user.addMultToBookshelf(this.results);
         this.addedToShelf = true;
