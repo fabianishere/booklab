@@ -26,4 +26,5 @@ import org.opencv.core.Mat
  */
 class TesseractTextExtractor(private val tesseract: Tesseract) : TextExtractor {
     override fun extract(mat: Mat): List<String> = listOf(tesseract.extract(mat))
+    override fun batch(matrices: List<Mat>): List<String> = matrices.map { mat -> tesseract.extract(mat) }
 }

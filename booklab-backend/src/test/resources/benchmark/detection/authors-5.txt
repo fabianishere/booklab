@@ -1,0 +1,14 @@
+Michael B. Feldman
+Kernighan
+Stroustrup
+Shalit
+Arnold Gosling
+Felleisen and Friedman
+Ullman
+Thompson
+Wall, Christiansen & Orwant
+Lutz & Ascher
+Nelson
+Kent Dybvig
+Guzdial Rose
+Sangiorgi & walker

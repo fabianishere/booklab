@@ -54,6 +54,7 @@ dependencies {
         exclude group: 'ch.qos.logback', module: 'logback-classic'
     }
     testCompile "org.junit.jupiter:junit-jupiter-api:$jupiter_version"
+    testCompile "org.junit.jupiter:junit-jupiter-params:$jupiter_version"
     testRuntime "org.junit.jupiter:junit-jupiter-engine:$jupiter_version"
     testRuntime "org.junit.platform:junit-platform-launcher:1.1.1"
 }
@@ -78,7 +79,9 @@ kotlin {
 
 /* Configure test setup */
 test {
-    useJUnitPlatform {}
+    useJUnitPlatform {
+        excludeTags 'benchmark'
+    }
 
     testLogging {
         events 'passed', 'skipped', 'failed'
@@ -89,6 +92,15 @@ test {
     }
 
     finalizedBy jacocoTestReport
+}
+
+task benchmark(type: Test) {
+    group = "verification"
+    description = "Run benchmark evaluation tests"
+
+    useJUnitPlatform {
+        includeTags 'benchmark'
+    }
 }
 
 jacocoTestReport {

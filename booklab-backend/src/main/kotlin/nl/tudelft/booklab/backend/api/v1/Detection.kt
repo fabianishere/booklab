@@ -47,7 +47,6 @@ fun Route.detection(vision: VisionConfiguration) {
                     .map { part ->
                         async {
                             part
-                                .joinToString(" ")
                                 .takeUnless { it.isBlank() }
                                 ?.let { vision.catalogue.client.query(it, max = 1).firstOrNull() }
                         }
