@@ -44,14 +44,15 @@ import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withApplication
 import nl.tudelft.booklab.backend.CatalogueConfiguration
 import nl.tudelft.booklab.backend.VisionConfiguration
+import nl.tudelft.booklab.catalogue.CatalogueClient
 import nl.tudelft.booklab.catalogue.google.GoogleCatalogueClient
 import nl.tudelft.booklab.vision.detection.opencv.VisionBookDetector
 import nl.tudelft.booklab.vision.ocr.gvision.GoogleVisionTextExtractor
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
-import java.io.File
 import kotlin.test.assertTrue
 
 /**
@@ -63,16 +64,25 @@ internal class RetrievalTest {
      * The Jackson mapper class that maps JSON to objects.
      */
     private lateinit var mapper: ObjectMapper
+    private lateinit var client: CatalogueClient
 
     @BeforeEach
     fun setUp() {
         mapper = jacksonObjectMapper()
+        val key = System.getenv()["GOOGLE_BOOKS_API_KEY"]
+        assumeTrue(key != null, "No Google Books API key given for running the Google Books tests (key GOOGLE_BOOKS_API_KEY)")
+        client = GoogleCatalogueClient(
+            Books.Builder(GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance(), null)
+                .setApplicationName("booklab")
+                .setGoogleClientRequestInitializer(BooksRequestInitializer(key))
+                .build()
+        )
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = ["/test-data.csv"])
-    fun `some correct books are retrieved`(bookshelf: String, titles: String, authors: String) = withApplication(detectionEnvironment()) {
-        val titles = File(RetrievalTest::class.java.getResource(titles).file).readLines()
+    fun `some correct books are retrieved`(bookshelf: String, bookTitles: String, authors: String) = withApplication(detectionEnvironment()) {
+        val titles = RetrievalTest::class.java.getResourceAsStream(bookTitles).reader().useLines { it }
         val image = RetrievalTest::class.java.getResourceAsStream(bookshelf).readBytes()
         val request = handleRequest(HttpMethod.Post, "/api/detection") {
             setBody(image)
@@ -82,7 +92,7 @@ internal class RetrievalTest {
             assertEquals(HttpStatusCode.OK, response.status())
             val response: DetectionResult? = response.content?.let { mapper.readValue(it) }
             val responseTitles = response?.results?.map { book -> book.titles[0].value }
-            val intersection = titles.intersect(responseTitles!!.asIterable())
+            val intersection = titles.asIterable().intersect(responseTitles!!.asIterable())
 
             assertTrue(intersection.isNotEmpty())
         }
@@ -107,20 +117,10 @@ internal class RetrievalTest {
                     VisionConfiguration(
                         detector = VisionBookDetector(),
                         extractor = GoogleVisionTextExtractor(ImageAnnotatorClient.create()),
-                        catalogue = CatalogueConfiguration(
-                            client = GoogleCatalogueClient(
-                                Books.Builder(
-                                    GoogleNetHttpTransport.newTrustedTransport(),
-                                    JacksonFactory.getDefaultInstance(),
-                                    null
-                                )
-                                    .setApplicationName("booklab")
-                                    .setGoogleClientRequestInitializer(BooksRequestInitializer(""))
-                                    .build()
-                            )
-                        ).also {
-                            attributes.put(CatalogueConfiguration.KEY, it)
-                        }
+                        catalogue = CatalogueConfiguration(client)
+                            .also {
+                                attributes.put(CatalogueConfiguration.KEY, it)
+                            }
                     )
                 )
             }
