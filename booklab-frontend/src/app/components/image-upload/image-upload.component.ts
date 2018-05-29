@@ -3,6 +3,14 @@ import {HttpService} from '../../services/http/http.service';
 import {UserService} from '../../services/user/user.service';
 import {Book, Title} from '../../dataTypes';
 
+
+export class BookItem {
+    constructor(public book: Book,
+                public checked: boolean = true,
+                public addedToShelf = false) {
+    }
+}
+
 @Component({
     selector: 'app-image',
     templateUrl: './image-upload.component.html',
@@ -52,7 +60,7 @@ export class ImageUploadComponent implements OnInit {
      * Adds the books found in the picture to the bookshelf.
      * @param {Event} event
      */
-    addToBookShelf(event: Event) {
+    addToBookShelf() {
         console.log('click!');
         this.user.addMultToBookshelf(this.results.filter(b => b.checked).map(b => {
             b.checked = false;
@@ -102,11 +110,4 @@ export class ImageUploadComponent implements OnInit {
         console.log(input);
     }
 
-}
-
-class BookItem {
-    constructor(public book: Book,
-                public checked: boolean = true,
-                public addedToShelf = false) {
-    }
 }

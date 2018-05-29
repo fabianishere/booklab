@@ -2,6 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HeaderComponent } from './header.component';
 import {UserService} from "../../services/user/user.service";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 describe('HeaderComponent', () => {
     let component: HeaderComponent;
@@ -10,7 +11,8 @@ describe('HeaderComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [ HeaderComponent ],
-            providers: [{provide: UserService, usevalue: jasmine.createSpyObj('UserService', ['getBookshelf'])}]
+            providers: [{provide: UserService, usevalue: jasmine.createSpyObj('UserService', ['getBookshelf'])},
+                {provide: NgbModal, usevalue: jasmine.createSpy('NgbModal')}]
         })
         .compileComponents();
     }));

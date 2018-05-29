@@ -1,25 +1,30 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SidebarComponent } from './sidebar.component';
+import {AppComponent} from "../../app.component";
 
-describe('SidebarComponent', () => {
+class MockApp {
+    menuCollapse: boolean = false;
+}
+
+describe('SidebarComponent should..', () => {
   let component: SidebarComponent;
-  let fixture: ComponentFixture<SidebarComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ SidebarComponent ]
-    })
-    .compileComponents();
-  }));
+  let app;
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SidebarComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    component = new SidebarComponent();
   });
 
-  it('should create', () => {
+  it('create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('toggle', () => {
+      app = new MockApp();
+      component.app = app;
+      component.toggle();
+      expect(app.menuCollapse).toBeTruthy();
+  })
+
+
 });
