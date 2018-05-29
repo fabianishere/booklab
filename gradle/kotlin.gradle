@@ -61,6 +61,13 @@ task benchmark(type: Test) {
     }
 }
 
+jacocoTestReport {
+    reports {
+        html.enabled = true
+        xml.enabled = true
+    }
+}
+
 /* Documentation generation */
 dokka {
     jdkVersion = 8
