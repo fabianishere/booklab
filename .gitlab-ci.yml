@@ -10,7 +10,7 @@ variables:
 
 before_script:
   - echo $GOOGLE_CLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > $HOME/gcloud-service-key.json
-  - export GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud-service.key.json
+  - export GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud-service-key.json
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
 build:backend:
