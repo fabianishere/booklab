@@ -20,7 +20,7 @@ app-login {
 .top {
     display: flex;
     flex-flow: column nowrap;
-    height: 100%;
+    min-height: 100%;
 }
 
 .main {

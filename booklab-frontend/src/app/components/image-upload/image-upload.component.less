@@ -1,18 +1,11 @@
 @import "../../theme.less";
 
 .top-container {
-    min-height: 100%;
     margin: 0;
 }
 
 .input {
     background-color: white;
-}
-
-.addedToShelf{
-    background-color: #80ff80;
-    width: 100%;
-    margin: 0;
 }
 
 .bookshelf {
@@ -35,8 +28,15 @@
 
 .books {
     margin-top: 10px;
-    width: 50%;
+    border: 1px solid @booklab-yellow;
 }
+
+.book {
+    background-color: white;
+    margin: 1px;
+    min-height: 48px;
+}
+
 .image {
     margin-top: 20px;
     width: 50%;
@@ -47,6 +47,12 @@
     }
 }
 
+.addedToShelf{
+    background-color: #80ff80;
+    width: 100%;
+    margin: 0;
+}
+
 @media (max-width: 768px) {
     .image {
         width: 80%;
@@ -55,4 +61,40 @@
         width: 80%;
     }
 }
+
+input[type="checkbox"] {
+    visibility: hidden;
+}
+
+.b-custom {
+    position: absolute;
+    top: 7px;
+    left: 1em;
+    img {
+        display: none;
+    }
+    .checkmark{
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 1em;
+        width: 1em;
+        background-color: #eee;
+    }
+    & input:checked ~ .checkmark {
+        display: block;
+        background-color: @booklab-blue;
+    }
+
+}
+
+.toAdd {
+    background-color:  #f5f5f7;
+}
+
+
+
+
+
+
 

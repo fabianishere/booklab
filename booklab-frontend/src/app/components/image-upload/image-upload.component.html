@@ -15,16 +15,24 @@
             </svg>
             <p *ngIf="results.length == 0 && img!= null">No books were found</p>
             <div *ngIf="results.length > 0" class="books">
-                <div class="row" [ngClass]="addedToShelf? 'addedToShelf': ''" *ngFor="let book of results">
-                    <div class="col-1"><i [ngClass]="addedToShelf? 'fas fa-check-circle okay':'fas fa-trash-alt delete'" (click)="deleteBook(book)"></i></div>
-                    <div class="col-5">{{book.getMainTitle()}}</div>
-                    <div class="col-6">{{book.authors[0]}}</div>
+                <div *ngFor="let book of results" class="row book" [ngClass]="{'addedToShelf':book.addedToShelf, 'toAdd':book.checked}">
+                    <div class="col-1" *ngIf="book.addedToShelf"><i class="fas fa-check-circle okay"
+                                                                    (click)="deleteBook(book.book)"></i></div>
+                    <div class="col-1" *ngIf="!book.addedToShelf">
+                        <label class="b-custom">
+                            <input type="checkbox"[(ngModel)]="book.checked" (change)="log(book.checked)">
+                            <span class="checkmark"></span>
+                            <img class="checkmark" src="../../../assets/check.png">
+                        </label>
+                    </div>
+                    <div class="col-7">{{book.book.getMainTitle()}}</div>
+                    <div class="col-4">{{book.book.authors[0]}}</div>
                 </div>
-                <label class="button bookshelf {{addedToShelf? 'disabled' : ''}}">
-                    Add to your bookshelf
-                    <input type="button" (click)="addToBookShelf($event)" disabled="{{addedToShelf? 'disabled' : ''}}">
-                </label>
             </div>
+            <label class="button bookshelf {{addedToShelf? 'disabled' : ''}}">
+                Add to your bookshelf
+                <input type="button" (click)="addToBookShelf($event)" disabled="{{addedToShelf? 'disabled' : ''}}">
+            </label>
         </div>
     </div>
 </div>
