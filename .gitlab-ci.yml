@@ -1,5 +1,4 @@
-# This is the Gradle build system for JVM applications
-image: openjdk:8-jdk
+# GitLab CI configuration for the BookLab project
 
 # Disable the Gradle daemon for Continuous Integration servers as correctness
 # is usually a priority over speed in CI environments. Using a fresh
@@ -9,50 +8,108 @@ variables:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
 
 before_script:
+  # Make the Google Cloud credentials available to the runner
   - echo $GOOGLE_CLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > $HOME/gcloud-service-key.json
   - export GOOGLE_APPLICATION_CREDENTIALS=$HOME/gcloud-service-key.json
+  # Allow Gradle cache directory to be cached by GitLab
   - export GRADLE_USER_HOME=`pwd`/.gradle
 
-build:backend:
+# Backend jobs
+.build:backend(template): &build-backend
+  image: openjdk:8-jdk
   stage: build
   script: ./gradlew --build-cache assemble
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
     paths:
-      - build
+      - "build"
       - "*/build"
-      - .gradle
+      - ".gradle"
 
-build:frontend:
-   image: node:8
-   stage: build
-   script:
-    - cd booklab-frontend
-    - npm install
-    - npm run build
-   cache:
-    key: "$CI_COMMIT_REF_NAME"
-    policy: push
+build:backend:
+  <<: *build-backend
+  except:
+    - master
+
+build:backend(master):
+  <<: *build-backend
+  script: ./gradlew --build-cache assembleDist dokka
+  artifacts:
+    expire_in: 1 week
     paths:
-      - booklab-frontend/node_modules
-      - booklab-frontend/build
+      - "booklab-backend/distributions"
+      - "*/build/libs/*.jar"
+      - "*/build/dokka"
+  only:
+    - master
 
-test:backend:
+.test:backend(template): &test-backend
+  image: openjdk:8-jdk
   stage: test
   script: ./gradlew --build-cache check
   coverage: '/booklab:\s*(\d+(?:\.\d+)?%)/'
   dependencies:
     - build:backend
+    - build:backend(master)
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
     paths:
-      - build
+      - "build"
       - "*/build"
-      - .gradle
+      - ".gradle"
 
-test:frontend:
+test:backend:
+  <<: *test-backend
+  except:
+    - master
+
+test:backend(master):
+  <<: *test-backend
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - "*/build/reports"
+  only:
+    - master
+
+# Frontend jobs
+.build:frontend(template): &build-frontend
+  image: node:8
+  stage: build
+  script:
+    - cd booklab-frontend
+    - npm install
+    - npm run build
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - "booklab-frontend/node_modules"
+      - "booklab-frontend/build"
+
+build:frontend:
+  <<: *build-frontend
+  except:
+    - master
+
+build:frontend(master):
+  <<: *build-frontend
+  script:
+    - cd booklab-frontend
+    - npm install
+    - npm run build
+    - npm run compodoc
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - "booklab-frontend/build/angular"
+      - "booklab-frontend/build/docs"
+  only:
+    - master
+
+.test:frontend(template): &test-frontend
   image: alekzonder/puppeteer
   stage: test
   script:
@@ -62,28 +119,34 @@ test:frontend:
   coverage: '/Branches\s*:\s*(\d+(?:\.\d+)?%)/'
   dependencies:
     - build:frontend
+    - build:frontend(master)
   cache:
-      key: "$CI_COMMIT_REF_NAME"
-      policy: pull
-      paths:
-        - booklab-frontend/node_modules
-        - booklab-frontend/build
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - "booklab-frontend/node_modules"
+      - "booklab-frontend/build"
+
+test:frontend:
+  <<: *test-frontend
+  except:
+    - master
+
+test:frontend(master):
+  <<: *test-frontend
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - "*/build/reports"
+  only:
+    - master
 
 test:frontend:e2e:
-  image: alekzonder/puppeteer
-  stage: test
+  <<: *test-frontend
   variables:
     HEADLESS: "TRUE"
   script:
     - cd booklab-frontend
     - npm install
     - npm run ng e2e
-  dependencies:
-    - build:frontend
-  cache:
-      key: "$CI_COMMIT_REF_NAME"
-      policy: pull
-      paths:
-        - booklab-frontend/node_modules
-        - booklab-frontend/build
   allow_failure: true
