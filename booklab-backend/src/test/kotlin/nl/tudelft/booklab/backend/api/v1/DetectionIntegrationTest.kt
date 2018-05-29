@@ -51,6 +51,7 @@ import nl.tudelft.booklab.vision.ocr.gvision.GoogleVisionTextExtractor
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
 import kotlin.test.assertTrue
@@ -59,7 +60,8 @@ import kotlin.test.assertTrue
  * Integration test suite for the detection and retrieval of books
  *
  */
-internal class RetrievalTest {
+@Tag("integration-test")
+internal class DetectionIntegrationTest {
     /**
      * The Jackson mapper class that maps JSON to objects.
      */
@@ -77,14 +79,19 @@ internal class RetrievalTest {
                 .setApplicationName("booklab")
                 .setGoogleClientRequestInitializer(BooksRequestInitializer(key))
                 .build())
-        imageAnnotatorClient = ImageAnnotatorClient.create()
+        imageAnnotatorClient = try {
+            ImageAnnotatorClient.create()
+        } catch (e: Throwable) {
+            assumeTrue(false, "No Google Cloud credentials available for running the Google Vision tests.")
+            throw e
+        }
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = ["/test-data.csv"])
     fun `some correct books are retrieved`(bookshelf: String, bookTitles: String, authors: String) = withApplication(detectionEnvironment()) {
-        val titles = RetrievalTest::class.java.getResourceAsStream(bookTitles).reader().useLines { it }
-        val image = RetrievalTest::class.java.getResourceAsStream(bookshelf).readBytes()
+        val titles = DetectionIntegrationTest::class.java.getResourceAsStream(bookTitles).reader().useLines { it }
+        val image = DetectionIntegrationTest::class.java.getResourceAsStream(bookshelf).readBytes()
         val request = handleRequest(HttpMethod.Post, "/api/detection") {
             setBody(image)
             addHeader(HttpHeaders.ContentType, ContentType.Application.OctetStream.toString())
