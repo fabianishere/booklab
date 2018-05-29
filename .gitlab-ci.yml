@@ -40,7 +40,7 @@ build:frontend:
 
 test:backend:
   stage: test
-  script: ./gradlew check
+  script: ./gradlew --build-cache check
   coverage: '/booklab:\s*(\d+(?:\.\d+)?%)/'
   dependencies:
     - build:backend
