@@ -43,8 +43,11 @@ task dockerSyncResources(type: Sync) {
 
 createDockerfile.dependsOn dockerSyncResources
 
-task dockerBuildImage(type: DockerBuildImage) {
-    dependsOn createDockerfile
+task dockerBuildImage(type: DockerBuildImage, dependsOn: createDockerfile) {
     inputDir = createDockerfile.destFile.parentFile
+    inputs.files fileTree(project.projectDir).filter {
+        exclude 'build'
+    }
+
     tag = "booklab-proxy:${project.version}"
 }
