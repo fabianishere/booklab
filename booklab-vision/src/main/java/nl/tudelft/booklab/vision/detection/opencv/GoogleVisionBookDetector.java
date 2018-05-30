@@ -71,7 +71,6 @@ public class GoogleVisionBookDetector extends AbstractBookDetector {
 
         BatchAnnotateImagesResponse response = client.batchAnnotateImages(requests);
         List<AnnotateImageResponse> responses = response.getResponsesList();
-        client.close();
 
         for (AnnotateImageResponse res : responses) {
             TextAnnotation annotation = res.getFullTextAnnotation();

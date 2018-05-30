@@ -90,9 +90,9 @@ internal class DetectionBenchmark {
                 .build()
         )
 
-        // XXX We cannot share the [ImageAnnotatorClient] across these classes as it will cause issues with jobs being rejected
-        detector = GoogleVisionBookDetector(setUpVision())
-        extractor = GoogleVisionTextExtractor(setUpVision())
+        val vision = setUpVision()
+        detector = GoogleVisionBookDetector(vision)
+        extractor = GoogleVisionTextExtractor(vision)
     }
 
     /**
