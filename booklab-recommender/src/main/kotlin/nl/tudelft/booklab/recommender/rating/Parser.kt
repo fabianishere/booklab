@@ -20,7 +20,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.InputStream
 
 object GoodreadsParser {
+    private val mapper = jacksonObjectMapper()
+
     fun parse(stream: InputStream): Results {
-        return jacksonObjectMapper().readValue(stream, Results::class.java)
+        return mapper.readValue(stream, Results::class.java)
     }
 }
