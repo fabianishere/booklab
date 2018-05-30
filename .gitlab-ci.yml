@@ -38,8 +38,8 @@ build:backend(master):
   artifacts:
     expire_in: 1 week
     paths:
-      - "booklab-backend/distributions"
-      - "*/build/libs/*.jar"
+      - "*/build/distributions"
+      - "*/build/libs"
       - "*/build/dokka"
   only:
     - master
