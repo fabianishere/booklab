@@ -3,19 +3,22 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {LoginComponent} from './login.component';
 import {UserService} from "../../services/user/user.service";
 import {Router} from "@angular/router";
+import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 describe('LoginComponent should..', () => {
     let component: LoginComponent;
     let fixture: ComponentFixture<LoginComponent>;
     let user: jasmine.SpyObj<UserService>;
     let router: jasmine.SpyObj<Router>;
+    let modal: jasmine.SpyObj<NgbActiveModal>;
 
 
     beforeEach(() => {
         user = jasmine.createSpyObj('UserService', ['login']);
         router = jasmine.createSpyObj('Router', ['navigate']);
+        modal = jasmine.createSpyObj('NgbActiveModal', ['dismiss']);
         user.login.and.returnValue(new Promise(null));
-        component = new LoginComponent(user, router);
+        component = new LoginComponent(user, router, modal );
     });
 
     it('create', () => {

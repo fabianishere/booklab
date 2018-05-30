@@ -10,8 +10,11 @@
             <i *ngIf="!book.isSearched" class="fas fa-trash-alt delete" (click)="deleteBook(book)"></i>
             <img *ngIf="book.isSearched" class="loading" src="assets/loading.gif">
         </div>
-        <div class="col-5">{{book.isSearched? 'searching book..':book.getMainTitle()}}</div>
-        <div class="col-6">{{book.isSearched? '': book.authors[0]}}</div>
+        <div class="col-10 col-sm-7 book-title">{{book.isSearched? 'searching book..':book.getMainTitle()}}</div>
+        <div class="w-100 d-sm-none"></div>
+        <div class="col-1 d-sm-none"></div>
+        <div class="col-10 col-sm-4">{{book.isSearched? '': book.authors[0]}}</div>
+        <div class="col-12 d-sm-none"><hr></div>
     </div>
     <div class="row" *ngIf="enterBook">
         <div class="col-8"><hr></div>
@@ -24,9 +27,9 @@
     </div>
     <div class="row">
         <div *ngIf="!enterBook" class="col-12 flex align-items-baseline">
-            <button class="button ml-0" (click)="enterBook = true">Enter your book</button>
-            <p class="m-0">or</p>
-            <button class="button" routerLink="../" *ngIf="!enterBook">Upload an image of your bookshelf</button>
+            <button class="button ml-0 mr-0" (click)="enterBook = true">Enter your book</button>
+            <p class="m-4">or</p>
+            <button class="button m-0 mb-3" routerLink="../" *ngIf="!enterBook">Upload an image of your bookshelf</button>
         </div>
         <div *ngIf="enterBook" class="col-12 flex align-items-baseline">
             <button class="button ml-0" (click)="findBook()">Submit</button>

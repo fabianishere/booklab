@@ -1,6 +1,6 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {ImageUploadComponent} from './image-upload.component';
+import {BookItem, ImageUploadComponent} from './image-upload.component';
 import {HttpService} from "../../services/http/http.service";
 import {UserService} from '../../services/user/user.service';
 import {Observable} from "rxjs/Rx";
@@ -37,12 +37,12 @@ describe('ImageUploadComponent should..', () => {
     });
 
     it('add found books to the bookshelf', () => {
-       let books = [new Book([new Title('test', 'MAIN')], ['auth'], ['123']),
-           new Book([new Title('test2', 'MAIN')], ['auth2'], ['1223'])];
-        component.results = books;
+        let books = [new Book([new Title('test', 'MAIN')], ['auth'], ['123']),
+            new Book([new Title('test2', 'MAIN')], ['auth2'], ['1223'])];
+        component.results = books.map(b => new BookItem(b));
         component.addToBookShelf();
-       expect(user.addMultToBookshelf.calls.count()).toBe(1);
-       expect(user.addMultToBookshelf.calls.mostRecent().args[0]).toBe(books);
+        expect(user.addMultToBookshelf.calls.count()).toBe(1);
+        expect(user.addMultToBookshelf.calls.mostRecent().args[0]).toEqual(books);
     });
 
 });
