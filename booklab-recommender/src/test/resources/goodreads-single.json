@@ -1,0 +1,16 @@
+{
+    "books": [
+        {
+            "id": 15700740,
+            "isbn": "8700631620",
+            "isbn13": "9788700631625",
+            "ratings_count": 41,
+            "reviews_count": 62,
+            "text_reviews_count": 0,
+            "work_ratings_count": 5342775,
+            "work_reviews_count": 6276018,
+            "work_text_reviews_count": 84705,
+            "average_rating": "4.45"
+        }
+    ]
+}

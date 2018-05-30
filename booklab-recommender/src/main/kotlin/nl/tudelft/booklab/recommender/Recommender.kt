@@ -35,5 +35,7 @@ interface Recommender {
      * the list is sorted decreasingly and does not contain any books that
      * are already in the collection
      */
-    fun recommend(collection: List<Book>, candidates: List<Book>): List<Pair<Book, Int>>
+    suspend fun recommend(collection: List<Book>, candidates: List<Book>): List<Pair<Book, Double>>
 }
+
+class RecommendException : Exception()

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.recommender
+package nl.tudelft.booklab.recommender.random
 
 import nl.tudelft.booklab.catalogue.Book
+import nl.tudelft.booklab.recommender.Recommender
 import java.util.Random
 
 /**
@@ -26,10 +27,11 @@ import java.util.Random
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
 class RandomRecommender(private val random: Random = Random()) : Recommender {
-    override fun recommend(collection: List<Book>, candidates: List<Book>): List<Pair<Book, Int>> {
+    override suspend fun recommend(collection: List<Book>, candidates: List<Book>): List<Pair<Book, Double>> {
         return candidates
+            .distinct()
             .filter { !collection.contains(it) }
             .shuffled(random)
-            .map { it to 0 }
+            .map { it to 0.0 }
     }
 }

@@ -51,5 +51,5 @@ enum class TitleType {
  */
 data class Title(
     val value: String,
-    val type: TitleType
+    val type: TitleType = TitleType.MAIN
 )

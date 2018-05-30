@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.recommender
+package nl.tudelft.booklab.recommender.author
 
 import nl.tudelft.booklab.catalogue.Book
+import nl.tudelft.booklab.recommender.Recommender
 
 /**
  * a [Recommender] that recommends solely based on the authors
@@ -25,7 +26,7 @@ import nl.tudelft.booklab.catalogue.Book
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
 class AuthorRecommender : Recommender {
-    override fun recommend(collection: List<Book>, candidates: List<Book>): List<Pair<Book, Int>> {
+    override suspend fun recommend(collection: List<Book>, candidates: List<Book>): List<Pair<Book, Double>> {
         val authors = collection
             .map { it.authors }
             .fold(emptyList<String>()) { list, it -> list.plus(it) }
@@ -34,7 +35,7 @@ class AuthorRecommender : Recommender {
             .map { it.key }
         val maxScore = authors.size
         val scores = candidates
-            .map { it to 0 }
+            .map { it to 0.0 }
             .toMap().toMutableMap()
         for (i in 0 until authors.size) {
             val selection = candidates.filter { it.authors.contains(authors[i]) }

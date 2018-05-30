@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.recommender
+package nl.tudelft.booklab.recommender.rating
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.call
-import io.ktor.client.engine.config
 import io.ktor.client.request.url
 import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.experimental.io.jvm.javaio.toInputStream
 import nl.tudelft.booklab.catalogue.Book
-import nl.tudelft.booklab.catalogue.sru.SruParser
+import nl.tudelft.booklab.recommender.RecommendException
+import nl.tudelft.booklab.recommender.Recommender
 
 /**
  * a [Recommender] that recommends solely based on the ratings from GoodReads
@@ -35,18 +36,32 @@ class RatingRecommender(
     private val client: HttpClient = HttpClient(io.ktor.client.engine.apache.Apache)
 ) : Recommender {
 
-    override fun recommend(collection: List<Book>, candidates: List<Book>): List<Pair<Book, Int>> {
-        val stream = client.call {
+    override suspend fun recommend(collection: List<Book>, candidates: List<Book>): List<Pair<Book, Double>> {
+        val response = client.call {
             url(createUrl(candidates
                 .map { it.ids }
-                .fold(emptyList<String>()) { list, it -> list.plus(it) } ))
+                .fold(emptyList()) { list, it -> list.plus(it) } ))
             method = HttpMethod.Get
-        }.response.content.toInputStream()
-        return
+        }.response
+        if (response.status.value != HttpStatusCode.OK.value) { throw RecommendException() } // none of the candidates were found
+        val ratings = GoodreadsParser.parse(response.content.toInputStream())
+        val map = candidates
+            .filter { !collection.contains(it) }
+            .map { it to 0.0 }
+            .toMap().toMutableMap()
+        map.forEach{
+            if (ratings.contains(it.key.ids)) {
+                map.replace(it.key, ratings.get(it.key.ids).rating.toDouble())
+            }
+        }
+        return map
+            .toList()
+            .sortedByDescending { it.second }
+            .map { it.first to it.second }
     }
 
     private fun createUrl(isbns: List<String>): String {
         return "https://www.goodreads.com/book/review_counts.json?key=hfYu6aQhW8g1iHbsapRFow&isbns=" +
-            "${isbns.joinToString(",")}"
+            "${isbns.joinToString(",")}" // TODO remove key from source
     }
 }
