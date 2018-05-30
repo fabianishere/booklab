@@ -21,6 +21,7 @@ import org.opencv.core.Mat;
 
 import java.util.List;
 
+import static org.opencv.core.Core.REDUCE_AVG;
 import static org.opencv.imgproc.Imgproc.*;
 
 /**
@@ -62,6 +63,6 @@ public class CannyBookDetector extends AbstractBookDetector {
         Mat edges = ImageProcessingHelper.autoCanny(gray);
         dilate(edges, dilation, new Mat());
 
-        return findCropLocations(dilation);
+        return findCropLocations(dilation, REDUCE_AVG);
     }
 }
