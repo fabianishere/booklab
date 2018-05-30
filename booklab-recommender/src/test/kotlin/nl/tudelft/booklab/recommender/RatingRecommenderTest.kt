@@ -107,4 +107,27 @@ class RatingRecommenderTest {
         }
     }
 
+    @Test
+    fun `unknown books are least recommended`() {
+        val candidates = listOf(
+            Book(listOf(Title("harry potter")), emptyList(), listOf("0545010225")),
+            Book(listOf(Title("UNKNOWN 1")), emptyList(), listOf("123")),
+            Book(listOf(Title("UNKNOWN 2")), emptyList(), listOf("234")),
+            Book(listOf(Title("kaas")), emptyList(), listOf("9789025363758")),
+            Book(listOf(Title("dit zijn de namen")), emptyList(), listOf("9789023473282")),
+            Book(listOf(Title("de ontdekking van de hemel")), emptyList(), listOf("9789023443988"))
+        )
+
+        runBlocking {
+            val results = recommender.recommend(emptyList(), candidates)
+
+            assertEquals(6, results.size)
+            assertEquals(results[0].first, candidates[0])
+            assertEquals(results[1].first, candidates[5])
+            assertEquals(results[2].first, candidates[4])
+            assertEquals(results[3].first, candidates[3])
+            assertEquals(results[4].first, candidates[1])
+            assertEquals(results[5].first, candidates[2])
+        }
+    }
 }
