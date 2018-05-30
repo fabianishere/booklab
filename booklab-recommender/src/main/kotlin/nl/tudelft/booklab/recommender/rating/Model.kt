@@ -22,8 +22,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Rating(
     @JsonProperty("isbn")
-    val isbn10: String,
-    val isbn13: String,
+    val isbn10: String?,
+    val isbn13: String?,
     @JsonProperty("average_rating")
     val rating: String
 )
