@@ -34,6 +34,10 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.9.+"
+    compile "io.ktor:ktor-client-core:$ktor_version"
+    implementation "io.ktor:ktor-client-apache:$ktor_version"
     compile project(':booklab-catalogue')
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"

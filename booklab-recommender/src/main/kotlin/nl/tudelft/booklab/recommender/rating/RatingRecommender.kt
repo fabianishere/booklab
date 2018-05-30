@@ -18,6 +18,7 @@ package nl.tudelft.booklab.recommender.rating
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.call
+import io.ktor.client.engine.apache.Apache
 import io.ktor.client.request.url
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -33,7 +34,7 @@ import nl.tudelft.booklab.recommender.Recommender
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
 class RatingRecommender(
-    private val client: HttpClient = HttpClient(io.ktor.client.engine.apache.Apache)
+    private val client: HttpClient = HttpClient(Apache)
 ) : Recommender {
 
     override suspend fun recommend(collection: List<Book>, candidates: List<Book>): List<Pair<Book, Double>> {

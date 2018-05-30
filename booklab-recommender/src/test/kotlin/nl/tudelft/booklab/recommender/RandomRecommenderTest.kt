@@ -90,7 +90,7 @@ class RandomRecommenderTest {
         val results = runBlocking { recommender.recommend(emptyList(), candidates) }
 
         assertEquals(3, results.size)
-        results.forEach { assertEquals(0, it.second) }
+        results.forEach { assertEquals(0.0, it.second) }
     }
 
     @Test
@@ -122,7 +122,7 @@ class RandomRecommenderTest {
         runBlocking {
             val results = recommender.recommend(emptyList(), candidates)
 
-            Assertions.assertEquals(4, results.size)
+            assertEquals(4, results.size)
         }
     }
 }
