@@ -93,8 +93,6 @@ export class ImageUploadComponent implements OnInit {
             new BookItem(new Book([new Title('Applications = Code + Markup: A Guide to the Microsoft® Windows® Presentation Foundation', 'MAIN')], ["Charles Petzold"], ["9780735638631", "0735638632"])),
             new BookItem(new Book([new Title('Developing Applications with Microsoft Office 95', 'MAIN')], ["Christine Solomon"], ["155615898X", "9781556158988"])),
             new BookItem(new Book([new Title('How to Solve It: Modern Heuristics', 'MAIN')], ["Zbigniew Michalewicz", "David B. Fogel"], ["9783662041314", "3662041316"])),
-            new BookItem(new Book([new Title('How to Solve It: Modern Heuristics', 'MAIN')], ["Zbigniew Michalewicz", "David B. Fogel"], ["9783662041314", "3662041316"])),
-            new BookItem(new Book([new Title('How to Solve It: Modern Heuristics', 'MAIN')], ["Zbigniew Michalewicz", "David B. Fogel"], ["9783662041314", "3662041316"])),
             new BookItem(new Book([new Title('Professional Visual Studio 2005 Team System', 'MAIN')], ["Jean-Luc David"], ["9780764584367", "0764584367"])),
             new BookItem(new Book([new Title('The Complete Reference to Professional Soa with Visual Studio 2005 (C# & VB 2005) .Net 3.0', 'MAIN')], ["Tom Gao"], ["9781847998354", "1847998356"])),
             new BookItem(new Book([new Title('Programming C# 4.0', 'MAIN')], ["Ian Griffiths", "Matthew Adams", "Jesse Liberty"], ["9781449399726", "144939972X"])),
