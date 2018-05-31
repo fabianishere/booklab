@@ -20,6 +20,7 @@ import { SorryComponent } from './components/sorry/sorry.component';
 import { environment } from "../environments/environment";
 import {AppRoutes} from "./app.routing";
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { AboutComponent } from './components/about/about.component';
 
 
 const routes: Routes = [
@@ -46,7 +47,8 @@ const routes: Routes = [
         BookshelfComponent,
         SidebarComponent,
         LoginComponent,
-        SorryComponent
+        SorryComponent,
+        AboutComponent
     ],
     imports: [
         BrowserModule,
