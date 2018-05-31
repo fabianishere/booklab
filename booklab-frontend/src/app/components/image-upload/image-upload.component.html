@@ -39,6 +39,8 @@
                 Add to your bookshelf
                 <input type="button" (click)="addToBookShelf()" disabled="{{addedToShelf? 'disabled' : ''}}">
             </label>
+            Or do you want to
+            <button class="button ml-0 mr-0" (click)="enterBook = true">Enter a book manually</button>
         </div>
     </div>
 </div>
