@@ -17,19 +17,27 @@
 package nl.tudelft.booklab.vision.detection.opencv
 
 import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.opencv.core.MatOfByte
 import org.opencv.imgcodecs.Imgcodecs
 
 class CannyBookDetectorTest {
+    lateinit var detector: CannyBookDetector
+
+    @BeforeEach
+    fun setUp() {
+        detector = CannyBookDetector()
+    }
+
     @Test
     fun `smoke test`() {
-        val detector = CannyBookDetector()
         val buffer = CannyBookDetectorTest::class.java.getResourceAsStream("/bookshelf.jpg").readBytes()
         val mat = Imgcodecs.imdecode(MatOfByte(*buffer), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED)
         val books = detector.detect(mat)
 
-        assertTrue(books.isNotEmpty())
+        // We should get around 65 slices. Update this value to a more appropriate value if the algorithm is changed.
+        assertTrue(books.size in 60..80)
     }
 
     companion object {

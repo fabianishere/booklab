@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.opencv.core.Core.REDUCE_MAX;
 import static org.opencv.imgproc.Imgproc.fillPoly;
 
 public class GoogleVisionBookDetector extends AbstractBookDetector {
@@ -57,7 +58,7 @@ public class GoogleVisionBookDetector extends AbstractBookDetector {
 
         fillPoly(mask, points, new Scalar(255, 255, 255));
 
-        return findCropLocations(mask);
+        return findCropLocations(mask, REDUCE_MAX);
     }
 
     /**
