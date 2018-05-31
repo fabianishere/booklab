@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpService} from '../../services/http/http.service';
 import {UserService} from '../../services/user/user.service';
-import {Book} from '../../dataTypes';
+import {Book, Title} from '../../dataTypes';
 
 @Component({
     selector: 'app-image',
@@ -16,6 +16,7 @@ export class ImageUploadComponent implements OnInit {
     public img: any;
     public results: Book[];
     public addedToShelf: boolean;
+    public searching = false;
 
     /**
      * Constructor for ImageUploadComponent.
@@ -44,9 +45,15 @@ export class ImageUploadComponent implements OnInit {
             this.img = reader.result;
         };
         this.http.checkHealth();
+        this.searching = true;
+        this.results = [];
         this.http.putImg(files[0]).subscribe((res) => {
+            this.searching = false;
             this.results = res.results.map(b => Book.getBook(b));
-        }, error => this.http.handleError(error));
+        }, error => {
+            this.searching = false;
+            this.http.handleError(error)
+        });
         this.addedToShelf = false;
 
     }
