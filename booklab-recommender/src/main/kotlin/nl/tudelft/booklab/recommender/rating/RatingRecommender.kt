@@ -34,10 +34,11 @@ import nl.tudelft.booklab.recommender.Recommender
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
 class RatingRecommender(
-    private val client: HttpClient = HttpClient(Apache)
+    private val client: HttpClient = HttpClient(Apache),
+    private val key: String
 ) : Recommender {
 
-    override suspend fun recommend(collection: List<Book>, candidates: List<Book>): List<Pair<Book, Double>> {
+    override suspend fun recommend(collection: Set<Book>, candidates: Set<Book>): List<Book> {
         val response = client.call {
             url(createUrl(candidates
                 .map { it.ids }
@@ -58,11 +59,11 @@ class RatingRecommender(
         return map
             .toList()
             .sortedByDescending { it.second }
-            .map { it.first to it.second }
+            .map { it.first }
     }
 
     private fun createUrl(isbns: List<String>): String {
-        return "https://www.goodreads.com/book/review_counts.json?key=hfYu6aQhW8g1iHbsapRFow&isbns=" +
-            "${isbns.joinToString(",")}" // TODO remove key from source
+        return "https://www.goodreads.com/book/review_counts.json?key=$key&isbns=" +
+            "${isbns.joinToString(",")}"
     }
 }

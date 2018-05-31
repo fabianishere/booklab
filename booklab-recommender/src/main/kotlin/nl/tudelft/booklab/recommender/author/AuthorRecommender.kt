@@ -26,7 +26,7 @@ import nl.tudelft.booklab.recommender.Recommender
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
 class AuthorRecommender : Recommender {
-    override suspend fun recommend(collection: List<Book>, candidates: List<Book>): List<Pair<Book, Double>> {
+    override suspend fun recommend(collection: Set<Book>, candidates: Set<Book>): List<Book> {
         val authors = collection
             .map { it.authors }
             .fold(emptyList<String>()) { list, it -> list.plus(it) }
@@ -45,5 +45,6 @@ class AuthorRecommender : Recommender {
             .toList()
             .filter { !collection.contains(it.first) }
             .sortedByDescending { it.second }
+            .map { it.first }
     }
 }

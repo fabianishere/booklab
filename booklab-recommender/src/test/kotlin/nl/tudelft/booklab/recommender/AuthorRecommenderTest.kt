@@ -50,11 +50,11 @@ class AuthorRecommenderTest {
             Book(listOf(Title("title 9")), listOf("author 3"), listOf("isbn 9"))
         )
 
-        val results = runBlocking { recommender.recommend(collection, candidates) }
+        val results = runBlocking { recommender.recommend(collection.toSet(), candidates.toSet()) }
 
-        assertEquals(candidates[1], results[0].first)
-        assertEquals(candidates[2], results[1].first)
-        assertEquals(candidates[0], results[2].first)
+        assertEquals(candidates[1], results[0])
+        assertEquals(candidates[2], results[1])
+        assertEquals(candidates[0], results[2])
     }
 
     @Test
@@ -73,7 +73,7 @@ class AuthorRecommenderTest {
             Book(listOf(Title("title 9")), listOf("author 3"), listOf("isbn 9"))
         )
 
-        val results = runBlocking { recommender.recommend(collection, candidates) }
+        val results = runBlocking { recommender.recommend(collection.toSet(), candidates.toSet()) }
 
         assertEquals(2, results.size)
     }
@@ -86,10 +86,9 @@ class AuthorRecommenderTest {
             Book(listOf(Title("title 9")), listOf("author 3"), listOf("isbn 9"))
         )
 
-        val results = runBlocking { recommender.recommend(emptyList(), candidates) }
+        val results = runBlocking { recommender.recommend(emptySet(), candidates.toSet()) }
 
         assertEquals(3, results.size)
-        results.forEach { assertEquals(0.0, it.second) }
     }
 
     @Test
@@ -103,7 +102,7 @@ class AuthorRecommenderTest {
             Book(listOf(Title("title 6")), listOf("author 3"), listOf("isbn 6"))
         )
 
-        val results = runBlocking { recommender.recommend(collection, emptyList()) }
+        val results = runBlocking { recommender.recommend(collection.toSet(), emptySet()) }
 
         assertTrue(results.isEmpty())
     }
@@ -119,7 +118,7 @@ class AuthorRecommenderTest {
         )
 
         runBlocking {
-            val results = recommender.recommend(emptyList(), candidates)
+            val results = recommender.recommend(emptySet(), candidates.toSet())
 
             assertEquals(4, results.size)
         }

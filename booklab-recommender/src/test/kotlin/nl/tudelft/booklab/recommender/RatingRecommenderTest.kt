@@ -21,10 +21,19 @@ import nl.tudelft.booklab.catalogue.Book
 import nl.tudelft.booklab.catalogue.Title
 import nl.tudelft.booklab.recommender.rating.RatingRecommender
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assumptions.assumeTrue
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class RatingRecommenderTest {
-    private val recommender = RatingRecommender()
+    lateinit var recommender: RatingRecommender
+
+    @BeforeEach
+    fun setup() {
+        val key = System.getenv()["GOODREADS_API_KEY"]
+        assumeTrue(key != null, "No Goodreads API key is given (key GOODREADS_API_KEY)")
+        recommender = RatingRecommender(key = key!!)
+    }
 
     @Test
     fun `default test`() {
@@ -36,13 +45,13 @@ class RatingRecommenderTest {
         )
 
         runBlocking {
-            val results = recommender.recommend(emptyList(), candidates)
+            val results = recommender.recommend(emptySet(), candidates.toSet())
 
             assertEquals(results.size, 4)
-            assertEquals(results[0].first, candidates[0])
-            assertEquals(results[1].first, candidates[3])
-            assertEquals(results[2].first, candidates[2])
-            assertEquals(results[3].first, candidates[1])
+            assertEquals(results[0], candidates[0])
+            assertEquals(results[1], candidates[3])
+            assertEquals(results[2], candidates[2])
+            assertEquals(results[3], candidates[1])
         }
     }
 
@@ -56,13 +65,13 @@ class RatingRecommenderTest {
         )
 
         runBlocking {
-            val results = recommender.recommend(emptyList(), candidates)
+            val results = recommender.recommend(emptySet(), candidates.toSet())
 
             assertEquals(results.size, 4)
-            assertEquals(results[0].first, candidates[0])
-            assertEquals(results[1].first, candidates[3])
-            assertEquals(results[2].first, candidates[2])
-            assertEquals(results[3].first, candidates[1])
+            assertEquals(results[0], candidates[0])
+            assertEquals(results[1], candidates[3])
+            assertEquals(results[2], candidates[2])
+            assertEquals(results[3], candidates[1])
         }
     }
 
@@ -84,7 +93,7 @@ class RatingRecommenderTest {
         )
 
         runBlocking {
-            val results = recommender.recommend(collection, candidates)
+            val results = recommender.recommend(collection.toSet(), candidates.toSet())
 
             assertEquals(3, results.size)
         }
@@ -101,7 +110,7 @@ class RatingRecommenderTest {
         )
 
         runBlocking {
-            val results = recommender.recommend(emptyList(), candidates)
+            val results = recommender.recommend(emptySet(), candidates.toSet())
 
             assertEquals(4, results.size)
         }
@@ -119,15 +128,15 @@ class RatingRecommenderTest {
         )
 
         runBlocking {
-            val results = recommender.recommend(emptyList(), candidates)
+            val results = recommender.recommend(emptySet(), candidates.toSet())
 
             assertEquals(6, results.size)
-            assertEquals(results[0].first, candidates[0])
-            assertEquals(results[1].first, candidates[5])
-            assertEquals(results[2].first, candidates[4])
-            assertEquals(results[3].first, candidates[3])
-            assertEquals(results[4].first, candidates[1])
-            assertEquals(results[5].first, candidates[2])
+            assertEquals(results[0], candidates[0])
+            assertEquals(results[1], candidates[5])
+            assertEquals(results[2], candidates[4])
+            assertEquals(results[3], candidates[3])
+            assertEquals(results[4], candidates[1])
+            assertEquals(results[5], candidates[2])
         }
     }
 }
