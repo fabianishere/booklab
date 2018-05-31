@@ -37,5 +37,3 @@ interface Recommender {
      */
     suspend fun recommend(collection: Set<Book>, candidates: Set<Book>): List<Book>
 }
-
-class RecommendException : Exception()
