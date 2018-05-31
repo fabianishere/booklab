@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {HttpService} from '../../services/http/http.service';
 import {UserService} from '../../services/user/user.service';
 import {Book, Title} from '../../dataTypes';
+import {isDefined} from "@angular/compiler/src/util";
 
 
 export class BookItem {
@@ -107,6 +108,10 @@ export class ImageUploadComponent implements OnInit {
 
     log(input: string) {
         console.log(input);
+    }
+
+    booksAddedToShelf(): boolean {
+        return isDefined(this.results.find(b => b.addedToShelf));
     }
 
 }
