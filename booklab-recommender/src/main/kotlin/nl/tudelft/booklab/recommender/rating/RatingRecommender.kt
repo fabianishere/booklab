@@ -30,6 +30,10 @@ import nl.tudelft.booklab.recommender.Recommender
  * a [Recommender] that recommends solely based on the ratings from GoodReads
  * [RatingRecommender] implements the [Recommender] interface
  *
+ * @property client the HTTP client used to connect with the Goodreads
+ * database
+ * @property key the Goodreads API key
+ *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
 class RatingRecommender(
@@ -62,12 +66,26 @@ class RatingRecommender(
             .map { it.first }
     }
 
+    /**
+     * creates a url that queries the ratings of a list of books bases
+     * on their ISBN numbers
+     *
+     * @param isbns the list of ISBN numbers to be queried
+     * @return the string represented url
+     */
     private fun createUrl(isbns: List<String>): String {
         return "https://www.goodreads.com/book/review_counts.json?key=$key&isbns=" +
             "${isbns.joinToString(",")}"
     }
 
-
+    /**
+     * a extension method used to check whether a ISBN number
+     * is present in the [Results]
+     *
+     * @param isbns the list of ISBN numbers to check. if 1 of these
+     * ISBN numbers is present in the ratings the method will return true
+     * @return true if a ISBN is present else returns false
+     */
     private fun Results.contains(isbns: List<String>): Boolean {
         return ratings
             .map { it.isbn10 }
@@ -76,6 +94,15 @@ class RatingRecommender(
             .isNotEmpty()
     }
 
+    /**
+     * a extension method that retrieves the Rating associated with a
+     * certain list of ISBN numbers
+     *
+     * @param isbns the list of ISBN numbers
+     * @return a [Rating] associated with the ISBN numbers
+     * @throws NoSuchElementException if no such element is found in the
+     * [Results]
+     */
     private fun Results.get(isbns: List<String>): Rating {
         if (contains(isbns)) { return ratings.filter { isbns.contains(it.isbn10) || isbns.contains(it.isbn13) }[0] }
         else throw NoSuchElementException()

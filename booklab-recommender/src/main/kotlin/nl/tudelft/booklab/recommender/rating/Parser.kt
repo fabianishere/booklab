@@ -19,9 +19,19 @@ package nl.tudelft.booklab.recommender.rating
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.InputStream
 
+/**
+ * a singleton parser that parses JSON results from
+ * the Goodreads database
+ */
 object GoodreadsParser {
     private val mapper = jacksonObjectMapper()
 
+    /**
+     * the parse function
+     *
+     * @param stream is the [InputStream] returned from Goodreads
+     * @return a [Results] object
+     */
     fun parse(stream: InputStream): Results {
         return mapper.readValue(stream, Results::class.java)
     }

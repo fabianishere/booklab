@@ -31,9 +31,9 @@ interface Recommender {
      * of the user
      * @param candidates a list of [Book]s that represents the domain out
      * of which a recommendation needs to be made
-     * @return a list of [Pair]s that of [Book]s and a accompanying score.
-     * the list is sorted decreasingly and does not contain any books that
-     * are already in the collection
+     * @return a list of [Book] recommendations sorted in decreasing order. it
+     * is expected from implementations that all books that are not recommendable
+     * are discarded.
      */
     suspend fun recommend(collection: Set<Book>, candidates: Set<Book>): List<Book>
 }

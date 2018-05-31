@@ -19,6 +19,15 @@ package nl.tudelft.booklab.recommender.rating
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
+/**
+ * a data class representing a Rating from Goodreads
+ *
+ * @property isbn10 the ISBN 10 number
+ * @property isbn13 the ISBN 13 number
+ * @property rating the rating of the book from 0 to 5
+ *
+ * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 data class Rating(
     @JsonProperty("isbn")
@@ -28,6 +37,14 @@ data class Rating(
     val rating: String
 )
 
+/**
+ * a data class representing the list of results from a
+ * Goodreads query
+ *
+ * @property ratings a list of [Rating]s
+ *
+ * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
+ */
 data class Results(
     @JsonProperty("books")
     val ratings: List<Rating>
