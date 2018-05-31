@@ -21,6 +21,7 @@ import { environment } from "../environments/environment";
 import {AppRoutes} from "./app.routing";
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AboutComponent } from './components/about/about.component';
+import { HomeComponent } from './components/home/home.component';
 
 
 const routes: Routes = [
@@ -48,7 +49,8 @@ const routes: Routes = [
         SidebarComponent,
         LoginComponent,
         SorryComponent,
-        AboutComponent
+        AboutComponent,
+        HomeComponent
     ],
     imports: [
         BrowserModule,
