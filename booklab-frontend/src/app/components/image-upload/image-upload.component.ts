@@ -23,6 +23,8 @@ export class ImageUploadComponent implements OnInit {
     public img: any;
     public results: BookItem[];
 
+    //public addedToShelf: boolean;
+
     /**
      * Constructor for ImageUploadComponent.
      * @param {HttpService} http
