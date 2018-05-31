@@ -97,6 +97,9 @@ fun Application.booklab() {
         attributes.put(VisionConfiguration.KEY, it)
     }
 
+    // Load the JPA EntityManagerFactory from the configuration
+    attributes.put(JPA_KEY, environment.config.config("jpa").asEntityManagerFactory())
+
     routing {
         route("/api") {
             api()
