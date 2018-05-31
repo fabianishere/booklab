@@ -23,22 +23,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AboutComponent } from './components/about/about.component';
 import { HomeComponent } from './components/home/home.component';
 import { ManualBookFindComponent } from './components/manual-book-find/manual-book-find.component';
-
-
-const routes: Routes = [
-    {
-        path: '',
-        component: ImageUploadComponent
-    },
-    {
-        path: 'bookshelf',
-        component: BookshelfComponent
-    },
-    {
-        path: 'sorry',
-        component: SorryComponent
-    }
-];
+import {RecommendationsComponent} from "./components/recommendations/recommendations.component";
 
 
 @NgModule({
@@ -52,7 +37,8 @@ const routes: Routes = [
         SorryComponent,
         AboutComponent,
         HomeComponent,
-        ManualBookFindComponent
+        ManualBookFindComponent,
+        RecommendationsComponent
     ],
     imports: [
         BrowserModule,

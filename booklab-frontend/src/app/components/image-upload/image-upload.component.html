@@ -1,10 +1,13 @@
 <div class="container-fluid top-container d-flex flex-column">
     <div class="row">
         <div class="col-12 input">
+            <br>
             <label class="button upload">
-                Upload your image
+                Upload a picture of your bookshelf!
                 <input type="file" (change)="onSubmit($event)" accept="image/*"/>
             </label>
+            <br>
+            Tip: Our service works best if you take a picture when you are standing right in front of your bookcase. Do it one shelf at the time.
         </div>
     </div>
     <div class="row flex-grow-1">
@@ -35,8 +38,8 @@
                     </div>
                 </div>
             </div>
-            <label class="button bookshelf {{addedToShelf? 'disabled' : ''}}">
-                Add to your bookshelf
+            <label *ngIf="results" class="button bookshelf {{addedToShelf? 'disabled' : ''}}">
+                Add these books to your bookshelf
                 <input type="button" (click)="addToBookShelf()" disabled="{{addedToShelf? 'disabled' : ''}}">
             </label>
             Or do you want to
