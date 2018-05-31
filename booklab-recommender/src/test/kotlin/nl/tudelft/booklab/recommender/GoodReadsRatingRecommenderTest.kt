@@ -19,21 +19,20 @@ package nl.tudelft.booklab.recommender
 import kotlinx.coroutines.experimental.runBlocking
 import nl.tudelft.booklab.catalogue.Book
 import nl.tudelft.booklab.catalogue.Title
-import nl.tudelft.booklab.recommender.rating.RatingRecommender
-import org.junit.jupiter.api.Assertions
+import nl.tudelft.booklab.recommender.rating.goodreads.GoodreadsRatingRecommender
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class RatingRecommenderTest {
-    lateinit var recommender: RatingRecommender
+class GoodReadsRatingRecommenderTest {
+    private lateinit var recommender: GoodreadsRatingRecommender
 
     @BeforeEach
     fun setup() {
         val key = System.getenv()["GOODREADS_API_KEY"]
         assumeTrue(key != null, "No Goodreads API key is given (key GOODREADS_API_KEY)")
-        recommender = RatingRecommender(key = key!!)
+        recommender = GoodreadsRatingRecommender(key = key!!)
     }
 
     @Test

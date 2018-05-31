@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.recommender.rating
+package nl.tudelft.booklab.recommender.rating.goodreads
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.InputStream

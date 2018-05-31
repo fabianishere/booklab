@@ -22,13 +22,16 @@ package nl.tudelft.booklab.catalogue
  * @property titles is a list of all [Title]s and subtitles
  * @property authors is a list of author names
  * @property ids is a list of isbn identifiers
+ * @property rating is the average rating for the book. the value
+ * is nullable since not all databases has this data.
  *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
 data class Book(
     val titles: List<Title>,
     val authors: List<String>,
-    val ids: List<String>
+    val ids: List<String>,
+    val rating: Double? = null
 )
 
 /**

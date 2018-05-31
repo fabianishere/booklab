@@ -16,8 +16,8 @@
 
 package nl.tudelft.booklab.recommender
 
-import nl.tudelft.booklab.recommender.rating.GoodreadsParser
-import nl.tudelft.booklab.recommender.rating.Rating
+import nl.tudelft.booklab.recommender.rating.goodreads.GoodreadsParser
+import nl.tudelft.booklab.recommender.rating.goodreads.Rating
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

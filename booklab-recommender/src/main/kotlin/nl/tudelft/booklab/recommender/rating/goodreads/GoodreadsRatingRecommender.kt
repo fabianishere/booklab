@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.recommender.rating
+package nl.tudelft.booklab.recommender.rating.goodreads
 
 import io.ktor.client.HttpClient
 import io.ktor.client.call.call
@@ -28,7 +28,7 @@ import nl.tudelft.booklab.recommender.Recommender
 
 /**
  * a [Recommender] that recommends solely based on the ratings from GoodReads
- * [RatingRecommender] implements the [Recommender] interface
+ * [GoodreadsRatingRecommender] implements the [Recommender] interface
  *
  * @property client the HTTP client used to connect with the Goodreads
  * database
@@ -36,7 +36,7 @@ import nl.tudelft.booklab.recommender.Recommender
  *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
-class RatingRecommender(
+class GoodreadsRatingRecommender(
     private val client: HttpClient = HttpClient(Apache),
     private val key: String
 ) : Recommender {
