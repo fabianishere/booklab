@@ -80,7 +80,7 @@ class RandomRecommenderTest {
     }
 
     @Test
-    fun `empty collection returns all the candidates with a score of zero`() {
+    fun `empty collection returns all the candidates`() {
         val candidates = listOf(
             Book(listOf(Title("title 6")), listOf("author 3"), listOf("isbn 6")),
             Book(listOf(Title("title 8")), listOf("author 2"), listOf("isbn 8")),

@@ -79,7 +79,7 @@ class AuthorRecommenderTest {
     }
 
     @Test
-    fun `empty collection returns all the candidates with a score of zero`() {
+    fun `empty collection returns no recommendations`() {
         val candidates = listOf(
             Book(listOf(Title("title 6")), listOf("author 3"), listOf("isbn 6")),
             Book(listOf(Title("title 8")), listOf("author 2"), listOf("isbn 8")),
@@ -88,7 +88,28 @@ class AuthorRecommenderTest {
 
         val results = runBlocking { recommender.recommend(emptySet(), candidates.toSet()) }
 
-        assertEquals(3, results.size)
+        assertTrue(results.isEmpty())
+    }
+
+    @Test
+    fun `books with authors not in the collection are discarded`() {
+        val collection = listOf(
+            Book(listOf(Title("title 1")), listOf("author 1"), listOf("isbn 1")),
+            Book(listOf(Title("title 2")), listOf("author 2"), listOf("isbn 2")),
+            Book(listOf(Title("title 3")), listOf("author 2"), listOf("isbn 3")),
+            Book(listOf(Title("title 4")), listOf("author 2"), listOf("isbn 4")),
+            Book(listOf(Title("title 5")), listOf("author 3"), listOf("isbn 5")),
+            Book(listOf(Title("title 6")), listOf("author 3"), listOf("isbn 6"))
+        )
+        val candidates = listOf(
+            Book(listOf(Title("title 7")), listOf("author 4"), listOf("isbn 7")),
+            Book(listOf(Title("title 8")), listOf("author 2"), listOf("isbn 8")),
+            Book(listOf(Title("title 9")), listOf("author 3"), listOf("isbn 9"))
+        )
+
+        val results = runBlocking { recommender.recommend(collection.toSet(), candidates.toSet()) }
+
+        assertEquals(2, results.size)
     }
 
     @Test
@@ -109,18 +130,24 @@ class AuthorRecommenderTest {
 
     @Test
     fun `remove duplicates from candidates`() {
+        val collection = listOf(
+            Book(listOf(Title("title 1")), listOf("author 1"), listOf("isbn 1")),
+            Book(listOf(Title("title 2")), listOf("author 2"), listOf("isbn 2")),
+            Book(listOf(Title("title 3")), listOf("author 2"), listOf("isbn 3")),
+            Book(listOf(Title("title 4")), listOf("author 2"), listOf("isbn 4")),
+            Book(listOf(Title("title 5")), listOf("author 3"), listOf("isbn 5")),
+            Book(listOf(Title("title 6")), listOf("author 3"), listOf("isbn 6"))
+        )
         val candidates = listOf(
-            Book(listOf(Title("harry potter")), emptyList(), listOf("0545010225")),
-            Book(listOf(Title("harry potter")), emptyList(), listOf("0545010225")),
-            Book(listOf(Title("kaas")), emptyList(), listOf("9789025363758")),
-            Book(listOf(Title("dit zijn de namen")), emptyList(), listOf("9789023473282")),
-            Book(listOf(Title("de ontdekking van de hemel")), emptyList(), listOf("9789023443988"))
+            Book(listOf(Title("title 8")), listOf("author 2"), listOf("isbn 8")),
+            Book(listOf(Title("title 8")), listOf("author 2"), listOf("isbn 8")),
+            Book(listOf(Title("title 9")), listOf("author 3"), listOf("isbn 9"))
         )
 
         runBlocking {
-            val results = recommender.recommend(emptySet(), candidates.toSet())
+            val results = recommender.recommend(collection.toSet(), candidates.toSet())
 
-            assertEquals(4, results.size)
+            assertEquals(2, results.size)
         }
     }
 }

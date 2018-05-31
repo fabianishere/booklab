@@ -20,6 +20,7 @@ import kotlinx.coroutines.experimental.runBlocking
 import nl.tudelft.booklab.catalogue.Book
 import nl.tudelft.booklab.catalogue.Title
 import nl.tudelft.booklab.recommender.rating.RatingRecommender
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.junit.jupiter.api.BeforeEach
@@ -117,10 +118,10 @@ class RatingRecommenderTest {
     }
 
     @Test
-    fun `unknown books are least recommended`() {
+    fun `books with no rating are discarded`() {
         val candidates = listOf(
             Book(listOf(Title("harry potter")), emptyList(), listOf("0545010225")),
-            Book(listOf(Title("UNKNOWN 1")), emptyList(), listOf("123")),
+            Book(listOf(Title("UNKNOWN 1")), emptyList(), listOf("234")),
             Book(listOf(Title("UNKNOWN 2")), emptyList(), listOf("234")),
             Book(listOf(Title("kaas")), emptyList(), listOf("9789025363758")),
             Book(listOf(Title("dit zijn de namen")), emptyList(), listOf("9789023473282")),
@@ -130,13 +131,11 @@ class RatingRecommenderTest {
         runBlocking {
             val results = recommender.recommend(emptySet(), candidates.toSet())
 
-            assertEquals(6, results.size)
+            assertEquals(4, results.size)
             assertEquals(results[0], candidates[0])
             assertEquals(results[1], candidates[5])
             assertEquals(results[2], candidates[4])
             assertEquals(results[3], candidates[3])
-            assertEquals(results[4], candidates[1])
-            assertEquals(results[5], candidates[2])
         }
     }
 }
