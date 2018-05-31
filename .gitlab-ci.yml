@@ -110,7 +110,7 @@ build:frontend(master):
     - master
 
 .test:frontend(template): &test-frontend
-  image: alekzonder/puppeteer
+  image: alekzonder/puppeteer:1.3.0
   stage: test
   script:
     - cd booklab-frontend
