@@ -19,9 +19,8 @@ package nl.tudelft.booklab.recommender
 import kotlinx.coroutines.experimental.runBlocking
 import nl.tudelft.booklab.catalogue.Book
 import nl.tudelft.booklab.catalogue.Title
-import nl.tudelft.booklab.catalogue.TitleType
-import org.junit.jupiter.api.Assertions.assertEquals
 import nl.tudelft.booklab.recommender.random.RandomRecommender
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

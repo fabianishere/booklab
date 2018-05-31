@@ -19,11 +19,8 @@ package nl.tudelft.booklab.recommender
 import kotlinx.coroutines.experimental.runBlocking
 import nl.tudelft.booklab.catalogue.Book
 import nl.tudelft.booklab.catalogue.Title
-import nl.tudelft.booklab.recommender.rating.goodreads.GoodreadsRatingRecommender
 import nl.tudelft.booklab.recommender.rating.google.GoogleBooksRatingRecommender
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assumptions.assumeTrue
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class GoogleBooksRatingRecommenderTest {

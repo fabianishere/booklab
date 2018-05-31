@@ -45,7 +45,7 @@ class GoodreadsRatingRecommender(
         val response = client.call {
             url(createUrl(candidates
                 .map { it.ids }
-                .fold(emptyList()) { list, it -> list.plus(it) } ))
+                .fold(emptyList()) { list, it -> list.plus(it) }))
             method = HttpMethod.Get
         }.response
         if (response.status.value != HttpStatusCode.OK.value) { return emptyList() } // no candidates were found
@@ -55,7 +55,7 @@ class GoodreadsRatingRecommender(
             .filter { ratings.contains(it.ids) }
             .map { it to 0.0 }
             .toMap().toMutableMap()
-        map.forEach{
+        map.forEach {
             if (ratings.contains(it.key.ids)) {
                 map.replace(it.key, ratings.get(it.key.ids).rating.toDouble())
             }
@@ -104,7 +104,9 @@ class GoodreadsRatingRecommender(
      * [Results]
      */
     private fun Results.get(isbns: List<String>): Rating {
-        if (contains(isbns)) { return ratings.filter { isbns.contains(it.isbn10) || isbns.contains(it.isbn13) }[0] }
-        else throw NoSuchElementException()
+        return if (contains(isbns))
+            ratings.filter { isbns.contains(it.isbn10) || isbns.contains(it.isbn13) }[0]
+        else
+            throw NoSuchElementException()
     }
 }
