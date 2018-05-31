@@ -14,6 +14,7 @@ import {UserService} from "./services/user/user.service";
 import {APP_BASE_HREF} from "@angular/common";
 import {LoginComponent} from "./components/login/login.component";
 import {SorryComponent} from "./components/sorry/sorry.component";
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
 describe('AppComponent', () => {
     beforeEach(async(() => {
@@ -37,7 +38,8 @@ describe('AppComponent', () => {
                         allowedUrls: ['http://localhost:8080'],
                         sendAccessToken: true,
                     },
-                })
+                }),
+                NgbModule.forRoot()
             ],
             providers: [
                 HttpService,

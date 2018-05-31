@@ -19,6 +19,24 @@ import { LoginComponent } from './components/login/login.component';
 import { SorryComponent } from './components/sorry/sorry.component';
 import { environment } from "../environments/environment";
 import {AppRoutes} from "./app.routing";
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
+
+const routes: Routes = [
+    {
+        path: '',
+        component: ImageUploadComponent
+    },
+    {
+        path: 'bookshelf',
+        component: BookshelfComponent
+    },
+    {
+        path: 'sorry',
+        component: SorryComponent
+    }
+];
+
 
 @NgModule({
     declarations: [
@@ -40,13 +58,15 @@ import {AppRoutes} from "./app.routing";
                 allowedUrls: [environment.apiUrl],
                 sendAccessToken: true,
             },
-        })
+        }),
+        NgbModule.forRoot()
     ],
     providers: [
         HttpService,
         UserService,
         {provide: APP_BASE_HREF, useValue : '/' }
     ],
-    bootstrap: [AppComponent]
+    bootstrap: [AppComponent],
+    entryComponents: [LoginComponent]
 })
 export class AppModule { }

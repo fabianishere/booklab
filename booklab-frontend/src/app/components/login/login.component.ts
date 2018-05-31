@@ -2,6 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {UserService} from '../../services/user/user.service';
 import {Secure} from '../../dataTypes';
 import {Router} from '@angular/router';
+import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
     selector: 'app-login',
@@ -13,14 +14,14 @@ export class LoginComponent implements OnInit {
     @Input() public app;
     invalid = false;
 
-    constructor(private user: UserService, private router: Router) {
+    constructor(private user: UserService, private router: Router, private activeModal: NgbActiveModal){
     }
 
     ngOnInit() {
     }
 
     goBack() {
-        this.app.login = false;
+        this.activeModal.dismiss();
     }
 
     login(username: string, password: string) {
