@@ -41,6 +41,7 @@
             </label>
             Or do you want to
             <button class="button ml-0 mr-0" (click)="enterBook = true">Enter a book manually</button>
+            <app-manual-book-find *ngIf="enterBook"></app-manual-book-find>
         </div>
     </div>
 </div>

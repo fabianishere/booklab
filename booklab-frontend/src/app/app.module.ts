@@ -22,6 +22,7 @@ import {AppRoutes} from "./app.routing";
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AboutComponent } from './components/about/about.component';
 import { HomeComponent } from './components/home/home.component';
+import { ManualBookFindComponent } from './components/manual-book-find/manual-book-find.component';
 
 
 const routes: Routes = [
@@ -50,7 +51,8 @@ const routes: Routes = [
         LoginComponent,
         SorryComponent,
         AboutComponent,
-        HomeComponent
+        HomeComponent,
+        ManualBookFindComponent
     ],
     imports: [
         BrowserModule,

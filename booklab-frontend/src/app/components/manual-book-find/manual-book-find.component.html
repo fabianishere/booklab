@@ -1,0 +1,31 @@
+<div class="container-fluid p-0">
+    <hr>
+    <div *ngIf="result" class="col-12 pink pl-0">Found:</div>
+    <div *ngIf="result" class="row book" [ngClass]="{'addedToShelf' : result.addedToShelf}">
+        <div class="col-1" *ngIf="!result.addedToShelf">
+            <i class="fas fa-trash-alt delete" (click)="deleteResult()"></i>
+        </div>
+        <div class="col-1" *ngIf="result.addedToShelf">
+            <i class="fas fa-check-circle okay"></i>
+        </div>
+        <div class="col-10 col-sm-7 book-title">{{result.book.getMainTitle()}}</div>
+        <div class="w-100 d-sm-none"></div>
+        <div class="col-1 d-sm-none"></div>
+        <div class="col-10 col-sm-4">{{result.book.authors[0]}}</div>
+        <div class="col-12 d-sm-none"></div>
+    </div>
+    <div class="row">
+        <div class="col-12 flex flex-column">
+            <label>Book</label>
+            <input type="text" [(ngModel)]="nameInput">
+            <label>Author</label>
+            <input type="text" (keyup.enter)="search.click()" [(ngModel)]="authorInput">
+        </div>
+    </div>
+    <div class="col-12 flex align-items-baseline" *ngIf="!result || result.addedToShelf">
+        <button #search class="button" (click)="findBook()">Search</button>
+    </div>
+    <div class="col-12 flex align-items-baseline" *ngIf="result && !result.addedToShelf">
+        <button class="button" (click)="addManualToBookshelf()">Add to bookshelf</button>
+    </div>
+</div>
