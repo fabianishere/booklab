@@ -35,9 +35,9 @@
                     </div>
                 </div>
             </div>
-            <label class="button bookshelf {{addedToShelf? 'disabled' : ''}}">
+            <label class="button bookshelf {{booksAddedToShelf()? 'disabled' : ''}}">
                 Add to your bookshelf
-                <input type="button" (click)="addToBookShelf()" disabled="{{addedToShelf? 'disabled' : ''}}">
+                <input type="button" (click)="addToBookShelf()" disabled="{{booksAddedToShelf()? 'disabled' : ''}}">
             </label>
         </div>
     </div>
