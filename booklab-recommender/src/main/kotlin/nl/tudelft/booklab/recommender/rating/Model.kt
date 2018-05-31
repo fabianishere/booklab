@@ -31,17 +31,4 @@ data class Rating(
 data class Results(
     @JsonProperty("books")
     val ratings: List<Rating>
-) {
-    fun contains(isbns: List<String>): Boolean {
-        return ratings
-            .map { it.isbn10 }
-            .plus( ratings.map { it.isbn13 })
-            .intersect(isbns)
-            .isNotEmpty()
-    }
-
-    fun get(isbns: List<String>): Rating {
-        if (contains(isbns)) { return ratings.filter { isbns.contains(it.isbn10) || isbns.contains(it.isbn13) }[0] }
-        else throw NoSuchElementException()
-    }
-}
+)

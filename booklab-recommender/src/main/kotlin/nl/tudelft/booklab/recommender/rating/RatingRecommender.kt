@@ -24,7 +24,6 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.experimental.io.jvm.javaio.toInputStream
 import nl.tudelft.booklab.catalogue.Book
-import nl.tudelft.booklab.recommender.RecommendException
 import nl.tudelft.booklab.recommender.Recommender
 
 /**
@@ -45,10 +44,11 @@ class RatingRecommender(
                 .fold(emptyList()) { list, it -> list.plus(it) } ))
             method = HttpMethod.Get
         }.response
-        if (response.status.value != HttpStatusCode.OK.value) { throw RecommendException() } // none of the candidates were found
+        if (response.status.value != HttpStatusCode.OK.value) { return emptyList() } // no candidates were found
         val ratings = GoodreadsParser.parse(response.content.toInputStream())
         val map = candidates
             .filter { !collection.contains(it) }
+            .filter { ratings.contains(it.ids) }
             .map { it to 0.0 }
             .toMap().toMutableMap()
         map.forEach{
@@ -65,5 +65,19 @@ class RatingRecommender(
     private fun createUrl(isbns: List<String>): String {
         return "https://www.goodreads.com/book/review_counts.json?key=$key&isbns=" +
             "${isbns.joinToString(",")}"
+    }
+
+
+    private fun Results.contains(isbns: List<String>): Boolean {
+        return ratings
+            .map { it.isbn10 }
+            .plus( ratings.map { it.isbn13 })
+            .intersect(isbns)
+            .isNotEmpty()
+    }
+
+    private fun Results.get(isbns: List<String>): Rating {
+        if (contains(isbns)) { return ratings.filter { isbns.contains(it.isbn10) || isbns.contains(it.isbn13) }[0] }
+        else throw NoSuchElementException()
     }
 }

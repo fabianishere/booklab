@@ -35,6 +35,7 @@ class AuthorRecommender : Recommender {
             .map { it.key }
         val maxScore = authors.size
         val scores = candidates
+            .filter { it.authors.intersect(authors).isNotEmpty() }
             .map { it to 0.0 }
             .toMap().toMutableMap()
         for (i in 0 until authors.size) {
