@@ -13,7 +13,11 @@
             <svg *ngIf="img==null" class="image">
                 <rect class="rect"></rect>
             </svg>
-            <p *ngIf="results.length == 0 && img!= null">No books were found</p>
+            <p *ngIf="!searching && results.length == 0 && img!= null">No books were found</p>
+            <p *ngIf="searching">
+                <img class="loading" src="assets/loading.gif">
+                Searching books in your picture..
+            </p>
             <div *ngIf="results.length > 0" class="books">
                 <div *ngFor="let book of results" class="row book"
                      [ngClass]="{'addedToShelf':book.addedToShelf, 'toAdd':book.checked}">
@@ -35,7 +39,8 @@
                     </div>
                 </div>
             </div>
-            <label class="button bookshelf {{booksAddedToShelf()? 'disabled' : ''}}">
+            <div class="mt-3" *ngIf="results.length > 0"><img src="https://books.google.com/googlebooks/images/poweredby.png"></div>
+            <label *ngIf="results.length > 0" class="button bookshelf {{booksAddedToShelf()? 'disabled' : ''}}">
                 Add to your bookshelf
                 <input type="button" (click)="addToBookShelf()" disabled="{{booksAddedToShelf()? 'disabled' : ''}}">
             </label>

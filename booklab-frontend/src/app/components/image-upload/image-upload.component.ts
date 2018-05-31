@@ -17,14 +17,15 @@ export class BookItem {
     templateUrl: './image-upload.component.html',
     styleUrls: ['./image-upload.component.less']
 })
+
 /**
  * Class for the image upload component, handles the uploading of an image and can add it to the bookshelf.
  */
 export class ImageUploadComponent implements OnInit {
     public img: any;
     public results: BookItem[];
-
-    //public addedToShelf: boolean;
+    public addedToShelf: boolean;
+    public searching = false;
 
     /**
      * Constructor for ImageUploadComponent.
@@ -52,9 +53,16 @@ export class ImageUploadComponent implements OnInit {
             this.img = reader.result;
         };
         this.http.checkHealth();
+        this.searching = true;
+        this.results = [];
         this.http.putImg(files[0]).subscribe((res) => {
+            this.searching = false;
             this.results = res.results.map(b => new BookItem(Book.getBook(b)));
-        }, error => this.http.handleError(error));
+        }, error => {
+            this.searching = false;
+            this.http.handleError(error)
+        });
+        this.addedToShelf = false;
     }
 
     /**
@@ -84,8 +92,6 @@ export class ImageUploadComponent implements OnInit {
             new BookItem(new Book([new Title('Negotiating For Dummies', 'MAIN')], ["Donaldson"], ["9781118068083", "1118068084"])),
             new BookItem(new Book([new Title('Applications = Code + Markup: A Guide to the Microsoft® Windows® Presentation Foundation', 'MAIN')], ["Charles Petzold"], ["9780735638631", "0735638632"])),
             new BookItem(new Book([new Title('Developing Applications with Microsoft Office 95', 'MAIN')], ["Christine Solomon"], ["155615898X", "9781556158988"])),
-            new BookItem(new Book([new Title('How to Solve It: Modern Heuristics', 'MAIN')], ["Zbigniew Michalewicz", "David B. Fogel"], ["9783662041314", "3662041316"])),
-            new BookItem(new Book([new Title('How to Solve It: Modern Heuristics', 'MAIN')], ["Zbigniew Michalewicz", "David B. Fogel"], ["9783662041314", "3662041316"])),
             new BookItem(new Book([new Title('How to Solve It: Modern Heuristics', 'MAIN')], ["Zbigniew Michalewicz", "David B. Fogel"], ["9783662041314", "3662041316"])),
             new BookItem(new Book([new Title('Professional Visual Studio 2005 Team System', 'MAIN')], ["Jean-Luc David"], ["9780764584367", "0764584367"])),
             new BookItem(new Book([new Title('The Complete Reference to Professional Soa with Visual Studio 2005 (C# & VB 2005) .Net 3.0', 'MAIN')], ["Tom Gao"], ["9781847998354", "1847998356"])),
