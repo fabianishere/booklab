@@ -39,11 +39,13 @@ apply from: '../gradle/kotlin.gradle'
 
 ext {
     javacpp_platform = Loader.getPlatform()
+    tensorflow_version = '1.8.0'
 }
 
 /* Project configuration */
 repositories {
     jcenter()
+    mavenCentral()
 }
 
 dependencies {
@@ -60,6 +62,8 @@ dependencies {
 
     runtimeOnly "org.bytedeco.javacpp-presets:leptonica:1.72-1.1:$javacpp_platform"
     runtimeOnly "org.bytedeco.javacpp-presets:tesseract:3.04-1.1:$javacpp_platform"
+
+    compile "org.tensorflow:tensorflow:$tensorflow_version"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
