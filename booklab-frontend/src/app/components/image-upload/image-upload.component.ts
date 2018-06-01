@@ -31,7 +31,6 @@ export class ImageUploadComponent implements OnInit {
     ngOnInit() {
         this.img = null;
         this.results = [];
-        this.loadDummy();
     }
 
     /**
