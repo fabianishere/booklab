@@ -3,10 +3,7 @@ package nl.tudelft.booklab.vision.detection.opencv;
 import com.google.cloud.vision.v1.*;
 import nl.tudelft.booklab.vision.ocr.gvision.GoogleVisionTextExtractor;
 import org.jetbrains.annotations.NotNull;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
+import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
@@ -14,10 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.opencv.core.Core.REDUCE_MAX;
-import static org.opencv.core.Core.ROTATE_90_CLOCKWISE;
-import static org.opencv.core.Core.rotate;
-import static org.opencv.imgproc.Imgproc.fillPoly;
+import static org.opencv.core.Core.*;
+import static org.opencv.imgcodecs.Imgcodecs.imwrite;
+import static org.opencv.imgproc.Imgproc.*;
 
 public class GoogleVisionBookDetector extends AbstractBookDetector {
 
@@ -44,6 +40,7 @@ public class GoogleVisionBookDetector extends AbstractBookDetector {
         List<Mat> books = new ArrayList<>();
 
         Mat mask = findTextRegions(image);
+        dilate(mask, mask, getStructuringElement(MORPH_ELLIPSE, new Size(10,10)));
         Map<Mat, Mat> shelfMaskMap = findShelves(image, mask);
 
         for (Map.Entry<Mat, Mat> entry : shelfMaskMap.entrySet()) {
@@ -53,16 +50,23 @@ public class GoogleVisionBookDetector extends AbstractBookDetector {
         return books;
     }
 
+    /**
+     * Finds the books in an image of a shelf
+     *
+     * @param shelf openCV matrix containing an image of the shelf
+     * @param mask openCV matrix containing a binary image containing the text regions of the shelf
+     * @return
+     */
     static List<Mat> findBooks(Mat shelf, Mat mask) {
         List<Integer> cropLocations = findCropLocations(mask, REDUCE_MAX);
         return cropBooks(shelf, cropLocations, false);
     }
 
     /**
-     * Find the locations of text in the image
+     * Finds the locations of text in the image
      *
      * @param image openCV matrix containing an image
-     * @return
+     * @return binary image with the text regions in white
      */
     private Mat findTextRegions(Mat image) {
         List<AnnotateImageRequest> requests = new ArrayList<>();
@@ -83,6 +87,12 @@ public class GoogleVisionBookDetector extends AbstractBookDetector {
         return mask;
     }
 
+    /**
+     * Determines whether the majority of the books on an image are oriented horizontally
+     *
+     * @param boxes list of text boxes
+     * @return true if the majority of books is horizontal
+     */
     private static boolean isHorizontal(List<MatOfPoint> boxes) {
         long horizontalBoxes = boxes.stream()
             .map(Imgproc::boundingRect)
@@ -125,6 +135,12 @@ public class GoogleVisionBookDetector extends AbstractBookDetector {
         return result;
     }
 
+    /**
+     * Converts the bounding box of a block to a list of coordinate points
+     *
+     * @param block block to get the bounding box points for
+     * @return list of points corresponding to the corners of the bounding box
+     */
     private static List<Point> getBoundingBoxPoints(Block block) {
         return block.getBoundingBox()
             .getVerticesList()
@@ -133,6 +149,12 @@ public class GoogleVisionBookDetector extends AbstractBookDetector {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Converts the bounding box of a paragraph to a list of coordinate points
+     *
+     * @param paragraph block to get the bounding box points for
+     * @return list of points corresponding to the corners of the bounding box
+     */
     private static List<Point> getBoundingBoxPoints(Paragraph paragraph) {
         return paragraph.getBoundingBox()
             .getVerticesList()
@@ -141,6 +163,12 @@ public class GoogleVisionBookDetector extends AbstractBookDetector {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Converts the bounding word of a block to a list of coordinate points
+     *
+     * @param word block to get the bounding box points for
+     * @return list of points corresponding to the corners of the bounding box
+     */
     private static List<Point> getBoundingBoxPoints(Word word) {
         return word.getBoundingBox()
             .getVerticesList()
@@ -149,6 +177,12 @@ public class GoogleVisionBookDetector extends AbstractBookDetector {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Converts the bounding box of a symbol to a list of coordinate points
+     *
+     * @param symbol symbol to get the bounding box points for
+     * @return list of points corresponding to the corners of the bounding box
+     */
     private static List<Point> getBoundingBoxPoints(Symbol symbol) {
         return symbol.getBoundingBox()
             .getVerticesList()
@@ -157,6 +191,12 @@ public class GoogleVisionBookDetector extends AbstractBookDetector {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Converts a list of Points to an OpenCV MatOfPoint
+     *
+     * @param points the list of points to be converted
+     * @return a MatOfPoint consisting of the input points
+     */
     private static MatOfPoint toMatOfPoint(List<Point> points) {
         MatOfPoint matOfPoint = new MatOfPoint();
         matOfPoint.fromList(points);
