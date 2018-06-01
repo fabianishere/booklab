@@ -123,7 +123,6 @@ public abstract class AbstractBookDetector implements BookDetector {
         return new Mat(image, roi);
     }
 
-
     @NotNull
     static List<Integer> findCropLocations(Mat image, int reduceType) {
         Mat reduced = new Mat();
