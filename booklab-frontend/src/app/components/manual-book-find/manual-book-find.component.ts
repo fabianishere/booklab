@@ -13,6 +13,7 @@ export class ManualBookFindComponent implements OnInit {
     public nameInput: string;
     public authorInput: string;
     public result: BookItem;
+    public searching = false;
 
     constructor(private user: UserService, private http: HttpService) {
     }
@@ -27,7 +28,9 @@ export class ManualBookFindComponent implements OnInit {
         if (!this.nameInput || !this.authorInput) {
             return;
         }
+        this.searching = true;
         this.http.findBook(this.nameInput, this.authorInput).subscribe((result) => {
+            this.searching = false;
             this.result = new BookItem(Book.getBook(result.results[0]));
         }, error => this.http.handleError(error));
         this.authorInput = '';

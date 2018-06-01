@@ -1,7 +1,11 @@
 <div class="container-fluid p-0">
     <hr>
-    <div *ngIf="result" class="col-12 pink pl-0">Found:</div>
-    <div *ngIf="result" class="row book" [ngClass]="{'addedToShelf' : result.addedToShelf}">
+    <div class="col-12" *ngIf="searching">
+        <img class="loading" src="assets/loading.gif">
+        Searching your book in Google Books..
+    </div>
+    <div *ngIf="result && !searching" class="col-12 pink pl-0">Found:</div>
+    <div *ngIf="result && !searching" class="row book" [ngClass]="{'addedToShelf' : result.addedToShelf}">
         <div class="col-1" *ngIf="!result.addedToShelf">
             <i class="fas fa-trash-alt delete" (click)="deleteResult()"></i>
         </div>
