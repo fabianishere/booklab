@@ -49,8 +49,7 @@ export class HttpService {
      * @returns {Observable<DetectionResult>}: result of the backend search
      */
     findBook(nameInput: string, authorInput: string): Observable<DetectionResult> {
-
-        return this.http.get<DetectionResult>(`${environment.apiUrl}/health/search?`
+        return this.http.get<DetectionResult>(`${environment.apiUrl}/search?`
             + 'title=' + Secure.checkInput(nameInput)
             + '&author=' + Secure.checkInput(authorInput));
 
