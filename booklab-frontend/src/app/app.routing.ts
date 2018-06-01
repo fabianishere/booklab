@@ -1,4 +1,3 @@
-
 import {RouterModule, Routes} from "@angular/router";
 import {ImageUploadComponent} from "./components/image-upload/image-upload.component";
 import {BookshelfComponent} from "./components/bookshelf/bookshelf.component";
@@ -19,6 +18,10 @@ const routes: Routes = [
     {
         path: 'about',
         component: AboutComponent
+    },
+    {
+        path: 'sorry',
+        component: SorryComponent
     }
     ,
     {
@@ -29,12 +32,8 @@ const routes: Routes = [
     {
         path: 'recommendations',
         component: RecommendationsComponent
-    },
-    {
-        path: 'sorry',
-        component: SorryComponent
     }
 
 ];
 
-export const AppRoutes = RouterModule.forRoot(routes, { enableTracing: true });
+export const AppRoutes = RouterModule.forRoot(routes, {enableTracing: true});

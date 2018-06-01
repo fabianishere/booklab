@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.opencv.core.Core.REDUCE_MAX;
 import static org.opencv.core.Core.reduce;
 import static org.opencv.imgproc.Imgproc.GaussianBlur;
 import static org.opencv.imgproc.Imgproc.line;
@@ -64,11 +63,11 @@ public abstract class AbstractBookDetector implements BookDetector {
     }
 
     @NotNull
-    static List<Integer> findCropLocations(Mat image) {
+    static List<Integer> findCropLocations(Mat image, int reduceType) {
         Mat reduced = new Mat();
         List<Point> coordinates = new ArrayList<>();
 
-        reduce(image, reduced, 0, REDUCE_MAX);
+        reduce(image, reduced, 0, reduceType);
         GaussianBlur(reduced, reduced, new Size(), 3);
 
         for (int i = 0; i < image.cols(); i++) {
