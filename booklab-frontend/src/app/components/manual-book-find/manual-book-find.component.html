@@ -23,11 +23,11 @@
             <label>Book</label>
             <input type="text" [(ngModel)]="nameInput">
             <label>Author</label>
-            <input type="text" (keyup.enter)="search.click()" [(ngModel)]="authorInput">
+            <input type="text" [(ngModel)]="authorInput">
         </div>
     </div>
     <div class="col-12 flex align-items-baseline" *ngIf="!result || result.addedToShelf">
-        <button #search class="button" (click)="findBook()">Search</button>
+        <button class="button" (click)="findBook()">Search</button>
         <img src="https://books.google.com/googlebooks/images/poweredby.png">
     </div>
     <div class="col-12 flex align-items-baseline" *ngIf="result && !result.addedToShelf">
