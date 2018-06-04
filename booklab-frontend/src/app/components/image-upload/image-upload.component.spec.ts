@@ -1,10 +1,10 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {BookItem, ImageUploadComponent} from './image-upload.component';
+import {ImageUploadComponent} from './image-upload.component';
 import {HttpService} from "../../services/http/http.service";
 import {UserService} from '../../services/user/user.service';
 import {Observable} from "rxjs/Rx";
-import {Book, Title} from "../../dataTypes";
+import {Book, BookItem, Title} from "../../dataTypes";
 
 class MockEvent {
     public srcElement = new MockSourceElement();
