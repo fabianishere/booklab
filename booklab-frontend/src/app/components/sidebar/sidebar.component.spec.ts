@@ -24,7 +24,7 @@ describe('SidebarComponent should..', () => {
       component.app = app;
       component.toggle();
       expect(app.menuCollapse).toBeTruthy();
-  })
+  });
 
 
 });

@@ -20,22 +20,10 @@ import { SorryComponent } from './components/sorry/sorry.component';
 import { environment } from "../environments/environment";
 import {AppRoutes} from "./app.routing";
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
-
-const routes: Routes = [
-    {
-        path: '',
-        component: ImageUploadComponent
-    },
-    {
-        path: 'bookshelf',
-        component: BookshelfComponent
-    },
-    {
-        path: 'sorry',
-        component: SorryComponent
-    }
-];
+import { AboutComponent } from './components/about/about.component';
+import { HomeComponent } from './components/home/home.component';
+import { ManualBookFindComponent } from './components/manual-book-find/manual-book-find.component';
+import {RecommendationsComponent} from "./components/recommendations/recommendations.component";
 
 
 @NgModule({
@@ -46,7 +34,11 @@ const routes: Routes = [
         BookshelfComponent,
         SidebarComponent,
         LoginComponent,
-        SorryComponent
+        SorryComponent,
+        AboutComponent,
+        HomeComponent,
+        ManualBookFindComponent,
+        RecommendationsComponent
     ],
     imports: [
         BrowserModule,

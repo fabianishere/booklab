@@ -45,6 +45,11 @@ export class Book {
         return new Book(b.titles, b.authors, b.ids);
     }
 
+    static create(title: string, author: string, id: string): Book {
+        return new Book([new Title(title, 'MAIN')], [author], [id]);
+    }
+
+
     /**
      * Searches the main title of the book.
      * @returns {string} result of the search, string is empty if the book didn't have a main title
@@ -56,6 +61,7 @@ export class Book {
         const res = this.titles.find(t => t.type === 'MAIN');
         return isUndefined(res) ? '' : res.value;
     }
+
 }
 
 /**
@@ -63,6 +69,13 @@ export class Book {
  */
 export interface DetectionResult {
     results: Book[];
+}
+
+export class BookItem {
+    constructor(public book: Book,
+                public checked: boolean = true,
+                public addedToShelf = false) {
+    }
 }
 
 export class Secure {
