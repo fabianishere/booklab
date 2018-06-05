@@ -38,77 +38,118 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
 import io.ktor.routing.route
 import io.ktor.routing.routing
+import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.createTestEnvironment
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
-import io.ktor.server.testing.withApplication
 import nl.tudelft.booklab.backend.CatalogueConfiguration
 import nl.tudelft.booklab.backend.VisionConfiguration
 import nl.tudelft.booklab.catalogue.CatalogueClient
 import nl.tudelft.booklab.catalogue.google.GoogleCatalogueClient
 import nl.tudelft.booklab.vision.detection.BookDetector
 import nl.tudelft.booklab.vision.detection.opencv.GoogleVisionBookDetector
+import nl.tudelft.booklab.vision.detection.tensorflow.TensorflowBookDetector
 import nl.tudelft.booklab.vision.ocr.TextExtractor
 import nl.tudelft.booklab.vision.ocr.gvision.GoogleVisionTextExtractor
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assumptions.assumeTrue
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag
+import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
+import org.tensorflow.Graph
+import java.util.concurrent.TimeUnit
 
 /**
  * This class provides a benchmark for the book recognition algorithms which we use to evaluate the
  * accuracy of the algorithms.
  *
- * In the future, we should extend this benchmark to the other available algorithms, not only the Google
- * algorithms.
  */
 @Tag("benchmark")
-internal class DetectionBenchmark {
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+sealed class DetectionBenchmark {
     /**
      * The Jackson mapper class that maps JSON to objects.
      */
     private lateinit var mapper: ObjectMapper
 
-    private lateinit var catalogue: CatalogueClient
-    private lateinit var detector: BookDetector
-    private lateinit var extractor: TextExtractor
+    /**
+     * The test environment to use.
+     */
+    private lateinit var engine: TestApplicationEngine
 
-    @BeforeEach
-    fun setUp() {
+    /**
+     * The amount of books that have been correctly found.
+     */
+    private var correct = 0
+
+    /**
+     * The amount of books that have been processed.
+     */
+    private var total = 0
+
+    /**
+     * The amount of books that we incorrectly guessed.
+     */
+    private var incorrect = 0
+
+    /**
+     * Set up the benchmark suite
+     */
+    @BeforeAll
+    fun internalSetupClass() {
+        setUpClass()
+
         mapper = jacksonObjectMapper()
-
-        // Setup Google Books catalogue
-        val key = System.getenv()["GOOGLE_BOOKS_API_KEY"]
-        assumeTrue(key != null, "No Google Books API key given for running the Google Books tests (key GOOGLE_BOOKS_API_KEY)")
-        catalogue = GoogleCatalogueClient(
-            Books.Builder(GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance(), null)
-                .setApplicationName("booklab")
-                .setGoogleClientRequestInitializer(BooksRequestInitializer(key))
-                .build()
-        )
-
-        val vision = setUpVision()
-        detector = GoogleVisionBookDetector(vision)
-        extractor = GoogleVisionTextExtractor(vision)
+        engine = TestApplicationEngine(detectionEnvironment())
+        engine.start()
     }
 
     /**
-     * Create a Google Vision [ImageAnnotatorClient].
+     * A function to initialise the server.
      */
-    private fun setUpVision(): ImageAnnotatorClient = try {
-        ImageAnnotatorClient.create()
-    } catch (e: Throwable) {
-        e.printStackTrace()
-        assumeTrue(false, "No Google Cloud credentials available for running the Google Vision tests.")
-        throw e
+    open fun setUpClass() {}
+
+    /**
+     * Tear down the benchmark suite
+     */
+    @AfterAll
+    fun internalTearDownClass() {
+        println("Total score: $correct/$total ($incorrect incorrect)")
+
+        engine.stop(0L, 0L, TimeUnit.MILLISECONDS)
     }
 
+    /**
+     * Method to configure the server
+     */
+    open fun detectionModule(application: Application) {
+        application.run {
+            install(ContentNegotiation) {
+                jackson {
+                    configure(SerializationFeature.INDENT_OUTPUT, true)
+                    registerModule(JavaTimeModule())
+                }
+            }
+        }
+    }
+
+    /**
+     * Helper method to create a Ktor test environment.
+     */
+    private fun detectionEnvironment() = createTestEnvironment {
+        config = HoconApplicationConfig(ConfigFactory.load("application-test.conf"))
+        module { detectionModule(this) }
+    }
+
+    /**
+     * The actual test that runs a couple of images through the detector.
+     */
     @ParameterizedTest
     @CsvFileSource(resources = ["/benchmark/detection/configurations.csv"])
-    fun `some correct books are retrieved`(bookshelf: String, bookTitles: String, authors: String) = withApplication(detectionEnvironment()) {
+    fun `some correct books are retrieved`(bookshelf: String, bookTitles: String, authors: String) = with(engine) {
         val titles = DetectionBenchmark::class.java.getResourceAsStream(bookTitles).reader().useLines { it.toList() }
         val image = DetectionBenchmark::class.java.getResourceAsStream(bookshelf).readBytes()
 
@@ -117,41 +158,102 @@ internal class DetectionBenchmark {
             addHeader(HttpHeaders.ContentType, ContentType.Application.OctetStream.toString())
         }
         with(request) {
-            assertEquals(HttpStatusCode.OK, response.status())
+            Assertions.assertEquals(HttpStatusCode.OK, response.status())
             val response: DetectionResult? = response.content?.let { mapper.readValue(it) }
             val responseTitles = response?.results?.map { book -> book.titles[0].value }
             val intersection = titles.intersect(responseTitles!!)
 
-            assertTrue(intersection.isNotEmpty())
+            correct += intersection.size
+            total += titles.size
+            incorrect += responseTitles.size - intersection.size
+            println("Found: $responseTitles")
+            println("Needed: $titles")
+            println("Correct: $intersection")
+            println("Score: ${intersection.size}/${titles.size} (${responseTitles.size - intersection.size} incorrect)")
         }
     }
 
-    private fun detectionEnvironment() = createTestEnvironment {
-        config = HoconApplicationConfig(ConfigFactory.load("application-test.conf"))
-        module { detectionModule() }
-    }
+    /**
+     * A benchmark for the Google Vision implementations
+     */
+    open class GoogleVisionBenchmark : DetectionBenchmark() {
+        protected lateinit var catalogue: CatalogueClient
+        protected lateinit var detector: BookDetector
+        protected lateinit var extractor: TextExtractor
 
-    private fun Application.detectionModule() {
-        install(ContentNegotiation) {
-            jackson {
-                configure(SerializationFeature.INDENT_OUTPUT, true)
-                registerModule(JavaTimeModule())
-            }
+        override fun setUpClass() {
+            super.setUpClass()
+            catalogue = setUpBooks()
+
+            val vision = setUpVision()
+            detector = GoogleVisionBookDetector(vision)
+            extractor = GoogleVisionTextExtractor(vision)
         }
 
-        routing {
-            route("/api/detection") {
-                detection(
-                    VisionConfiguration(
-                        detector = detector,
-                        extractor = extractor,
-                        catalogue = CatalogueConfiguration(catalogue)
-                            .also {
-                                attributes.put(CatalogueConfiguration.KEY, it)
-                            }
-                    )
-                )
+        /**
+         * Create a Google Books API client.
+         */
+        protected fun setUpBooks(): CatalogueClient {
+            // Setup Google Books catalogue
+            val key = System.getenv()["GOOGLE_BOOKS_API_KEY"]
+            assumeTrue(key != null, "No Google Books API key given for running the Google Books tests (key GOOGLE_BOOKS_API_KEY)")
+            return GoogleCatalogueClient(
+                Books.Builder(GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance(), null)
+                    .setApplicationName("booklab")
+                    .setGoogleClientRequestInitializer(BooksRequestInitializer(key))
+                    .build()
+            )
+        }
+
+        /**
+         * Create a Google Vision [ImageAnnotatorClient].
+         */
+        protected fun setUpVision(): ImageAnnotatorClient = try {
+            ImageAnnotatorClient.create()
+        } catch (e: Throwable) {
+            e.printStackTrace()
+            assumeTrue(false, "No Google Cloud credentials available for running the Google Vision tests.")
+            throw e
+        }
+
+        override fun detectionModule(application: Application) {
+            super.detectionModule(application)
+            application.run {
+                routing {
+                    route("/api/detection") {
+                        detection(
+                            VisionConfiguration(
+                                detector = detector,
+                                extractor = extractor,
+                                catalogue = CatalogueConfiguration(catalogue)
+                                    .also {
+                                        attributes.put(CatalogueConfiguration.KEY, it)
+                                    }
+                            )
+                        )
+                    }
+                }
             }
+        }
+    }
+
+    /**
+     * A benchmark of the Tensorflow implementation
+     */
+    class TensorflowBenchmark : GoogleVisionBenchmark() {
+        private lateinit var graph: Graph
+
+        override fun setUpClass() {
+            super.setUpClass()
+
+            graph = setUpTensorflow()
+            detector = TensorflowBookDetector(graph)
+        }
+
+        private fun setUpTensorflow(): Graph = Graph().also {
+            val data = TensorflowBookDetector::class.java.getResourceAsStream("/tensorflow/inception-book-model.pb")
+                .use { it.readBytes() }
+            it.importGraphDef(data)
         }
     }
 }

@@ -57,7 +57,7 @@ dependencies {
     implementation "org.bytedeco.javacpp-presets:tesseract:3.04-1.1"
     compile "com.google.cloud:google-cloud-vision:1.28.0"
     /* Fix for https://stackoverflow.com/questions/35157642 */
-    implementation "com.google.guava:guava:20.0"
+    runtimeOnly "com.google.guava:guava:20.0"
 
 
     runtimeOnly "org.bytedeco.javacpp-presets:leptonica:1.72-1.1:$javacpp_platform"

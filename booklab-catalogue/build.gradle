@@ -36,7 +36,9 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "io.ktor:ktor-client-core:$ktor_version"
     implementation "io.ktor:ktor-client-apache:$ktor_version"
-    compile 'com.google.apis:google-api-services-books:v1-rev99-1.23.0'
+    compile("com.google.apis:google-api-services-books:v1-rev99-1.23.0") {
+        exclude group: "com.google.guava", module: "guava-jdk5"
+    }
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
