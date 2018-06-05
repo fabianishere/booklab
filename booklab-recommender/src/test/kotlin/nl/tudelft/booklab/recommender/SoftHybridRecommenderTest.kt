@@ -54,8 +54,6 @@ class SoftHybridRecommenderTest {
         runBlocking {
             val results = recommender.recommend(collection.toSet(), candidates.toSet())
 
-            results.forEach { println(it) }
-
             assertEquals(6, results.size)
             assertEquals(candidates[5], results[0])
             assertEquals(candidates[1], results[1])

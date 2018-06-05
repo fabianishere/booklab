@@ -21,40 +21,20 @@ import nl.tudelft.booklab.recommender.Recommender
 import nl.tudelft.booklab.recommender.author.AuthorRecommender
 import nl.tudelft.booklab.recommender.random.RandomRecommender
 import nl.tudelft.booklab.recommender.rating.google.GoogleBooksRatingRecommender
-import java.lang.Double.compare
-import java.lang.Integer.compare
 
 class StrictHybridRecommender(
-    private val authorRecommender: Recommender = AuthorRecommender(),
-    private val ratingRecommender: Recommender = GoogleBooksRatingRecommender(),
-    private val randomRecommender: Recommender = RandomRecommender()
+    authorRecommender: Recommender = AuthorRecommender(),
+    ratingRecommender: Recommender = GoogleBooksRatingRecommender(),
+    randomRecommender: Recommender = RandomRecommender()
 ) : Recommender {
 
+    private val softHybridRecommender = SoftHybridRecommender(
+        authorRecommender,
+        ratingRecommender,
+        randomRecommender,
+        Double.MAX_VALUE)
+
     override suspend fun recommend(collection: Set<Book>, candidates: Set<Book>): List<Book> {
-        val authorRecommendations = authorRecommender.recommend(collection, candidates)
-        val ratingRecommendations = ratingRecommender.recommend(collection, candidates)
-        val randomRecommendations = randomRecommender.recommend(collection, candidates)
-        val mergedRecommendations = ratingRecommendations.union(authorRecommendations)
-            .sortedWith(Comparator {
-                o1, o2 ->
-                    when {
-                        authorRecommendations.contains(o1) == authorRecommendations.contains(o2) ->
-                            -compare(o1.rating!!, o2.rating!!)
-                        authorRecommendations.contains(o1) -> -1
-                        else -> 1
-                    }
-            })
-        return randomRecommendations
-            .sortedWith(Comparator {
-                o1, o2 ->
-                    val index1 = mergedRecommendations.indexOf(o1)
-                    val index2 = mergedRecommendations.indexOf(o2)
-                    when {
-                        index1 == -1 && index2 == -1 -> 0
-                        index1 == -1 -> 1
-                        index2 == -1 -> -1
-                        else -> compare(index1, index2)
-                    }
-        })
+        return softHybridRecommender.recommend(collection, candidates)
     }
 }

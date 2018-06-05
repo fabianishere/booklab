@@ -41,7 +41,7 @@ class SoftHybridRecommender(
                 o1, o2 ->
                     when {
                         authorRecommendations.contains(o1) == authorRecommendations.contains(o2)
-                            || abs(o1.rating!! - o2.rating!!) > softness ->
+                            || (o1.rating != null && o2.rating != null && abs(o1.rating!! - o2.rating!!) > softness) ->
                             -compare(o1.rating!!, o2.rating!!)
                         authorRecommendations.contains(o1) -> -1
                         else -> 1
