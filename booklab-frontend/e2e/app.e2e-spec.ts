@@ -12,8 +12,9 @@ describe('book-lab App', () => {
     expect(page.getHeader()).toBeTruthy();
   });
 
-  it('should start with image-upload component', () => {
+  it('should start with home page component', () => {
       page.navigateTo();
       expect(page.getCurrentRoutedComponent('app-home').isPresent()).toBeTruthy();
-  })
+  });
+  
 });
