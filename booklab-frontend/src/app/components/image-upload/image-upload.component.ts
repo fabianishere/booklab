@@ -1,16 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpService} from '../../services/http/http.service';
 import {UserService} from '../../services/user/user.service';
-import {Book, Title} from '../../dataTypes';
+import {Book, BookItem, Title} from '../../dataTypes';
 import {isDefined} from "@angular/compiler/src/util";
 
-
-export class BookItem {
-    constructor(public book: Book,
-                public checked: boolean = true,
-                public addedToShelf = false) {
-    }
-}
 
 @Component({
     selector: 'app-image-upload',
@@ -24,7 +17,7 @@ export class BookItem {
 export class ImageUploadComponent implements OnInit {
     public img: any;
     public results: BookItem[];
-    public addedToShelf: boolean;
+    public enterBook = false;
     public searching = false;
 
     /**
@@ -62,7 +55,6 @@ export class ImageUploadComponent implements OnInit {
             this.searching = false;
             this.http.handleError(error)
         });
-        this.addedToShelf = false;
     }
 
     /**

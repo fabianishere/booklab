@@ -15,6 +15,10 @@ import {APP_BASE_HREF} from "@angular/common";
 import {LoginComponent} from "./components/login/login.component";
 import {SorryComponent} from "./components/sorry/sorry.component";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {ManualBookFindComponent} from "./components/manual-book-find/manual-book-find.component";
+import {AboutComponent} from "./components/about/about.component";
+import {HomeComponent} from "./components/home/home.component";
+import {RecommendationsComponent} from "./components/recommendations/recommendations.component";
 
 describe('AppComponent', () => {
     beforeEach(async(() => {
@@ -26,7 +30,11 @@ describe('AppComponent', () => {
                 BookshelfComponent,
                 SidebarComponent,
                 LoginComponent,
-                SorryComponent
+                SorryComponent,
+                ManualBookFindComponent,
+                AboutComponent,
+                HomeComponent,
+                RecommendationsComponent
             ],
             imports: [
                 BrowserModule,

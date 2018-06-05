@@ -12,24 +12,18 @@ import {HttpService} from '../../services/http/http.service';
 export class BookshelfComponent implements OnInit {
 
     public books: Book[];
-    public enterBook: boolean;
-    public nameInput: string;
-    public authorInput: string;
 
     /**
-     * Constructor for bookshelf component, handles user-input to the bookshelf.
-     *
+     * Constructor for bookshelf component
      * @param {UserService} user
-     * @param {HttpService} http
      */
-    constructor(private user: UserService, private http: HttpService) {
+    constructor(private user: UserService) {
     }
 
     ngOnInit() {
         this.user.getBookshelf().subscribe(b => {
             this.books = b;
         });
-        this.enterBook = false;
     }
 
     /**
@@ -40,20 +34,4 @@ export class BookshelfComponent implements OnInit {
         this.user.deleteFromBookshelf(book);
     }
 
-    /**
-     * Finds a book in the api with best corresponding title and author and adds it to the bookshelf.
-     */
-    findBook() {
-        if (!this.nameInput || !this.authorInput) {
-            return;
-        }
-        this.user.addToBookshelf(new Book([], [], [], true));
-        this.http.findBook(this.nameInput, this.authorInput).subscribe((result) => {
-            this.user.bookSearchComplete(Book.getBook(result.results[0]));
-        }, error => this.http.handleError(error));
-        this.enterBook = false;
-        this.authorInput = '';
-        this.nameInput = '';
-
-    }
 }
