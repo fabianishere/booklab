@@ -25,6 +25,34 @@ import java.lang.Double.compare
 import java.lang.Integer.compare
 import java.lang.Math.abs
 
+/**
+ * a [Recommender] that uses multiple different types of recommenders
+ * to give book recommendations. the [SoftHybridRecommender] implements
+ * the [Recommender] interface. by default the recommender will recommend
+ * authors present in the collection more than books with high ratings.
+ * However when a book rating is sufficiently higher than the rating of the
+ * book by that author this rule will be overridden.
+ *
+ * @property authorRecommender the recommender used to give recommendations
+ * based on the authors
+ * @property ratingRecommender the recommender used to give recommendations
+ * based on the ratings of the books
+ * @property randomRecommender the random recommender is used to make sure that
+ * always recommendations are made. it simply suffles the candidates and filters
+ * the already present books in the collection
+ * @property softness when a rating is this amount larger than the rating of a
+ * book of a recommended author then this rule is overridden.
+ * example 1: book A is written by a recommended author and has rating of 3.0.
+ * book B is only recommended based on the rating of 4.0 and the softness is 1.5.
+ * this will result in that book A is recommended since the difference between the
+ * ratings is to small.
+ * example 2: book C is written by a recommended author and has rating of 2.0.
+ * book D is only recommended based on the rating of 4.0 and the softness is 1.0.
+ * however book D will be recommended more since it rating is more that 1.0 higher than
+ * book book C
+ * 
+ * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
+ */
 class SoftHybridRecommender(
     private val authorRecommender: Recommender = AuthorRecommender(),
     private val ratingRecommender: Recommender = GoogleBooksRatingRecommender(),

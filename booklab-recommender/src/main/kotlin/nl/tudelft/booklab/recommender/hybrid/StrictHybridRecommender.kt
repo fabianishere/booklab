@@ -22,6 +22,17 @@ import nl.tudelft.booklab.recommender.author.AuthorRecommender
 import nl.tudelft.booklab.recommender.random.RandomRecommender
 import nl.tudelft.booklab.recommender.rating.google.GoogleBooksRatingRecommender
 
+/**
+ * a [Recommender] that uses multiple different types of recommenders
+ * to give book recommendations. the [StrictHybridRecommender] implements
+ * the [Recommender] interface. by default the recommender will recommend
+ * authors present in the collection more than books with high ratings.
+ * the [SoftHybridRecommender] would overrule this rule by using a softness
+ * factor. a higher softness means a stricter recommender. the
+ * [StrictHybridRecommender] has "infinite" softness.
+ *
+ * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
+ */
 class StrictHybridRecommender(
     authorRecommender: Recommender = AuthorRecommender(),
     ratingRecommender: Recommender = GoogleBooksRatingRecommender(),
