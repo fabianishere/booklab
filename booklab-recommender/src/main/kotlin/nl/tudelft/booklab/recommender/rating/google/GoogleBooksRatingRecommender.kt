@@ -20,12 +20,9 @@ import nl.tudelft.booklab.catalogue.Book
 import nl.tudelft.booklab.recommender.Recommender
 
 /**
- * a [Recommender] that recommends solely based on the ratings from GoodReads
+ * a [Recommender] that recommends solely based on the ratings from Google
+ * Books
  * [GoogleBooksRatingRecommender] implements the [Recommender] interface
- *
- * @property client the HTTP client used to connect with the Goodreads
- * database
- * @property key the Goodreads API key
  *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */

@@ -40,6 +40,7 @@ class GoodreadsRatingRecommender(
     private val client: HttpClient = HttpClient(Apache),
     private val key: String
 ) : Recommender {
+    private val parser = GoodreadsParser()
 
     override suspend fun recommend(collection: Set<Book>, candidates: Set<Book>): List<Book> {
         val response = client.call {
@@ -49,7 +50,7 @@ class GoodreadsRatingRecommender(
             method = HttpMethod.Get
         }.response
         if (response.status.value != HttpStatusCode.OK.value) { return emptyList() } // no candidates were found
-        val ratings = GoodreadsParser.parse(response.content.toInputStream())
+        val ratings = parser.parse(response.content.toInputStream())
         val map = candidates
             .filter { !collection.contains(it) }
             .filter { ratings.contains(it.ids) }

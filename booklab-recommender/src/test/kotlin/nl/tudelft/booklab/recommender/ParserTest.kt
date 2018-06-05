@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test
 class ParserTest {
     @Test
     fun `single result`() {
-        val results = GoodreadsParser.parse(ParserTest::class.java.getResourceAsStream("/goodreads-single.json"))
+        val results = GoodreadsParser().parse(ParserTest::class.java.getResourceAsStream("/goodreads-single.json"))
 
         assertEquals(results.ratings.size, 1)
         assertEquals(results.ratings[0], Rating("8700631620", "9788700631625", "4.45"))
@@ -32,7 +32,7 @@ class ParserTest {
 
     @Test
     fun `multiple results`() {
-        val results = GoodreadsParser.parse(
+        val results = GoodreadsParser().parse(
             ParserTest::class.java.getResourceAsStream("/goodreads-multiple.json"))
 
         assertEquals(results.ratings.size, 2)
