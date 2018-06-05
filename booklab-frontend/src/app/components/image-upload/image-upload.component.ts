@@ -13,7 +13,7 @@ export class BookItem {
 }
 
 @Component({
-    selector: 'app-image',
+    selector: 'app-image-upload',
     templateUrl: './image-upload.component.html',
     styleUrls: ['./image-upload.component.less']
 })

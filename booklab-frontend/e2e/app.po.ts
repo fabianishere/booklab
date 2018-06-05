@@ -8,4 +8,8 @@ export class AppPage {
   getHeader() {
     return element(by.css('app-root app-header')).isPresent();
   }
+
+  getCurrentRoutedComponent(component: string) {
+      return element(by.css('router-outlet + ' + component ));
+  }
 }

@@ -11,4 +11,9 @@ describe('book-lab App', () => {
     page.navigateTo();
     expect(page.getHeader()).toBeTruthy();
   });
+
+  it('should start with image-upload component', () => {
+      page.navigateTo();
+      expect(page.getCurrentRoutedComponent('app-image-upload').isPresent()).toBeTruthy();
+  })
 });
