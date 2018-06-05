@@ -1,0 +1,28 @@
+{
+    "books": [
+        {
+            "id": 15700740,
+            "isbn": "8700631620",
+            "isbn13": "9788700631625",
+            "ratings_count": 41,
+            "reviews_count": 62,
+            "text_reviews_count": 0,
+            "work_ratings_count": 5342775,
+            "work_reviews_count": 6276018,
+            "work_text_reviews_count": 84705,
+            "average_rating": "4.45"
+        },
+        {
+            "id": 772954,
+            "isbn": "2070733955",
+            "isbn13": "9782070733958",
+            "ratings_count": 6,
+            "reviews_count": 11,
+            "text_reviews_count": 0,
+            "work_ratings_count": 10013,
+            "work_reviews_count": 23153,
+            "work_text_reviews_count": 460,
+            "average_rating": "4.17"
+        }
+    ]
+}

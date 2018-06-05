@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.recommender
+package nl.tudelft.booklab.recommender.rating.goodreads
 
-import nl.tudelft.booklab.catalogue.Book
-import java.util.Random
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import java.io.InputStream
 
 /**
- * a [Recommender] that recommends randomly
- * [RandomRecommender] implements the [Recommender] interface
- *
- * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
+ * a singleton parser that parses JSON results from
+ * the Goodreads database
  */
-class RandomRecommender(private val random: Random = Random()) : Recommender {
-    override fun recommend(collection: List<Book>, candidates: List<Book>): List<Pair<Book, Int>> {
-        return candidates
-            .filter { !collection.contains(it) }
-            .shuffled(random)
-            .map { it to 0 }
+class GoodreadsParser(private val mapper: ObjectMapper = jacksonObjectMapper()) {
+
+    /**
+     * the parse function
+     *
+     * @param stream is the [InputStream] returned from Goodreads
+     * @return a [Results] object
+     */
+    fun parse(stream: InputStream): Results {
+        return mapper.readValue(stream, Results::class.java)
     }
 }

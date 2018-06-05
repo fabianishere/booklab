@@ -14,26 +14,23 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.recommender
+package nl.tudelft.booklab.recommender.random
 
 import nl.tudelft.booklab.catalogue.Book
+import nl.tudelft.booklab.recommender.Recommender
+import java.util.Random
 
 /**
- * an interface that standardizes the different types of recommenders
+ * a [Recommender] that recommends randomly
+ * [RandomRecommender] implements the [Recommender] interface
  *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
-interface Recommender {
-    /**
-     * the default recommend function
-     *
-     * @param collection a list of [Book]s that represents the collection
-     * of the user
-     * @param candidates a list of [Book]s that represents the domain out
-     * of which a recommendation needs to be made
-     * @return a list of [Book] recommendations sorted in decreasing order. it
-     * is expected from implementations that all books that are not recommendable
-     * are discarded.
-     */
-    suspend fun recommend(collection: Set<Book>, candidates: Set<Book>): List<Book>
+class RandomRecommender(private val random: Random = Random()) : Recommender {
+    override suspend fun recommend(collection: Set<Book>, candidates: Set<Book>): List<Book> {
+        return candidates
+            .distinct()
+            .filter { !collection.contains(it) }
+            .shuffled(random)
+    }
 }

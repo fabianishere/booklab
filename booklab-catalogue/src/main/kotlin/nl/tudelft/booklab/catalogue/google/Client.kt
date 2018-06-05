@@ -54,7 +54,8 @@ class GoogleCatalogueClient(private val catalogue: Books) : CatalogueClient {
                     it.volumeInfo.authors,
                     it.volumeInfo.industryIdentifiers
                         .filter { it.type == "ISBN_10" || it.type == "ISBN_13" }
-                        .map { it.identifier })
+                        .map { it.identifier },
+                    it.volumeInfo.averageRating)
         }.toList()
     }
 
