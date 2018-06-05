@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {AppComponent} from "../../app.component";
+import {OAuthService} from "angular-oauth2-oidc";
 
 @Component({
     selector: 'app-sidebar',
@@ -16,7 +17,7 @@ export class SidebarComponent implements OnInit {
     /**
      * Constructor for SidebarComponent
      */
-    constructor() {
+    constructor(public oauth: OAuthService) {
     }
 
     ngOnInit() {

@@ -5,33 +5,43 @@ import {AboutComponent} from "./components/about/about.component";
 import {HomeComponent} from "./components/home/home.component";
 import {RecommendationsComponent} from "./components/recommendations/recommendations.component";
 import {SorryComponent} from "./components/sorry/sorry.component";
+import {RegistrationComponent} from "./components/registration/registration.component";
+import {UserService} from "./services/user/user.service";
 
 const routes: Routes = [
     {
-        path: '',
-        component: ImageUploadComponent
+        path: 'register',
+        component: RegistrationComponent
     },
     {
-        path: 'bookshelf',
-        component: BookshelfComponent
+        path: '',
+        component: HomeComponent
+    },
+    {
+        path: 'sorry',
+        component: SorryComponent
     },
     {
         path: 'about',
         component: AboutComponent
     },
     {
-        path: 'sorry',
-        component: SorryComponent
-    }
-    ,
-    {
-        path: 'home',
-        component: HomeComponent
-    }
-    ,
-    {
-        path: 'recommendations',
-        component: RecommendationsComponent
+        path: '',
+        canActivate: [UserService],
+        children: [
+            {
+                path: 'upload',
+                component: ImageUploadComponent
+            },
+            {
+                path: 'bookshelf',
+                component: BookshelfComponent
+            },
+            {
+                path: 'recommendations',
+                component: RecommendationsComponent
+            }
+        ]
     }
 
 ];

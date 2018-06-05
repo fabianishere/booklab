@@ -24,6 +24,8 @@ import { AboutComponent } from './components/about/about.component';
 import { HomeComponent } from './components/home/home.component';
 import { ManualBookFindComponent } from './components/manual-book-find/manual-book-find.component';
 import {RecommendationsComponent} from "./components/recommendations/recommendations.component";
+import { RegistrationComponent } from './components/registration/registration.component';
+import {LoginService} from "./services/login/login.service";
 
 
 @NgModule({
@@ -38,7 +40,8 @@ import {RecommendationsComponent} from "./components/recommendations/recommendat
         AboutComponent,
         HomeComponent,
         ManualBookFindComponent,
-        RecommendationsComponent
+        RecommendationsComponent,
+        RegistrationComponent
     ],
     imports: [
         BrowserModule,
@@ -56,6 +59,7 @@ import {RecommendationsComponent} from "./components/recommendations/recommendat
     providers: [
         HttpService,
         UserService,
+        LoginService,
         {provide: APP_BASE_HREF, useValue : '/' }
     ],
     bootstrap: [AppComponent],
