@@ -61,6 +61,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
 import org.tensorflow.Graph
 import java.util.concurrent.TimeUnit
+import kotlin.system.measureTimeMillis
 
 /**
  * This class provides a benchmark for the book recognition algorithms which we use to evaluate the
@@ -153,33 +154,37 @@ sealed class DetectionBenchmark {
         val titles = DetectionBenchmark::class.java.getResourceAsStream(bookTitles).reader().useLines { it.toList() }
         val image = DetectionBenchmark::class.java.getResourceAsStream(bookshelf).readBytes()
 
-        val request = handleRequest(HttpMethod.Post, "/api/detection") {
-            setBody(image)
-            addHeader(HttpHeaders.ContentType, ContentType.Application.OctetStream.toString())
-        }
-        with(request) {
-            Assertions.assertEquals(HttpStatusCode.OK, response.status())
-            val response: DetectionResult? = response.content?.let { mapper.readValue(it) }
-            val responseTitles = response?.results?.map { book -> book.titles[0].value }
-            val intersection = titles.intersect(responseTitles!!)
+        val timing = measureTimeMillis {
+            val request = handleRequest(HttpMethod.Post, "/api/detection") {
+                setBody(image)
+                addHeader(HttpHeaders.ContentType, ContentType.Application.OctetStream.toString())
+            }
+            with(request) {
+                Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                val response: DetectionResult? = response.content?.let { mapper.readValue(it) }
+                val responseTitles = response?.results?.map { book -> book.titles[0].value }
+                val intersection = titles.intersect(responseTitles!!)
 
-            correct += intersection.size
-            total += titles.size
-            incorrect += responseTitles.size - intersection.size
-            println("Found: $responseTitles")
-            println("Needed: $titles")
-            println("Correct: $intersection")
-            println("Score: ${intersection.size}/${titles.size} (${responseTitles.size - intersection.size} incorrect)")
+                correct += intersection.size
+                total += titles.size
+                incorrect += responseTitles.size - intersection.size
+                println("Found: $responseTitles")
+                println("Needed: $titles")
+                println("Correct: $intersection")
+                println("Score: ${intersection.size}/${titles.size} (${responseTitles.size - intersection.size} incorrect)")
+            }
         }
+
+        println("Took: $timing ms")
     }
 
     /**
      * A benchmark for the Google Vision implementations
      */
     open class GoogleVisionBenchmark : DetectionBenchmark() {
-        protected lateinit var catalogue: CatalogueClient
+        private lateinit var catalogue: CatalogueClient
         protected lateinit var detector: BookDetector
-        protected lateinit var extractor: TextExtractor
+        private lateinit var extractor: TextExtractor
 
         override fun setUpClass() {
             super.setUpClass()
@@ -193,7 +198,7 @@ sealed class DetectionBenchmark {
         /**
          * Create a Google Books API client.
          */
-        protected fun setUpBooks(): CatalogueClient {
+        private fun setUpBooks(): CatalogueClient {
             // Setup Google Books catalogue
             val key = System.getenv()["GOOGLE_BOOKS_API_KEY"]
             assumeTrue(key != null, "No Google Books API key given for running the Google Books tests (key GOOGLE_BOOKS_API_KEY)")
@@ -208,7 +213,7 @@ sealed class DetectionBenchmark {
         /**
          * Create a Google Vision [ImageAnnotatorClient].
          */
-        protected fun setUpVision(): ImageAnnotatorClient = try {
+        private fun setUpVision(): ImageAnnotatorClient = try {
             ImageAnnotatorClient.create()
         } catch (e: Throwable) {
             e.printStackTrace()
