@@ -95,5 +95,6 @@ export class UserService implements CanActivate{
     logout() {
         this.oauthService.logOut();
         this.loggedIn = false;
+        this.router.navigate([""]);
     }
 }
