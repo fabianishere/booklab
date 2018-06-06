@@ -38,7 +38,6 @@ build:backend(master):
   artifacts:
     expire_in: 1 week
     paths:
-      - "*/build/distributions"
       - "*/build/libs"
       - "*/build/dokka"
   only:
@@ -87,7 +86,9 @@ test:backend(master):
     policy: push
     paths:
       - "booklab-frontend/node_modules"
-      - "booklab-frontend/build"
+      - "booklab-frontend/build/angular"
+  tags:
+    - longJob
 
 build:frontend:
   <<: *build-frontend
@@ -98,7 +99,6 @@ build:frontend(master):
   <<: *build-frontend
   script:
     - cd booklab-frontend
-    - npm install
     - npm run build
     - npm run compodoc
   artifacts:
@@ -110,7 +110,7 @@ build:frontend(master):
     - master
 
 .test:frontend(template): &test-frontend
-  image: alekzonder/puppeteer:1.3.0
+  image: fabianishere/puppeteer-root:1.4.0
   stage: test
   script:
     - cd booklab-frontend
@@ -125,7 +125,9 @@ build:frontend(master):
     policy: pull
     paths:
       - "booklab-frontend/node_modules"
-      - "booklab-frontend/build"
+      - "booklab-frontend/build/angular"
+  tags:
+    - longJob
 
 test:frontend:
   <<: *test-frontend
