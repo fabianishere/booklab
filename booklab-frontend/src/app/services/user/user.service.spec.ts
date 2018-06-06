@@ -17,7 +17,7 @@ describe('UserService should..', () => {
     beforeEach(() => {
         authSpy = jasmine.createSpyObj('OAuthService', ['hasValidAccessToken', 'fetchTokenUsingPasswordFlow', 'logOut']);
         authSpy.hasValidAccessToken.and.returnValue(true);
-        user = new UserService(authSpy);
+        user = new UserService(authSpy, jasmine.createSpyObj('Router', ['navigate']));
     });
 
     it('be created', () => {

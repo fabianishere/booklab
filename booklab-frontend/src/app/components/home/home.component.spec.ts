@@ -1,22 +1,19 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HomeComponent } from './home.component';
+import {LoginService} from "../../services/login/login.service";
+import {OAuthService} from "angular-oauth2-oidc";
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
-  let fixture: ComponentFixture<HomeComponent>;
+  let login: jasmine.SpyObj<LoginService>;
+  let auth: jasmine.SpyObj<OAuthService>;
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ HomeComponent ]
-    })
-    .compileComponents();
-  }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(HomeComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    beforeEach(() => {
+      login = jasmine.createSpyObj('LoginService', ['login']);
+      auth = jasmine.createSpyObj('OAuthService', ['hasValidAccessToken']);
+      component = new HomeComponent(login, auth);
   });
 
   it('should create', () => {

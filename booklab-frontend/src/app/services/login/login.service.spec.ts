@@ -1,15 +1,18 @@
-import { TestBed, inject } from '@angular/core/testing';
+import {inject} from '@angular/core/testing';
 
-import { LoginService } from './login.service';
+import {LoginService} from './login.service';
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
 describe('LoginService', () => {
+    let login: LoginService;
+    let modal: jasmine.SpyObj<NgbModal>;
+
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [LoginService]
-    });
+    modal = jasmine.createSpyObj('NgbModal', ['open']);
+    login = new LoginService(modal);
   });
 
-  it('should be created', inject([LoginService], (service: LoginService) => {
-    expect(service).toBeTruthy();
-  }));
+  it('should be created', () => {
+    expect(login).toBeTruthy();
+  });
 });
