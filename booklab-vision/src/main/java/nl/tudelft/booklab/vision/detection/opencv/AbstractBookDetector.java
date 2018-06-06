@@ -61,6 +61,14 @@ public abstract class AbstractBookDetector implements BookDetector {
     }
 
 
+    /**
+     * Finds the shelves in an image
+     *
+     * @param image openCV matrix containing an image
+     * @param mask  openCV matrix containing a binary image of text regions
+     * @return map of shelves with each key-value pair being an image of
+     * the shelf and an image of its text regions
+     */
     static Map<Mat, Mat> findShelves(Mat image, Mat mask) {
         Mat rotatedMask = new Mat();
         rotate(mask, rotatedMask, ROTATE_90_COUNTERCLOCKWISE);
@@ -78,6 +86,14 @@ public abstract class AbstractBookDetector implements BookDetector {
         return shelfMaskMap;
     }
 
+    /**
+     * Finds the locations of the shelves in an image
+     *
+     * @param image         openCV matrix containing an image
+     * @param cropLocations list of the locations of local minima on the y-axis of the image
+     * @return map of locations of the shelves with each key-value pair
+     * being the min and max y-coordinates of a shelf
+     */
     @NotNull
     static Map<Integer, Integer> findShelfLocations(Mat image, List<Integer> cropLocations) {
         Map<Integer, Integer> locations = new HashMap<>();
@@ -93,6 +109,14 @@ public abstract class AbstractBookDetector implements BookDetector {
     }
 
 
+    /**
+     * Crops segments from an image corresponding to the found shelf locations
+     *
+     * @param image     openCV matrix containing an image
+     * @param locations map of locations of the shelves with each key-value pair
+     *                  being the min and max y-coordinates of a shelf
+     * @return list of images of shelves
+     */
     static List<Mat> cropShelves(Mat image, Map<Integer, Integer> locations) {
         List<Mat> shelves = new ArrayList<>();
         for (Map.Entry<Integer, Integer> entry : locations.entrySet()) {
@@ -108,9 +132,9 @@ public abstract class AbstractBookDetector implements BookDetector {
     /**
      * Crops a segment from the image
      *
-     * @param image      openCV matrix containing an image
-     * @param y          y-coordinate
-     * @param height     height of segment
+     * @param image  openCV matrix containing an image
+     * @param y      y-coordinate
+     * @param height height of segment
      * @return cropped image
      */
     @NotNull
@@ -123,6 +147,13 @@ public abstract class AbstractBookDetector implements BookDetector {
         return new Mat(image, roi);
     }
 
+    /**
+     * Finds the locations where to split the image on the x-axis based on local minima
+     *
+     * @param image openCV matrix containing an image
+     * @param reduceType type of openCV reduction to apply, either REDUCE_MAX or REDUCE_AVG
+     * @return list of x-coordinates
+     */
     @NotNull
     static List<Integer> findCropLocations(Mat image, int reduceType) {
         Mat reduced = new Mat();
