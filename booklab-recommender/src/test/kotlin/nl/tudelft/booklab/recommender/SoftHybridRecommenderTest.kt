@@ -136,6 +136,29 @@ class SoftHybridRecommenderTest {
     }
 
     @Test
+    fun `random recommendations are lowest recommended`() {
+        val collection = listOf(
+            Book(listOf(Title("AMAZING")), listOf("GREAT_AUTHOR"))
+        )
+        val candidates = listOf(
+            Book(listOf(Title("book 0")), listOf("GREAT_AUTHOR"), rating = 2.0),
+            Book(listOf(Title("book 1")), listOf("author")),
+            Book(listOf(Title("book 2")), listOf("author")),
+            Book(listOf(Title("book 3")), listOf("author"))
+        )
+
+        runBlocking {
+            val results = SoftHybridRecommender(randomRecommender = RandomRecommender(Random(123)), softness = 2.0)
+                .recommend(collection.toSet(), candidates.toSet())
+
+            assertEquals(candidates[0], results[0])
+            assertEquals(candidates[1], results[1])
+            assertEquals(candidates[3], results[2])
+            assertEquals(candidates[2], results[3])
+        }
+    }
+
+    @Test
     fun `if rating is sufficiently low then softness should not falsely promote`() {
         val collection = listOf(
             Book(listOf(Title("AMAZING")), listOf("GREAT_AUTHOR"))
@@ -247,7 +270,6 @@ class SoftHybridRecommenderTest {
             assertEquals(candidates[16], results[15])
             assertEquals(candidates[17], results[16])
             assertEquals(candidates[15], results[17])
-
         }
     }
 }
