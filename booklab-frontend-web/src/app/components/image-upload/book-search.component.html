@@ -1,0 +1,25 @@
+<div class="container-fluid top-container d-flex flex-column">
+    <div class="row">
+        <div class="col-12 input">
+            <br>
+            <label class="button upload">
+                Upload a picture of your bookshelf!
+                <input type="file" (change)="onSubmit($event)" accept="image/*"/>
+            </label>
+            <br>
+            <p>Tip: Our service works best if you take a picture when you are standing right in front of your bookcase. Do
+                it one shelf at the time.</p>
+        </div>
+    </div>
+    <div class="row flex-grow-1">
+        <div class="col-12 results d-block ">
+            <app-image-search class="d-block"></app-image-search>
+            <p *ngIf="!image.searching && booklist.books.length == 0 && image.img!= null">No books were found</p>
+            <app-booklist [addTo]="this"
+                          [buttonText]="'Add these books to my collection'"></app-booklist>
+            <p class="m-0" >Or do you want to </p>
+            <button class="button ml-0 mr-0" (click)="enterBook = true">Enter a book manually</button>
+            <app-manual-book-find *ngIf="enterBook"></app-manual-book-find>
+        </div>
+    </div>
+</div>

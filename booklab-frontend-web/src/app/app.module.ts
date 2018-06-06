@@ -1,7 +1,6 @@
 import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {RouterModule, Routes} from '@angular/router';
 import {HttpClientModule} from '@angular/common/http';
 import {APP_BASE_HREF} from '@angular/common';
 
@@ -11,7 +10,7 @@ import {HttpService} from './services/http/http.service';
 import {UserService} from './services/user/user.service';
 
 import {AppComponent} from './app.component';
-import {ImageUploadComponent} from './components/image-upload/image-upload.component';
+import {BookSearchComponent} from './components/image-upload/book-search.component';
 import {HeaderComponent} from './components/header/header.component';
 import {BookshelfComponent} from './components/bookshelf/bookshelf.component';
 import {SidebarComponent} from './components/sidebar/sidebar.component';
@@ -26,12 +25,13 @@ import {ManualBookFindComponent} from './components/manual-book-find/manual-book
 import {RecommendationsComponent} from "./components/recommendations/recommendations.component";
 import {RegistrationComponent} from './components/registration/registration.component';
 import {LoginService} from "./services/login/login.service";
-
+import {BooklistComponent} from './components/booklist/booklist.component';
+import {ImageSearchComponent} from './components/image-search/image-search.component';
 
 @NgModule({
     declarations: [
         AppComponent,
-        ImageUploadComponent,
+        BookSearchComponent,
         HeaderComponent,
         BookshelfComponent,
         SidebarComponent,
@@ -41,7 +41,9 @@ import {LoginService} from "./services/login/login.service";
         HomeComponent,
         ManualBookFindComponent,
         RecommendationsComponent,
-        RegistrationComponent
+        RegistrationComponent,
+        BooklistComponent,
+        ImageSearchComponent,
     ],
     imports: [
         BrowserModule,

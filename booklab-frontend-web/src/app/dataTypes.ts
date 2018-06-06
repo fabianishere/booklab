@@ -163,7 +163,7 @@ export interface BookDetection {
 export class BookItem {
     constructor(public book: Book,
                 public checked: boolean = true,
-                public addedToShelf = false) {
+                public added = false) {
     }
 }
 

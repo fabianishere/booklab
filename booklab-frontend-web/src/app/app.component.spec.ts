@@ -3,7 +3,7 @@ import {AppComponent} from './app.component';
 import {SidebarComponent} from "./components/sidebar/sidebar.component";
 import {BookshelfComponent} from "./components/bookshelf/bookshelf.component";
 import {HeaderComponent} from './components/header/header.component';
-import {ImageUploadComponent} from "./components/image-upload/image-upload.component";
+import {BookSearchComponent} from "./components/image-upload/book-search.component";
 import {BrowserModule} from "@angular/platform-browser";
 import {FormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
@@ -20,13 +20,15 @@ import {AboutComponent} from "./components/about/about.component";
 import {HomeComponent} from "./components/home/home.component";
 import {RecommendationsComponent} from "./components/recommendations/recommendations.component";
 import {RegistrationComponent} from "./components/registration/registration.component";
+import {BooklistComponent} from "./components/booklist/booklist.component";
+import {ImageSearchComponent} from "./components/image-search/image-search.component";
 
 describe('AppComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [
                 AppComponent,
-                ImageUploadComponent,
+                BookSearchComponent,
                 HeaderComponent,
                 BookshelfComponent,
                 SidebarComponent,
@@ -36,7 +38,9 @@ describe('AppComponent', () => {
                 AboutComponent,
                 HomeComponent,
                 RecommendationsComponent,
-                RegistrationComponent
+                RegistrationComponent,
+                BooklistComponent,
+                ImageSearchComponent
             ],
             imports: [
                 BrowserModule,
