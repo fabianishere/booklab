@@ -25,8 +25,9 @@
             <div *ngIf="results.length > 0" class="books">
                 <div *ngFor="let book of results" class="row book"
                      [ngClass]="{'addedToShelf':book.addedToShelf, 'toAdd':book.checked}">
-                    <div class="col-1" *ngIf="book.addedToShelf"><i class="fas fa-check-circle okay"
-                                                                    (click)="deleteBook(book.book)"></i></div>
+                    <div class="col-1" *ngIf="book.addedToShelf">
+                        <i class="fas fa-check-circle okay"></i>
+                    </div>
                     <div class="col-1" *ngIf="!book.addedToShelf">
                         <label class="b-custom">
                             <input type="checkbox" [(ngModel)]="book.checked" (change)="log(book.checked)">

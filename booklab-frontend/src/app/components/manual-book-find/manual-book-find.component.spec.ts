@@ -32,7 +32,7 @@ describe('ManualBookFindComponent should..', () => {
 
     it('add a book to the bookshelf', () => {
         const book = new BookItem(Book.create('Kaas', 'Willem Elsschot', '123456'));
-        component.result = book;
+        component.results = [book];
         component.addManualToBookshelf();
         expect(user.addToBookshelf.calls.count()).toBe(1);
         expect(user.addToBookshelf.calls.mostRecent().args[0]).toEqual(book.book);
