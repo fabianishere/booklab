@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {HttpService} from "../../services/http/http.service";
 import {UserService} from "../../services/user/user.service";
 import {Book, BookItem} from "../../dataTypes";
+import {isDefined} from "@angular/compiler/src/util";
 
 @Component({
     selector: 'app-manual-book-find',
@@ -12,7 +13,7 @@ export class ManualBookFindComponent implements OnInit {
 
     public nameInput: string;
     public authorInput: string;
-    public result: BookItem;
+    public results: BookItem[];
     public searching = false;
 
     constructor(private user: UserService, private http: HttpService) {
@@ -29,9 +30,10 @@ export class ManualBookFindComponent implements OnInit {
             return;
         }
         this.searching = true;
+        this.results = null;
         this.http.findBook(this.nameInput, this.authorInput).subscribe((result) => {
             this.searching = false;
-            this.result = new BookItem(Book.getBook(result.results[0]));
+            this.results = result.results.map(r => new BookItem(Book.getBook(r),false, false));
         }, error => this.http.handleError(error));
         this.authorInput = '';
         this.nameInput = '';
@@ -39,12 +41,18 @@ export class ManualBookFindComponent implements OnInit {
     }
 
     addManualToBookshelf() {
-        this.result.addedToShelf = true;
-        this.user.addToBookshelf(this.result.book);
+        this.results.filter(r => r.checked).forEach(r => {
+            r.addedToShelf = true;
+            this.user.addToBookshelf(r.book);
+        });
     }
 
     deleteResult() {
-        this.result = null;
+        this.results = null;
+    }
+
+    booksAddedToShelf(): boolean {
+        return isDefined(this.results.find(b => b.addedToShelf));
     }
 
 }

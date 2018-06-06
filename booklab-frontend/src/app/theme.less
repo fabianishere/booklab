@@ -81,6 +81,31 @@ input[type="text"], input[type="password"] {
     cursor: default;
 }
 
+.b-custom {
+    position: absolute;
+    top: 7px;
+    left: 1em;
+    input {
+        display: none;
+    }
+    img {
+        display: none;
+    }
+    .checkmark{
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 1em;
+        width: 1em;
+        background-color: #eee;
+    }
+    & input:checked ~ .checkmark {
+        display: block;
+        background-color: @booklab-blue;
+    }
+
+}
+
 .pink {
     color: @booklab-pink;
 }
