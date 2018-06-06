@@ -23,7 +23,6 @@ import nl.tudelft.booklab.recommender.random.RandomRecommender
 import nl.tudelft.booklab.recommender.rating.google.GoogleBooksRatingRecommender
 import java.lang.Double.compare
 import java.lang.Integer.compare
-import java.lang.Math.abs
 
 /**
  * a [Recommender] that uses multiple different types of recommenders
@@ -50,7 +49,7 @@ import java.lang.Math.abs
  * book D is only recommended based on the rating of 4.0 and the softness is 1.0.
  * however book D will be recommended more since it rating is more that 1.0 higher than
  * book book C
- * 
+ *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
 class SoftHybridRecommender(
@@ -67,13 +66,31 @@ class SoftHybridRecommender(
         val mergedRecommendations = ratingRecommendations.union(authorRecommendations)
             .sortedWith(Comparator {
                 o1, o2 ->
-                    when {
-                        authorRecommendations.contains(o1) == authorRecommendations.contains(o2)
-                            || (o1.rating != null && o2.rating != null && abs(o1.rating!! - o2.rating!!) > softness) ->
-                            -compare(o1.rating!!, o2.rating!!)
-                        authorRecommendations.contains(o1) -> -1
-                        else -> 1
-                    }
+                fun Book.isRecommended(): Boolean = authorRecommendations.contains(this)
+                fun Book.notRecommended(): Boolean = !this.isRecommended()
+                fun Book.hasRating(): Boolean = this.rating != null
+                fun Book.noRating(): Boolean = !this.hasRating()
+                fun Book.index(): Int = authorRecommendations.indexOf(this)
+                fun compareRating(book1: Book, book2: Book): Int = -compare(book1.rating!!, book2.rating!!)
+                when {
+                    o1.isRecommended() && o2.isRecommended() && !(o1.hasRating() && o2.hasRating()) ->
+                        compare(o1.index(), o2.index())
+                    o1.hasRating() && o1.notRecommended() && o2.hasRating() && o2.notRecommended() ->
+                        compareRating(o1, o2)
+                    o1.noRating() && o1.isRecommended() && o2.hasRating() && o2.notRecommended() ->
+                        -1 // favor o1, not expected to happen often
+                    o1.hasRating() && o1.notRecommended() && o2.noRating() && o2.isRecommended() ->
+                        1 // favor o2, not expected to happen often
+                    o1.hasRating() && o1.notRecommended() && o2.hasRating() && o2.isRecommended() ->
+                        if (o1.rating!! - o2.rating!! < softness) 1 else compareRating(o1, o2)
+                    o1.hasRating() && o1.isRecommended() && o2.hasRating() && o2.notRecommended() ->
+                        if (o2.rating!! - o1.rating!! < softness) -1 else compareRating(o1, o2)
+                    o1.hasRating() && o1.isRecommended() && o2.hasRating() && o2.isRecommended() ->
+                        compareRating(o1, o2)
+                    else -> throw IllegalStateException() // should be impossible to reach since this means that
+                    // either o1 or o2 besides not having a rating also does not have a recommended author. this cannot
+                    // be possible if the union of both those recommendations is taken.
+                }
             })
         return randomRecommendations
             .sortedWith(Comparator {
