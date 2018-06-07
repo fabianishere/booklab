@@ -9,7 +9,7 @@ import {SorryComponent} from "./components/sorry/sorry.component";
 const routes: Routes = [
     {
         path: '',
-        component: ImageUploadComponent
+        component: HomeComponent
     },
     {
         path: 'bookshelf',
@@ -25,8 +25,8 @@ const routes: Routes = [
     }
     ,
     {
-        path: 'home',
-        component: HomeComponent
+        path: 'upload',
+        component: ImageUploadComponent
     }
     ,
     {

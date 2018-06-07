@@ -9,6 +9,12 @@ describe('book-lab App', () => {
 
   it('should display welcome message', () => {
     page.navigateTo();
-    expect(page.getParagraphText()).toEqual('Welcome to app!');
+    expect(page.getHeader()).toBeTruthy();
   });
+
+  it('should start with home page component', () => {
+      page.navigateTo();
+      expect(page.getCurrentRoutedComponent('app-home').isPresent()).toBeTruthy();
+  });
+  
 });
