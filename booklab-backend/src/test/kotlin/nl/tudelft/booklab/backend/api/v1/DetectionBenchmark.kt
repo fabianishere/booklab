@@ -17,8 +17,6 @@
 package nl.tudelft.booklab.backend.api.v1
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
@@ -26,24 +24,27 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.books.Books
 import com.google.api.services.books.BooksRequestInitializer
 import com.google.cloud.vision.v1.ImageAnnotatorClient
-import com.typesafe.config.ConfigFactory
 import io.ktor.application.Application
 import io.ktor.application.install
-import io.ktor.config.HoconApplicationConfig
+import io.ktor.auth.Authentication
 import io.ktor.features.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.jackson.jackson
 import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.createTestEnvironment
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
-import nl.tudelft.booklab.backend.CatalogueConfiguration
-import nl.tudelft.booklab.backend.VisionConfiguration
+import nl.tudelft.booklab.backend.configureAuthorization
+import nl.tudelft.booklab.backend.configureJackson
+import nl.tudelft.booklab.backend.configureOAuth
+import nl.tudelft.booklab.backend.createTestContext
+import nl.tudelft.booklab.backend.services.vision.VisionService
+import nl.tudelft.booklab.backend.spring.bootstrap
+import nl.tudelft.booklab.backend.spring.inject
 import nl.tudelft.booklab.catalogue.CatalogueClient
 import nl.tudelft.booklab.catalogue.google.GoogleCatalogueClient
 import nl.tudelft.booklab.vision.detection.BookDetector
@@ -52,13 +53,15 @@ import nl.tudelft.booklab.vision.detection.tensorflow.TensorflowBookDetector
 import nl.tudelft.booklab.vision.ocr.TextExtractor
 import nl.tudelft.booklab.vision.ocr.gvision.GoogleVisionTextExtractor
 import org.junit.jupiter.api.AfterAll
-import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
+import org.springframework.context.support.BeanDefinitionDsl
+import org.springframework.context.support.beans
 import org.tensorflow.Graph
 import java.util.concurrent.TimeUnit
 import kotlin.system.measureTimeMillis
@@ -104,7 +107,9 @@ sealed class DetectionBenchmark {
         setUpClass()
 
         mapper = jacksonObjectMapper()
-        engine = TestApplicationEngine(detectionEnvironment())
+        engine = TestApplicationEngine(createTestEnvironment {
+            module { test() }
+        })
         engine.start()
     }
 
@@ -124,28 +129,6 @@ sealed class DetectionBenchmark {
     }
 
     /**
-     * Method to configure the server
-     */
-    open fun detectionModule(application: Application) {
-        application.run {
-            install(ContentNegotiation) {
-                jackson {
-                    configure(SerializationFeature.INDENT_OUTPUT, true)
-                    registerModule(JavaTimeModule())
-                }
-            }
-        }
-    }
-
-    /**
-     * Helper method to create a Ktor test environment.
-     */
-    private fun detectionEnvironment() = createTestEnvironment {
-        config = HoconApplicationConfig(ConfigFactory.load("application-test.conf"))
-        module { detectionModule(this) }
-    }
-
-    /**
      * The actual test that runs a couple of images through the detector.
      */
     @ParameterizedTest
@@ -155,12 +138,14 @@ sealed class DetectionBenchmark {
         val image = DetectionBenchmark::class.java.getResourceAsStream(bookshelf).readBytes()
 
         val timing = measureTimeMillis {
+
             val request = handleRequest(HttpMethod.Post, "/api/detection") {
                 setBody(image)
+                configureAuthorization("test", listOf("detection"))
                 addHeader(HttpHeaders.ContentType, ContentType.Application.OctetStream.toString())
             }
             with(request) {
-                Assertions.assertEquals(HttpStatusCode.OK, response.status())
+                assertEquals(HttpStatusCode.OK, response.status())
                 val response: DetectionResult? = response.content?.let { mapper.readValue(it) }
                 val responseTitles = response?.results?.map { book -> book.titles[0].value }
                 val intersection = titles.intersect(responseTitles!!)
@@ -177,6 +162,32 @@ sealed class DetectionBenchmark {
 
         println("Took: $timing ms")
     }
+
+    /**
+     * A method to configure the test application.
+     */
+    fun Application.test() {
+        val context = createTestContext {
+            beans {
+                // VisionService
+                bean { VisionService(detector = ref(), extractor = ref(), catalogue = ref()) }
+                beans(this)
+            }.initialize(this)
+        }
+        context.bootstrap(this) {
+            install(ContentNegotiation) { configureJackson() }
+            install(Authentication) { configureOAuth(inject()) }
+
+            routing {
+                route("/api/detection") { detection() }
+            }
+        }
+    }
+
+    /**
+     * The test beans.
+     */
+    abstract fun beans(dsl: BeanDefinitionDsl)
 
     /**
      * A benchmark for the Google Vision implementations
@@ -201,7 +212,10 @@ sealed class DetectionBenchmark {
         private fun setUpBooks(): CatalogueClient {
             // Setup Google Books catalogue
             val key = System.getenv()["GOOGLE_BOOKS_API_KEY"]
-            assumeTrue(key != null, "No Google Books API key given for running the Google Books tests (key GOOGLE_BOOKS_API_KEY)")
+            assumeTrue(
+                key != null,
+                "No Google Books API key given for running the Google Books tests (key GOOGLE_BOOKS_API_KEY)"
+            )
             return GoogleCatalogueClient(
                 Books.Builder(GoogleNetHttpTransport.newTrustedTransport(), JacksonFactory.getDefaultInstance(), null)
                     .setApplicationName("booklab")
@@ -221,23 +235,11 @@ sealed class DetectionBenchmark {
             throw e
         }
 
-        override fun detectionModule(application: Application) {
-            super.detectionModule(application)
-            application.run {
-                routing {
-                    route("/api/detection") {
-                        detection(
-                            VisionConfiguration(
-                                detector = detector,
-                                extractor = extractor,
-                                catalogue = CatalogueConfiguration(catalogue)
-                                    .also {
-                                        attributes.put(CatalogueConfiguration.KEY, it)
-                                    }
-                            )
-                        )
-                    }
-                }
+        override fun beans(dsl: BeanDefinitionDsl) {
+            dsl.run {
+                bean { detector }
+                bean { extractor }
+                bean { catalogue }
             }
         }
     }

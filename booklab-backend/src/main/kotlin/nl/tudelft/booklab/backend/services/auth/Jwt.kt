@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.backend.auth
+package nl.tudelft.booklab.backend.services.auth
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTCreator
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
-import io.ktor.application.Application
 import io.ktor.config.ApplicationConfig
-import io.ktor.util.AttributeKey
 import java.time.Duration
 
 /**
- * The configuration for the JWT authentication method.
+ * A service for generating and verifying JSON Web Tokens.
  */
-data class JwtConfiguration(
+data class JwtService(
     val issuer: String,
     val audience: String,
     val realm: String,
@@ -53,31 +51,25 @@ data class JwtConfiguration(
         .withAudience(audience)
         .withIssuer(issuer)
         .withSubject("access-token")
-
-    companion object {
-        /**
-         * The attribute key that allows the user to access the [JwtConfiguration] object within an application.
-         */
-        val KEY = AttributeKey<JwtConfiguration>("JwtConfiguration")
-    }
 }
 
 /**
- * Build the [JwtConfiguration] object for the given configuration environment.
+ * Build the [JwtService] object for the given configuration environment.
  *
- * @return The [JwtConfiguration] instance that has been built.
+ * @return The [JwtService] instance that has been built.
  */
-fun ApplicationConfig.asJwtConfiguration(): JwtConfiguration {
+fun ApplicationConfig.asJwtService(): JwtService {
     val issuer = property("domain").getString()
     val audience = property("audience").getString()
     val realm = property("realm").getString()
     val passphrase = property("passphrase").getString()
     val validity = Duration.parse(property("validity").getString())
 
-    return JwtConfiguration(issuer, audience, realm, validity, Algorithm.HMAC512(passphrase))
+    return JwtService(
+        issuer,
+        audience,
+        realm,
+        validity,
+        Algorithm.HMAC512(passphrase)
+    )
 }
-
-/**
- * Extension method for accessing the [JwtConfiguration] instance of the [Application].
- */
-val Application.jwt: JwtConfiguration get() = attributes[JwtConfiguration.KEY]

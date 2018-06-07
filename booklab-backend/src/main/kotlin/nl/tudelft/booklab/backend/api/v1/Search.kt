@@ -21,23 +21,25 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.Route
+import io.ktor.routing.application
 import io.ktor.routing.get
-import nl.tudelft.booklab.backend.CatalogueConfiguration
+import nl.tudelft.booklab.backend.spring.inject
 import nl.tudelft.booklab.catalogue.Book
+import nl.tudelft.booklab.catalogue.CatalogueClient
 
 /**
  * Define catalogue search endpoints at the current route for the REST api.
- *
- * @param catalogue The catalogue client to use for searching.
  */
-fun Route.search(catalogue: CatalogueConfiguration) {
+fun Route.search() {
+    val catalogue: CatalogueClient = application.inject()
+
     get {
         val title = call.parameters["title"]
         val author = call.parameters["author"]
         val max = call.parameters["max"]?.toIntOrNull() ?: 5
 
         if (title != null && author != null) {
-            val results = catalogue.client.query(title, author, max)
+            val results = catalogue.query(title, author, max)
             call.respond(SearchResults(results.size, results))
         } else {
             call.respondText("Failed to process query", status = HttpStatusCode.BadRequest)

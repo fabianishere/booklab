@@ -14,37 +14,29 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.backend.auth
+package nl.tudelft.booklab.backend.services.auth
 
-import io.ktor.application.Application
 import io.ktor.auth.UserIdPrincipal
 import io.ktor.auth.oauth2.OAuthServer
 import io.ktor.auth.oauth2.grant.ClientCredentialsGrantHandler
 import io.ktor.auth.oauth2.grant.PasswordGrantHandler
-import io.ktor.auth.oauth2.repository.ClientHashedTableRepository
 import io.ktor.auth.oauth2.repository.ClientIdPrincipal
 import io.ktor.auth.oauth2.repository.ClientRepository
 import io.ktor.auth.oauth2.repository.JwtAccessTokenRepository
-import io.ktor.auth.oauth2.repository.UserHashedTableRepository
 import io.ktor.auth.oauth2.repository.UserRepository
-import io.ktor.auth.oauth2.repository.parseClients
-import io.ktor.auth.oauth2.repository.parseUsers
-import io.ktor.config.ApplicationConfig
-import io.ktor.util.AttributeKey
-import io.ktor.util.getDigestFunction
 import io.ktor.auth.oauth2.repository.JwtConfiguration as JwtOAuthConfiguration
 
 /**
- * The configuration for the OAuth authorization server.
+ * A service for the OAuth authorization server.
  *
  * @property clientRepository The repository for looking up and validating clients.
  * @property userRepository The repository for looking up and validating users.
- * @property jwt The [JwtConfiguration] for generating JWT tokens.
+ * @property jwt The [JwtService] for generating JWT tokens.
  */
-data class OAuthConfiguration(
+data class OAuthService(
     val clientRepository: ClientRepository<ClientIdPrincipal>,
     val userRepository: UserRepository<UserIdPrincipal>,
-    val jwt: JwtConfiguration
+    val jwt: JwtService
 ) {
     /**
      * The [OAuthServer] object.
@@ -62,33 +54,4 @@ data class OAuthConfiguration(
             validity = jwt.validity
         )
     )
-    companion object {
-        /**
-         * The attribute key that allows the user to access the [OAuthConfiguration] object within an application.
-         */
-        val KEY = AttributeKey<OAuthConfiguration>("OAuthConfiguration")
-    }
 }
-
-/**
- * Build the [OAuthConfiguration] object for the given configuration environment.
- *
- * @return The [OAuthConfiguration] instance that has been built.
- */
-fun ApplicationConfig.asOAuthConfiguration(): OAuthConfiguration {
-    val jwt = config("jwt").asJwtConfiguration()
-    val clientRepository = ClientHashedTableRepository(
-        digester = getDigestFunction("SHA-256", salt = "ktor"),
-        table = parseClients()
-    )
-    val userRepository = UserHashedTableRepository(
-        digester = getDigestFunction("SHA-256", salt = "ktor"),
-        table = parseUsers()
-    )
-    return OAuthConfiguration(clientRepository, userRepository, jwt)
-}
-
-/**
- * Extension method for accessing the [OAuthConfiguration] instance of the [Application].
- */
-val Application.oauth: OAuthConfiguration get() = attributes[OAuthConfiguration.KEY]

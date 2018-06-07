@@ -18,5 +18,4 @@
     version="2.2"
     xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
 >
-
 </entity-mappings>
