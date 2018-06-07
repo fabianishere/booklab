@@ -21,9 +21,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.auth.Authentication
-import io.ktor.auth.UserIdPrincipal
 import io.ktor.auth.oauth2.oauth
-import io.ktor.auth.oauth2.repository.ClientIdPrincipal
 import io.ktor.features.CORS
 import io.ktor.features.Compression
 import io.ktor.features.ContentNegotiation
@@ -87,10 +85,7 @@ internal fun ContentNegotiation.Configuration.configureJackson() {
  * @param oauth The [OAuthService] to use for the authentication provider.
  */
 internal fun Authentication.Configuration.configureOAuth(oauth: OAuthService) {
-    // Create an authentication provider for protecting resources using
-    // the OAuth authorization server.
-    oauth<ClientIdPrincipal, UserIdPrincipal>("rest:detection") {
-        server = oauth.server
-        scopes = setOf("detection")
-    }
+    // Create an unnamed authentication provider for protecting resources using
+    // the OAuth authorization server
+    oauth(oauth.server)
 }

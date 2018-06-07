@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import io.ktor.application.application
 import io.ktor.application.call
 import io.ktor.application.log
-import io.ktor.auth.authenticate
+import io.ktor.auth.oauth2.scoped
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.header
@@ -39,7 +39,7 @@ import nl.tudelft.booklab.vision.toMat
  */
 fun Route.detection() {
     val vision: VisionService = application.inject()
-    authenticate("rest:detection") { detect(vision) }
+    scoped("detection") { detect(vision) }
 }
 
 /**

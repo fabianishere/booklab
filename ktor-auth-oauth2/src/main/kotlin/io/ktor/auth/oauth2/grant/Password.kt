@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Fabian Mastenbroek.
+ * Copyright 2018 The BookLab Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import io.ktor.auth.oauth2.InvalidClient
 import io.ktor.auth.oauth2.InvalidGrant
 import io.ktor.auth.oauth2.InvalidScope
 import io.ktor.auth.oauth2.ServerError
-import io.ktor.auth.oauth2.getNonBlank
 import io.ktor.auth.oauth2.repository.PrincipalRepository
+import io.ktor.auth.oauth2.util.getNonBlank
 
 /**
  * The Password grant is used when the application exchanges the user’s username and password for an access token.
@@ -41,6 +41,8 @@ open class PasswordGrantHandler<C : Principal, U : Principal>(
     override val clientCredentialsRequired: Boolean = true
 
     override val supportsAuthorization: Boolean = false
+
+    override val supportsGranting: Boolean = true
 
     override suspend fun ApplicationCall.grant(request: GrantRequest<C, U>): Grant<C, U> {
         val server = request.server

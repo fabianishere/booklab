@@ -98,10 +98,13 @@ interface GrantHandler<C : Principal, U : Principal> {
     val supportsAuthorization: Boolean
 
     /**
+     * A flag to indicate whether this [GrantHandler] supports a token grant endpoint.
+     */
+    val supportsGranting: Boolean
+
+    /**
      * Authorize the given client and return the proper url to redirect to.
      *
-     * @param server The server that is handling the request.
-     * @param request The request to handle.
      * @param user The user to authorize the request.
      * @return The proper url to redirect to.
      * @throws OAuthError if the authorization failed.
