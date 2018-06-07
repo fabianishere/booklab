@@ -65,13 +65,19 @@ jacocoTestReport.doLast {
     slurper.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
     slurper.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
 
-    def spacing = allprojects*.name.max().length() + 2
+    def spacing = allprojects*.name.collect { it.length() }.max() + 1
     allprojects.each {
         if (!it.plugins.hasPlugin("jacoco"))  {
             return
         }
 
-        def res = slurper.parse it.jacocoTestReport.reports.xml.destination
+        def report = it.jacocoTestReport.reports.xml.destination
+
+        if (!report.exists()) {
+            return
+        }
+
+        def res = slurper.parse report
         def counter = res.counter.find { it.@type == 'BRANCH' }
         def covered = counter.@covered.toInteger()
         def missed = counter.@missed.toInteger()

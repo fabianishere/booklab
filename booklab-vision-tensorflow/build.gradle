@@ -25,6 +25,10 @@ plugins {
 /* Apply default Kotlin configuration */
 apply from: '../gradle/kotlin.gradle'
 
+ext {
+    tensorflow_version = '1.8.0'
+}
+
 /* Project configuration */
 repositories {
     jcenter()
@@ -33,7 +37,8 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    compile "org.openpnp:opencv:3.2.0-1"
+    compile project(":booklab-vision")
+    compile "org.tensorflow:tensorflow:$tensorflow_version"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"

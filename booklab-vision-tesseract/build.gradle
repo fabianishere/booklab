@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
+import org.bytedeco.javacpp.Loader
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'org.bytedeco:javacpp:1.1'
+    }
+}
+
 plugins {
     id "java"
     id "jacoco"
@@ -25,15 +37,24 @@ plugins {
 /* Apply default Kotlin configuration */
 apply from: '../gradle/kotlin.gradle'
 
+ext {
+    javacpp_platform = Loader.getPlatform()
+}
+
 /* Project configuration */
 repositories {
     jcenter()
-    mavenCentral()
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    compile "org.openpnp:opencv:3.2.0-1"
+    compile project(":booklab-vision")
+    implementation "org.bytedeco:javacpp:1.1"
+    implementation "org.bytedeco.javacpp-presets:leptonica:1.72-1.1"
+    implementation "org.bytedeco.javacpp-presets:tesseract:3.04-1.1"
+
+    runtimeOnly "org.bytedeco.javacpp-presets:leptonica:1.72-1.1:$javacpp_platform"
+    runtimeOnly "org.bytedeco.javacpp-presets:tesseract:3.04-1.1:$javacpp_platform"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"

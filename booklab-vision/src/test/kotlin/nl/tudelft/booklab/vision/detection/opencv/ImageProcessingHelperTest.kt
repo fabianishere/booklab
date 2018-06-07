@@ -16,7 +16,6 @@
 
 package nl.tudelft.booklab.vision.detection.opencv
 
-import nl.tudelft.booklab.vision.ocr.tesseract.toPix
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Test
@@ -49,14 +48,6 @@ internal class ImageProcessingHelperTest {
     fun `test median`() {
         val image = Mat(10, 10, CvType.CV_8UC3, Scalar(1.0, 2.0, 0.0))
         assertEquals(1, ImageProcessingHelper.getMedian(image))
-    }
-
-    @Test
-    fun `matrix can be converted to pix buffer`() {
-        val image = Mat(10, 10, CvType.CV_8UC3, Scalar(1.0, 1.0, 1.0))
-        val testpix = image.toPix()
-        assertEquals(10, testpix.w())
-        assertEquals(10, testpix.h())
     }
 
     companion object {
