@@ -35,7 +35,7 @@ export class LoginComponent implements OnInit {
         this.user.login(username, password).then((resp) => {
             if (resp) {
                 this.user.loggedIn = true;
-                this.router.navigate(['']);
+                this.router.navigate(['upload']);
                 this.goBack();
             }
         }, rejected => this.invalid = true);

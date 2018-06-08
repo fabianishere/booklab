@@ -3,12 +3,13 @@ import {Book} from '../../dataTypes';
 import {Observable} from 'rxjs/Observable';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {OAuthService} from 'angular-oauth2-oidc';
+import {CanActivate, Router} from "@angular/router";
 
 /**
  * Class to hold the information of the user and to provide an interface for editing this information.
  */
 @Injectable()
-export class UserService {
+export class UserService implements CanActivate{
 
     private bookshelf: Book[];
     private bookSub: BehaviorSubject<Book[]>;
@@ -19,10 +20,19 @@ export class UserService {
      *
      * @param oauthService The OAuth service provider to use.
      */
-    constructor(private oauthService: OAuthService) {
+    constructor(private oauthService: OAuthService, private router: Router) {
         this.bookSub = new BehaviorSubject([]);
         this.bookshelf = [];
         this.loggedIn = this.oauthService.hasValidAccessToken();
+    }
+
+    canActivate() {
+        if(this.oauthService.hasValidAccessToken()) {
+            return true;
+        }
+        else {
+            this.router.navigate([""]);
+        }
     }
 
     /**
@@ -85,5 +95,6 @@ export class UserService {
     logout() {
         this.oauthService.logOut();
         this.loggedIn = false;
+        this.router.navigate([""]);
     }
 }

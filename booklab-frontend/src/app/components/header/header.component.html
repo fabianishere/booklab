@@ -6,14 +6,14 @@
             <i class="fas fa-bars menu-button" (click)="app.menuCollapse = !app.menuCollapse"></i>
         </div>
         <div class="col">
-            <p class="logo d-none d-md-inline-block" routerLink="">
+            <p class="logo d-none d-md-inline-block" routerLink="upload">
                 BookLab
             </p>
             <br>
             <span class="d-none d-md-inline-block mb-2">Finding the right book on another shelf.</span>
         </div>
         <div>
-            <p class="login-link" (click)="login()" *ngIf="!user.loggedIn">
+            <p class="login-link" (click)="login.login()" *ngIf="!user.loggedIn">
                 Log in
             </p>
             <p class="login-link" (click)="user.logout()" *ngIf="user.loggedIn">Log out</p>

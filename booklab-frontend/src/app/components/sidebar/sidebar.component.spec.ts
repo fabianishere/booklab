@@ -12,7 +12,7 @@ describe('SidebarComponent should..', () => {
   let app;
 
   beforeEach(() => {
-    component = new SidebarComponent();
+    component = new SidebarComponent(jasmine.createSpyObj('OAuthService', ['hasValidAccessToken']));
   });
 
   it('create', () => {

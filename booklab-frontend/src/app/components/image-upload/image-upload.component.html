@@ -47,7 +47,7 @@
             <div class="mt-3" *ngIf="results.length > 0"><img
                 src="https://books.google.com/googlebooks/images/poweredby.png"></div>
             <label *ngIf="results.length > 0" class="button bookshelf {{booksAddedToShelf()? 'disabled' : ''}}">
-                Add these books to your bookshelf
+                Add these books to your collection
                 <input type="button" (click)="addToBookShelf()" disabled="{{booksAddedToShelf()? 'disabled' : ''}}">
             </label>
             Or do you want to

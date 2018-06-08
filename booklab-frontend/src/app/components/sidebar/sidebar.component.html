@@ -1,8 +1,8 @@
 
     <div class="dropdown-content" (click)="toggle()">
-        <a routerLink="">Home</a><br>
-        <a routerLink="upload">Add books to collection</a><br>
-        <a routerLink="recommendations">Get recommendations!</a><br>
-        <a routerLink="bookshelf">My collection</a><br>
+        <a routerLink="">Home</a>
+        <a *ngIf="oauth.hasValidAccessToken()" routerLink="upload">Add books to collection</a>
+        <a *ngIf="oauth.hasValidAccessToken()" routerLink="recommendations">Get recommendations!</a>
+        <a *ngIf="oauth.hasValidAccessToken()" routerLink="bookshelf">My collection</a>
         <a routerLink="about">About us</a>
     </div>

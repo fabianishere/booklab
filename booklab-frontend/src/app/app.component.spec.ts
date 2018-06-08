@@ -19,6 +19,7 @@ import {ManualBookFindComponent} from "./components/manual-book-find/manual-book
 import {AboutComponent} from "./components/about/about.component";
 import {HomeComponent} from "./components/home/home.component";
 import {RecommendationsComponent} from "./components/recommendations/recommendations.component";
+import {RegistrationComponent} from "./components/registration/registration.component";
 
 describe('AppComponent', () => {
     beforeEach(async(() => {
@@ -34,7 +35,8 @@ describe('AppComponent', () => {
                 ManualBookFindComponent,
                 AboutComponent,
                 HomeComponent,
-                RecommendationsComponent
+                RecommendationsComponent,
+                RegistrationComponent
             ],
             imports: [
                 BrowserModule,
