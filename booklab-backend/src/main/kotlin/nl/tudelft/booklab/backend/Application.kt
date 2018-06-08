@@ -42,8 +42,9 @@ import nl.tudelft.booklab.backend.api.v1.api
 import nl.tudelft.booklab.backend.auth.OAuthConfiguration
 import nl.tudelft.booklab.backend.auth.asOAuthConfiguration
 import nl.tudelft.booklab.catalogue.google.GoogleCatalogueClient
-import nl.tudelft.booklab.vision.detection.opencv.CannyBookDetector
+import nl.tudelft.booklab.vision.detection.tensorflow.TensorflowBookDetector
 import nl.tudelft.booklab.vision.ocr.gvision.GoogleVisionTextExtractor
+import org.tensorflow.Graph
 
 /**
  * The main entry point of the BookLab web application.
@@ -71,31 +72,8 @@ fun Application.booklab() {
         method(HttpMethod.Post)
     }
 
-    // Define the catalogue configuration
-    val catalogue = CatalogueConfiguration(
-        client = GoogleCatalogueClient(
-            Books.Builder(
-                GoogleNetHttpTransport.newTrustedTransport(),
-                JacksonFactory.getDefaultInstance(),
-                null
-            )
-                .setApplicationName("booklab")
-                .setGoogleClientRequestInitializer(BooksRequestInitializer(environment.config.property("catalogue.key").getString()))
-                .build()
-        )
-    ).also {
-        attributes.put(CatalogueConfiguration.KEY, it)
-    }
-
-    // Define the vision configuration
-    // TODO Implement a way to make this configuration configurable via the application.conf file
-    VisionConfiguration(
-            detector = CannyBookDetector(),
-            extractor = GoogleVisionTextExtractor(ImageAnnotatorClient.create()),
-            catalogue = catalogue
-    ).also {
-        attributes.put(VisionConfiguration.KEY, it)
-    }
+    configureCatalogue()
+    configureVision()
 
     // Load the JPA EntityManagerFactory from the configuration
     attributes.put(JPA_KEY, environment.config.config("jpa").asEntityManagerFactory())
@@ -128,5 +106,46 @@ fun Authentication.Configuration.configureOAuth(oauth: OAuthConfiguration) {
     oauth<ClientIdPrincipal, UserIdPrincipal>("rest:detection") {
         server = oauth.server
         scopes = setOf("detection")
+    }
+}
+
+/**
+ * Configure the [CatalogueConfiguration] of the [Application].
+ */
+fun Application.configureCatalogue() {
+    // Define the catalogue configuration
+    val catalogue = CatalogueConfiguration(
+        client = GoogleCatalogueClient(
+            Books.Builder(
+                GoogleNetHttpTransport.newTrustedTransport(),
+                JacksonFactory.getDefaultInstance(),
+                null
+            )
+                .setApplicationName("booklab")
+                .setGoogleClientRequestInitializer(BooksRequestInitializer(environment.config.property("catalogue.key").getString()))
+                .build()
+        )
+    ).also {
+        attributes.put(CatalogueConfiguration.KEY, it)
+    }
+}
+
+/**
+ * Configure the [VisionConfiguration] of the application.
+ */
+fun Application.configureVision() {
+    val graph = Graph()
+    val data = TensorflowBookDetector::class.java.getResourceAsStream("/tensorflow/inception-book-model.pb")
+        .use { it.readBytes() }
+    graph.importGraphDef(data)
+
+    // Define the vision configuration
+    // TODO Implement a way to make this configuration configurable via the application.conf file
+    VisionConfiguration(
+        detector = TensorflowBookDetector(graph),
+        extractor = GoogleVisionTextExtractor(ImageAnnotatorClient.create()),
+        catalogue = attributes[CatalogueConfiguration.KEY]
+    ).also {
+        attributes.put(VisionConfiguration.KEY, it)
     }
 }
