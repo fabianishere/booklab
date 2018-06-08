@@ -95,6 +95,15 @@ Finally, if you want to run the end-to-end tests, run:
 npm run e2e
 ```
 
+### Building without mobile applications
+If you do not have the Android SDK or iOS SDK installed and you are not interested in building
+the mobile applications, either:
+
+- Set the environmental variable to ignore the projects:  
+  `ORG_GRADLE_PROJECT_exclude=booklab-frontend-ios,booklab-frontend-android`
+- Set the `exclude` property in your `gradle.properties`:  
+  `exclude=booklab-frontend-ios,booklab-frontend-android`
+
 
 ## Contributing
 In addition to this document, the repository contains a README for each of the modules that builds this project. 

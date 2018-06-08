@@ -1,0 +1,4 @@
+github "Swinject/Swinject"
+github "Swinject/SwinjectAutoregistration"
+github "Swinject/SwinjectStoryboard"
+github "devxoul/URLNavigator"

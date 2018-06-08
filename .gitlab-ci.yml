@@ -27,7 +27,7 @@ before_script:
       - "*/build"
       - ".gradle/caches"
   variables:
-    ORG_GRADLE_PROJECT_exclude: "booklab-frontend-android"
+    ORG_GRADLE_PROJECT_exclude: "booklab-frontend-android,booklab-frontend-ios"
 
 build:backend:
   <<: *build-backend
@@ -63,7 +63,7 @@ build:backend(master):
       - "*/build"
       - ".gradle/caches"
   variables:
-    ORG_GRADLE_PROJECT_exclude: "booklab-frontend-android"
+    ORG_GRADLE_PROJECT_exclude: "booklab-frontend-android,booklab-frontend-ios"
 
 test:backend:
   <<: *test-backend

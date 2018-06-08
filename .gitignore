@@ -26,3 +26,6 @@ local.properties
 booklab-backend/out
 *.iml
 */out
+
+### iOS
+Carthage/
