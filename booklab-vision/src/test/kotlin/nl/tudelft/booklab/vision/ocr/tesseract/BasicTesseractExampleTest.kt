@@ -16,9 +16,11 @@
 
 package nl.tudelft.booklab.vision.ocr.tesseract
 
-import org.bytedeco.javacpp.lept.pixReadMem
+import org.bytedeco.javacpp.lept.pixRead
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Test
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 internal class BasicTesseractExampleTest {
     @Test
@@ -26,8 +28,11 @@ internal class BasicTesseractExampleTest {
         val data = BasicTesseractExampleTest::class.java.getResourceAsStream("/tesseract/languages/english")
         Tesseract(data, emptyMap()).use { api ->
             // Open input image with leptonica library
-            val buffer = BasicTesseractExampleTest::class.java.getResourceAsStream("/tesseract.png").readBytes()
-            val image = pixReadMem(buffer, buffer.size.toLong())
+            val buffer = BasicTesseractExampleTest::class.java.getResourceAsStream("/tesseract.png")
+            val tmp = Files.createTempFile("tesseract-image", ".png")
+            Files.copy(buffer, tmp, StandardCopyOption.REPLACE_EXISTING)
+            val image = pixRead(tmp.toString())
+            Files.delete(tmp)
 
             // Get OCR result
             val string = api.extract(image)
