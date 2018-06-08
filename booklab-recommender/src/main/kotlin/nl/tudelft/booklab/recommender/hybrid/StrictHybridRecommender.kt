@@ -43,7 +43,8 @@ class StrictHybridRecommender(
         authorRecommender,
         ratingRecommender,
         randomRecommender,
-        Double.MAX_VALUE)
+        Double.MAX_VALUE
+    )
 
     override suspend fun recommend(collection: Set<Book>, candidates: Set<Book>): List<Book> {
         return softHybridRecommender.recommend(collection, candidates)

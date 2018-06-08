@@ -21,7 +21,6 @@ import nl.tudelft.booklab.recommender.Recommender
 import nl.tudelft.booklab.recommender.author.AuthorRecommender
 import nl.tudelft.booklab.recommender.random.RandomRecommender
 import nl.tudelft.booklab.recommender.rating.google.GoogleBooksRatingRecommender
-import java.lang.Double.compare
 import java.lang.Integer.compare
 
 /**
@@ -71,22 +70,22 @@ class SoftHybridRecommender(
                 fun Book.hasRating(): Boolean = this.rating != null
                 fun Book.noRating(): Boolean = !this.hasRating()
                 fun Book.index(): Int = authorRecommendations.indexOf(this)
-                fun compareRating(book1: Book, book2: Book): Int = -compare(book1.rating!!, book2.rating!!)
+                fun compareRating() = Comparator.comparingDouble<Book> { it.rating!! }.reversed().compare(o1, o2)
                 when {
                     o1.isRecommended() && o2.isRecommended() && !(o1.hasRating() && o2.hasRating()) ->
                         compare(o1.index(), o2.index())
                     o1.hasRating() && o1.notRecommended() && o2.hasRating() && o2.notRecommended() ->
-                        compareRating(o1, o2)
+                        compareRating()
                     o1.noRating() && o1.isRecommended() && o2.hasRating() && o2.notRecommended() ->
                         -1 // favor o1, not expected to happen often
                     o1.hasRating() && o1.notRecommended() && o2.noRating() && o2.isRecommended() ->
                         1 // favor o2, not expected to happen often
                     o1.hasRating() && o1.notRecommended() && o2.hasRating() && o2.isRecommended() ->
-                        if (o1.rating!! - o2.rating!! < softness) 1 else compareRating(o1, o2)
+                        if (o1.rating!! - o2.rating!! < softness) 1 else compareRating()
                     o1.hasRating() && o1.isRecommended() && o2.hasRating() && o2.notRecommended() ->
-                        if (o2.rating!! - o1.rating!! < softness) -1 else compareRating(o1, o2)
+                        if (o2.rating!! - o1.rating!! < softness) -1 else compareRating()
                     o1.hasRating() && o1.isRecommended() && o2.hasRating() && o2.isRecommended() ->
-                        compareRating(o1, o2)
+                        compareRating()
                     else -> throw IllegalStateException() // should be impossible to reach since this means that
                     // either o1 or o2 besides not having a rating also does not have a recommended author. this cannot
                     // be possible if the union of both those recommendations is taken.
