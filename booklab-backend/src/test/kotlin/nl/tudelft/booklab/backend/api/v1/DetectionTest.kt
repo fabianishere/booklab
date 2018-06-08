@@ -21,6 +21,10 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.stub
 import com.typesafe.config.ConfigFactory
 import io.ktor.application.Application
 import io.ktor.application.install
@@ -49,6 +53,8 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyString
 import org.opencv.core.Mat
 
 /**
@@ -63,13 +69,46 @@ internal class DetectionTest {
      */
     private lateinit var mapper: ObjectMapper
 
+    /**
+     * The book detector to use.
+     */
+    private lateinit var detector: BookDetector
+
+    /**
+     * The text extractor to use.
+     */
+    private lateinit var extractor: TextExtractor
+
+    /**
+     * The catalogue client to use.
+     */
+    private lateinit var catalogue: CatalogueClient
+
     @BeforeEach
     fun setUp() {
         mapper = jacksonObjectMapper()
+        detector = mock {
+            on { detect(any()) } doReturn(emptyList<Mat>())
+        }
+        extractor = mock()
+        catalogue = mock()
     }
 
     @Test
     fun `post returns proper interface`() = withApplication(detectionEnvironment()) {
+        extractor.stub {
+            on { batch(any()) } doReturn(listOf("De ontdekking van Harry Mulisch"))
+        }
+        catalogue.stub {
+            onBlocking { query(anyString(), anyInt()) } doReturn(listOf(
+                Book(
+                    titles = listOf(Title("The ontdekking van de hemel", TitleType.MAIN)),
+                    authors = listOf("Harry Mulisch"),
+                    ids = emptyList()
+                )
+            ))
+        }
+
         val image = DetectionTest::class.java.getResourceAsStream("/test-image.jpg").readBytes()
         val request = handleRequest(HttpMethod.Post, "/api/detection") {
             setBody(image)
@@ -79,6 +118,35 @@ internal class DetectionTest {
             assertEquals(HttpStatusCode.OK, response.status())
             val response: DetectionResult? = response.content?.let { mapper.readValue(it) }
             assertNotNull(response)
+            assertEquals(1, response?.size)
+        }
+    }
+
+    @Test
+    fun `post does not return duplicates`() = withApplication(detectionEnvironment()) {
+        extractor.stub {
+            on { batch(any()) } doReturn(listOf("De ontdekking van", "Harry Mulisch"))
+        }
+        catalogue.stub {
+            onBlocking { query(anyString(), anyInt()) } doReturn(listOf(
+                Book(
+                    titles = listOf(Title("The ontdekking van de hemel", TitleType.MAIN)),
+                    authors = listOf("Harry Mulisch"),
+                    ids = emptyList()
+                )
+            ))
+        }
+
+        val image = DetectionTest::class.java.getResourceAsStream("/test-image.jpg").readBytes()
+        val request = handleRequest(HttpMethod.Post, "/api/detection") {
+            setBody(image)
+            addHeader(HttpHeaders.ContentType, ContentType.Application.OctetStream.toString())
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            val response: DetectionResult? = response.content?.let { mapper.readValue(it) }
+            assertNotNull(response)
+            assertEquals(1, response?.size)
         }
     }
 
@@ -107,33 +175,13 @@ internal class DetectionTest {
             route("/api/detection") {
                 detection(
                     VisionConfiguration(
-                        detector = DummyBookDetector(),
-                        extractor = DummyTextExtractor(listOf("De ontdekking van", "Harry Mulisch")),
-                        catalogue = CatalogueConfiguration(DummyCatalogueClient(listOf(
-                            Book(
-                                titles = listOf(Title("The ontdekking van de hemel", TitleType.MAIN)),
-                                authors = listOf("Harry Mulisch"),
-                                ids = emptyList()
-                            )
-                        )))
+                        detector = detector,
+                        extractor = extractor,
+                        catalogue = CatalogueConfiguration(catalogue)
                     )
                 )
             }
         }
-    }
-
-    internal class DummyBookDetector : BookDetector {
-        override fun detect(mat: Mat): List<Mat> = listOf(mat)
-    }
-
-    internal class DummyTextExtractor(val values: List<String>) : TextExtractor {
-        override fun extract(mat: Mat): List<String> = values
-    }
-
-    internal class DummyCatalogueClient(val values: List<Book>) : CatalogueClient {
-        override suspend fun query(keywords: String, max: Int): List<Book> = values
-
-        override suspend fun query(title: String, author: String, max: Int): List<Book> = values
     }
 
     companion object {

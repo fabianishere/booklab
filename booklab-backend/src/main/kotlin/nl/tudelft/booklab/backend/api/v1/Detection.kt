@@ -52,6 +52,7 @@ fun Route.detection(vision: VisionConfiguration) {
                         }
                     }
                     .mapNotNull { it.await() }
+                    .distinct()
             }
         } catch (e: Throwable) {
             application.log.warn("An error occurred while processing an image", e)
