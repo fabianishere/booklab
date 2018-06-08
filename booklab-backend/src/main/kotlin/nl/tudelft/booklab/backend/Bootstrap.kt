@@ -18,6 +18,8 @@ package nl.tudelft.booklab.backend
 
 import io.ktor.application.Application
 import nl.tudelft.booklab.backend.spring.bootstrap
+import nl.tudelft.booklab.backend.spring.configure
+import org.springframework.beans.factory.xml.XmlBeanDefinitionReader
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.support.GenericApplicationContext
 import org.springframework.context.support.registerBean
@@ -25,19 +27,47 @@ import org.springframework.context.support.registerBean
 /**
  * Create a [GenericApplicationContext] for the application.
  */
-fun createApplicationContext(): GenericApplicationContext {
+fun createApplicationContext(application: Application): GenericApplicationContext {
     val context = AnnotationConfigApplicationContext()
-    val configuration = BooklabSpringConfiguration()
-    context.registerBean { configuration }
-    context.register(BooklabSpringConfiguration::class.java)
-    configuration.beans().initialize(context)
+
+    // Configure the container for the given application
+    context.configure(application)
+
+    // Run the compile time bean configuration
+    context.configureStatic()
+
+    // The cast will always succeed since our HOCON configuration only returns string lists.
+    @Suppress("UNCHECKED_CAST")
+    val contexts = context.environment.getProperty("spring.contexts", List::class.java) as? List<String>
+    println(contexts)
+    if (contexts != null) {
+        context.configureDynamic(contexts)
+    }
+
     return context
 }
 
 /**
- * A bootstrap method for a Ktor [Application] which runs a [BooklabApplication] inside a Spring DI container.
+ * Load the static bean configuration.
  */
-fun Application.bootstrap() {
-    val context = createApplicationContext()
-    context.bootstrap(this, Application::booklab)
+internal fun AnnotationConfigApplicationContext.configureStatic() {
+    val configuration = BooklabSpringConfiguration()
+    registerBean { configuration }
+    register(BooklabSpringConfiguration::class.java)
+    configuration.beans().initialize(this)
 }
+
+/**
+ * Load the dynamic bean configuration.
+ *
+ * @param paths The paths to the dynamic Spring configuration files.
+ */
+internal fun AnnotationConfigApplicationContext.configureDynamic(paths: List<String>) {
+    val reader = XmlBeanDefinitionReader(this)
+    paths.forEach { reader.loadBeanDefinitions(it) }
+}
+
+/**
+ * A bootstrap method for a Ktor [Application] which runs a Booklab application inside a Spring DI container.
+ */
+fun Application.bootstrap() = createApplicationContext(this).bootstrap(this, Application::booklab)

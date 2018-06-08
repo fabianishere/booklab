@@ -73,7 +73,6 @@ fun GenericApplicationContext.configure(application: Application) {
  * @param module The module to bootstrap inside the container.
  */
 fun GenericApplicationContext.bootstrap(application: Application, module: Application.() -> Unit = {}) {
-    configure(application)
     refresh()
     module(application)
 }

@@ -17,11 +17,6 @@
 package nl.tudelft.booklab.backend
 
 import com.auth0.jwt.algorithms.Algorithm
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
-import com.google.api.client.json.jackson2.JacksonFactory
-import com.google.api.services.books.Books
-import com.google.api.services.books.BooksRequestInitializer
-import com.google.cloud.vision.v1.ImageAnnotatorClient
 import io.ktor.application.Application
 import io.ktor.auth.oauth2.repository.ClientHashedTableRepository
 import io.ktor.auth.oauth2.repository.UserHashedTableRepository
@@ -32,15 +27,11 @@ import io.ktor.util.getDigestFunction
 import nl.tudelft.booklab.backend.services.auth.JwtService
 import nl.tudelft.booklab.backend.services.auth.OAuthService
 import nl.tudelft.booklab.backend.services.vision.VisionService
-import nl.tudelft.booklab.catalogue.google.GoogleCatalogueClient
-import nl.tudelft.booklab.vision.detection.tensorflow.TensorflowBookDetector
-import nl.tudelft.booklab.vision.ocr.gvision.GoogleVisionTextExtractor
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.support.BeanDefinitionDsl
 import org.springframework.context.support.beans
 import org.springframework.core.env.get
-import org.tensorflow.Graph
 import java.time.Duration
 
 /**
@@ -58,8 +49,10 @@ class BooklabSpringConfiguration {
             Routing::routes
         }
 
+        // Vision
+        bean(isLazyInit = true) { VisionService(ref("detector"), ref("extractor"), ref("catalogue")) }
+
         auth()
-        vision()
     }
 
     /**
@@ -95,40 +88,5 @@ class BooklabSpringConfiguration {
         }
 
         bean(isLazyInit = true) { OAuthService(ref("auth:clients"), ref("auth:users"), ref()) }
-    }
-
-    /***
-     * This method defines the beans related to the vision module of the project.
-     */
-    fun BeanDefinitionDsl.vision() {
-        // CatalogueService
-        bean(isLazyInit = true) {
-            GoogleCatalogueClient(
-                Books.Builder(
-                    GoogleNetHttpTransport.newTrustedTransport(),
-                    JacksonFactory.getDefaultInstance(),
-                    null
-                )
-                    .setApplicationName("booklab")
-                    .setGoogleClientRequestInitializer(BooksRequestInitializer(env["catalogue.key"]))
-                    .build()
-            )
-        }
-
-        bean(isLazyInit = true) {
-            val graph = Graph()
-            val data = TensorflowBookDetector::class.java.getResourceAsStream("/tensorflow/inception-book-model.pb")
-                .use { it.readBytes() }
-            graph.importGraphDef(data)
-
-            TensorflowBookDetector(graph)
-        }
-
-        bean(isLazyInit = true) {
-            GoogleVisionTextExtractor(ImageAnnotatorClient.create())
-        }
-
-        // VisionService
-        bean(isLazyInit = true) { VisionService(ref(), ref(), ref()) }
     }
 }

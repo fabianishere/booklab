@@ -61,5 +61,8 @@ fun Application.createTestContext(builder: GenericApplicationContext.() -> Unit 
     }
     root.refresh()
     root.configure(this)
-    return GenericApplicationContext(root).apply(builder)
+    return GenericApplicationContext(root).apply {
+        configure(this@createTestContext)
+        builder()
+    }
 }
