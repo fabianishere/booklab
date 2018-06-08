@@ -31,6 +31,7 @@ build:backend:
   <<: *build-backend
   except:
     - master
+    - develop
 
 build:backend(master):
   <<: *build-backend
@@ -42,6 +43,7 @@ build:backend(master):
       - "*/build/dokka"
   only:
     - master
+    - develop
 
 .test:backend(template): &test-backend
   image: gradle:4.7
@@ -63,6 +65,7 @@ test:backend:
   <<: *test-backend
   except:
     - master
+    - develop
 
 test:backend(master):
   <<: *test-backend
@@ -72,6 +75,7 @@ test:backend(master):
       - "*/build/reports"
   only:
     - master
+    - develop
 
 # Frontend jobs
 .build:frontend(template): &build-frontend
@@ -94,11 +98,13 @@ build:frontend:
   <<: *build-frontend
   except:
     - master
+    - develop
 
 build:frontend(master):
   <<: *build-frontend
   script:
     - cd booklab-frontend
+    - npm install
     - npm run build
     - npm run compodoc
   artifacts:
@@ -108,6 +114,7 @@ build:frontend(master):
       - "booklab-frontend/build/docs"
   only:
     - master
+    - develop
 
 .test:frontend(template): &test-frontend
   image: fabianishere/puppeteer-root:1.4.0
@@ -133,6 +140,7 @@ test:frontend:
   <<: *test-frontend
   except:
     - master
+    - develop
 
 test:frontend(master):
   <<: *test-frontend
@@ -142,6 +150,7 @@ test:frontend(master):
       - "*/build/reports"
   only:
     - master
+    - develop
 
 test:frontend:e2e:
   <<: *test-frontend
