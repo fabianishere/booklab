@@ -1,0 +1,21 @@
+<div class="container">
+    <div class="row">
+        <div *ngIf="submitted && !succeeded">
+            <img class="loading" src="assets/loading.gif">
+            Registering your profile..
+        </div>
+        <div *ngIf="succeeded">
+            Your profile is registered!
+            <button class="button" (click)="login.login()">Click here to Login</button>
+        </div>
+        <div *ngIf="!submitted" class="col-12 flex flex-column">
+                <label>Email</label>
+                <input #email type="email" placeholder="your@email.com">
+                <label>Password</label>
+                <input #password1 type="password">
+                <label>Repeat password</label>
+                <input #password2 type="password">
+                <button #loginbutton class="button ml-0" (click)="registrate(email.value, password1.value)">Register</button>
+        </div>
+    </div>
+</div>

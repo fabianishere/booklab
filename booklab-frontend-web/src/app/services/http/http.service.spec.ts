@@ -1,14 +1,17 @@
 import {TestBed, getTestBed} from '@angular/core/testing';
 
 import {HttpService} from './http.service';
-import {Router} from "@angular/router";
-import {environment} from "../../../environments/environment";
+import {OAuthService, UrlHelperService} from "angular-oauth2-oidc";
 import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
+import {environment} from "../../../environments/environment";
+import {SorryComponent} from "../../components/sorry/sorry.component";
+import {Router} from "@angular/router";
 
 describe('HttpService should..', () => {
     let injector: TestBed;
     let client: HttpTestingController;
     let router;
+    let oauth: OAuthService;
     let http: HttpService;
 
     beforeEach(() => {
@@ -17,13 +20,15 @@ describe('HttpService should..', () => {
         };
 
         TestBed.configureTestingModule({
+            declarations: [SorryComponent],
             imports: [HttpClientTestingModule],
-            providers: [HttpService, { provide: Router, useValue: router }]
+            providers: [HttpService, OAuthService, UrlHelperService, { provide: Router, useValue: router }]
         });
 
         injector = getTestBed();
 
         client = injector.get(HttpTestingController);
+        oauth = injector.get(OAuthService);
         http = injector.get(HttpService);
     });
 
