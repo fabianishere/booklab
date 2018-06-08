@@ -30,7 +30,7 @@ package nl.tudelft.booklab.catalogue
 data class Book(
     val titles: List<Title>,
     val authors: List<String>,
-    val ids: List<String>,
+    val ids: List<String> = emptyList(),
     val rating: Double? = null
 )
 
