@@ -22,6 +22,7 @@ import nl.tudelft.booklab.catalogue.CatalogueClient
 import nl.tudelft.booklab.vision.detection.BookDetector
 import nl.tudelft.booklab.vision.ocr.TextExtractor
 import org.opencv.core.Mat
+import org.opencv.core.Rect
 
 /**
  * A service used for detecting and identifying books.
@@ -41,16 +42,27 @@ class VisionService(
      * @param image The image to detect the books in.
      * @return A list of books that has been detected.
      */
-    suspend fun detect(image: Mat): List<Book> {
-        return extractor.batch(detector.detect(image))
-            .map { part ->
+    suspend fun detect(image: Mat): List<BookDetection> {
+        val segments = detector.detect(image)
+        val text = extractor.batch(segments.map { Mat(image, it) })
+        return segments
+            .zip(text)
+            .map { (segment, part) ->
                 async {
                     part
                         .takeUnless { it.isBlank() }
-                        ?.let { catalogue.query(it, max = 1).firstOrNull() }
+                        ?.let { catalogue.query(it, max = 1) }
+                        ?.let { BookDetection(segment, it) }
                 }
             }
             .mapNotNull { it.await() }
-            .distinct()
     }
 }
+
+/**
+ * This class defines the shape of a detected book result.
+ *
+ * @property box The rectangle where the book was detected.
+ * @property matches A list of actual books that have been matched.
+ */
+data class BookDetection(val box: Rect, val matches: List<Book>)

@@ -17,6 +17,7 @@
 package nl.tudelft.booklab.vision.detection
 
 import org.opencv.core.Mat
+import org.opencv.core.Rect
 
 /**
  * Implementors of this interface provide a strategy for detecting books
@@ -26,7 +27,7 @@ interface BookDetector {
      * Detect the given book in the image represented as OpenCV matrix.
      *
      * @param mat The image represented as matrix to detect the books in.
-     * @return A list of submatrices that contain the detected books.
+     * @return A list of rectangles that represents the locations of the detected books.
      */
-    fun detect(mat: Mat): List<Mat>
+    fun detect(mat: Mat): List<Rect>
 }

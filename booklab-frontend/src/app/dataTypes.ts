@@ -68,7 +68,17 @@ export class Book {
  * Interface to represent the results coming from the api.
  */
 export interface DetectionResult {
-    results: Book[];
+    results: BookDetection[];
+}
+
+export interface BookDetection {
+    matches: Book[];
+    box: {
+        x: number,
+        y: number,
+        width: number,
+        height: number
+    }
 }
 
 export class BookItem {

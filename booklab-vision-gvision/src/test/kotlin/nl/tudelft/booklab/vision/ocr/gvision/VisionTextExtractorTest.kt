@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.opencv.core.Mat
 import org.opencv.core.MatOfByte
 import org.opencv.imgcodecs.Imgcodecs
 
@@ -57,7 +58,7 @@ class VisionTextExtractorTest {
         val textExtractor = GoogleVisionTextExtractor(client)
 
         val books = GoogleVisionBookDetector(client).detect(image)
-        val bookText = textExtractor.batch(books)
+        val bookText = textExtractor.batch(books.map { Mat(image, it) })
 
         bookText.forEach(System.out::println)
 
