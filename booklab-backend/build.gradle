@@ -58,6 +58,7 @@ dependencies {
     testImplementation("io.ktor:ktor-server-test-host:$ktor_version") {
         exclude group: 'ch.qos.logback', module: 'logback-classic'
     }
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.0.0-alpha04"
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
     testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_jupiter_version"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
