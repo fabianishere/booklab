@@ -101,6 +101,7 @@ public abstract class AbstractBookDetector implements BookDetector {
         for (int i = 1; i < cropLocations.size(); i++) {
             int distance = cropLocations.get(i) - cropLocations.get(i - 1);
 
+            // The shelf should take up at least 20% of the image in order to prevent false positives
             if (distance > 0.2 * image.width()) {
                 locations.put(cropLocations.get(i - 1), cropLocations.get(i));
             }
