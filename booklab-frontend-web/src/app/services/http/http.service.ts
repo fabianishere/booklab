@@ -6,10 +6,10 @@ import 'rxjs/add/operator/map'
 import {Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
 import {OAuthService} from "angular-oauth2-oidc";
-import 'rxjs/add/operator/map'
+import 'rxjs/add/observable/throw';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/mergeMap';
-
-
 
 /**
  * Service to handle all http requests and interactions with the backend.
@@ -23,6 +23,7 @@ export class HttpService {
      * @param {Router} router The Angular router to use.
      */
     constructor(private http: HttpClient, private router: Router, private oauth: OAuthService) {}
+
     /**
      * Checks if the backend is running.
      */
@@ -43,11 +44,7 @@ export class HttpService {
      */
     putImg(img: Blob): Observable<BookDetection[]> {
         return this.http.post<Response<BookDetection[]>>(`${environment.apiUrl}/detection`, img)
-            .map(res => {
-                if (isFailure(res))
-                    throw res;
-                return res.data;
-            });
+            .pipe(extract);
     }
 
     /**
@@ -61,12 +58,7 @@ export class HttpService {
         let author = Secure.checkInput(authorInput);
         return this.http.get<Response<Book[]>>(`${environment.apiUrl}/catalogue/`, {
             params: {title: title, author: author}
-        })
-            .map(res => {
-                if (isFailure(res))
-                    throw res;
-                return res.data
-            });
+        }).pipe(extract);
     }
 
     /**
@@ -92,11 +84,30 @@ export class HttpService {
                 const headers = new HttpHeaders({ 'Authorization' : `Bearer ${token}`});
                 const body = { email : email, password : password};
 
-                return this.http.post<User>(`${environment.apiUrl}/users`, body, { headers: headers });
-            });
+                return this.http.post<Response<User>>(`${environment.apiUrl}/users`, body, { headers: headers });
+            })
+            .pipe(extract);
     }
 
     handleError(error) {
         this.router.navigate(['/sorry']);
     }
+}
+
+/**
+ * Extract the response from the envelope
+ */
+function extract<T>(source: Observable<Response<T>>): Observable<T> {
+    return source
+        .map(res => {
+            if (isFailure(res))
+                throw res.error;
+            return res.data;
+        })
+        .catch(error => {
+            if (error.error && error.error.error) {
+                return Observable.throwError(error.error.error);
+            }
+            return Observable.throwError(error);
+        });
 }

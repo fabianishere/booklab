@@ -2,7 +2,8 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {RegistrationComponent} from './registration.component';
 import {HttpService} from "../../services/http/http.service";
-import {NgbModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {FormsModule} from "@angular/forms";
 
 describe('RegistrationComponent', () => {
     let component: RegistrationComponent;
@@ -12,7 +13,7 @@ describe('RegistrationComponent', () => {
     beforeEach(async(() => {
         TestBed.configureTestingModule({
             declarations: [RegistrationComponent],
-            imports: [NgbModule.forRoot()],
+            imports: [NgbModule.forRoot(), FormsModule],
             providers: [ { provide: HttpService, useValue: http }]
         })
             .compileComponents();

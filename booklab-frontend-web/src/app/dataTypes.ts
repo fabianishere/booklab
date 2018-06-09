@@ -70,7 +70,22 @@ export interface User {
 }
 
 /**
- * Class to model a book.
+ * A request to register a user.
+ */
+export interface UserRegistration {
+    /**
+     * The email of the user.
+     */
+    email: string;
+
+    /**
+     * The chosen password of the user.
+     */
+    password: string;
+}
+
+/**
+ * Class to model a book title.
  */
 export interface Book {
     /**

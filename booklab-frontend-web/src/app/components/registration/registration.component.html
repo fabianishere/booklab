@@ -1,6 +1,6 @@
 <div class="container">
     <div class="row">
-        <div *ngIf="submitted && !succeeded">
+        <div *ngIf="submitted && !succeeded && !this.invalid">
             <img class="loading" src="assets/loading.gif">
             Registering your profile..
         </div>
@@ -8,14 +8,39 @@
             Your profile is registered!
             <button class="button" (click)="login.login()">Click here to Login</button>
         </div>
-        <div *ngIf="!submitted" class="col-12 flex flex-column">
+        <p *ngIf="this.invalid">Failed to register: {{error.detail}}</p>
+            <form *ngIf="!submitted" class="col-12 flex flex-column" #f="ngForm" (ngSubmit)="register(f)">
                 <label>Email</label>
-                <input #email type="email" placeholder="your@email.com">
+                <input name="email"
+                       type="email"
+                       placeholder="your@email.com"
+                       #email="ngModel"
+                       [ngClass]="{'input-error': email.errors && email.touched}"
+                       pattern="[a-zA-Z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*"
+                       required ngModel>
+                <div *ngIf="(email.errors?.required || email.errors?.pattern)&& email.touched" class="error">
+                    Please fill an valid email
+                </div>
                 <label>Password</label>
-                <input #password1 type="password">
+                <input name="password"
+                       type="password"
+                       minlength="5"
+                       #password="ngModel"
+                       [ngClass]="{'input-error': password.errors && password.touched}"
+                       required ngModel>
+                <div *ngIf="password.errors?.minlength && password.touched" class="error">
+                    Your password should contain at least 5 characters
+                </div>
                 <label>Repeat password</label>
-                <input #password2 type="password">
-                <button #loginbutton class="button ml-0" (click)="registrate(email.value, password1.value)">Register</button>
-        </div>
+                <input name="passwordVerify"
+                       type="password"
+                       #passwordVerify="ngModel"
+                       [ngClass]="{'input-error': (passwordVerify.errors || passwordVerify.value != password.value) && passwordVerify.touched}"
+                       required ngModel>
+                <div *ngIf="(passwordVerify.errors?.required || passwordVerify.value != password.value) && passwordVerify.touched" class="error">
+                    Your password must be the same as the password above
+                </div>
+                <button class="button ml-0" type="submit" [disabled]="f.invalid || passwordVerify.value != password.value">Register</button>
+            </form>
     </div>
 </div>
