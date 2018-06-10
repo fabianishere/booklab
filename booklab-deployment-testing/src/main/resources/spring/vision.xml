@@ -18,6 +18,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
+
     <!-- Tensorflow BookDetector -->
     <bean name="detector" class="nl.tudelft.booklab.vision.detection.tensorflow.TensorflowBookDetector">
         <constructor-arg name="input" value="classpath:/tensorflow/inception-book-model.pb" />
