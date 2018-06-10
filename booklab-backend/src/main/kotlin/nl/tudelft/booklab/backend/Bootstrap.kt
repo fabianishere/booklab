@@ -39,7 +39,6 @@ fun createApplicationContext(application: Application): GenericApplicationContex
     // The cast will always succeed since our HOCON configuration only returns string lists.
     @Suppress("UNCHECKED_CAST")
     val contexts = context.environment.getProperty("spring.contexts", List::class.java) as? List<String>
-    println(contexts)
     if (contexts != null) {
         context.configureDynamic(contexts)
     }
