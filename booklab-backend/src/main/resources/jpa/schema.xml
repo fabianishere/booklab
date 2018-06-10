@@ -18,4 +18,26 @@
     version="2.2"
     xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
 >
+    <named-query name="User.findByEmail">
+        <query>SELECT u FROM nl.tudelft.booklab.backend.services.user.User u WHERE u.email = :email</query>
+    </named-query>
+
+    <named-query name="User.existsByEmail">
+        <query>SELECT count(u) > 0 FROM nl.tudelft.booklab.backend.services.user.User u WHERE u.email = :email</query>
+    </named-query>
+
+    <entity class="nl.tudelft.booklab.backend.services.user.User" access="FIELD" name="users">
+        <table name="users" />
+        <attributes>
+            <id name="id">
+                <generated-value strategy="IDENTITY" />
+            </id>
+            <basic name="email">
+                <column unique="true" nullable="false" />
+            </basic>
+            <basic name="password">
+                <column nullable="false" />
+            </basic>
+        </attributes>
+    </entity>
 </entity-mappings>

@@ -16,42 +16,11 @@
 
 package nl.tudelft.booklab.backend.services.auth
 
-import io.ktor.auth.UserIdPrincipal
 import io.ktor.auth.oauth2.OAuthServer
-import io.ktor.auth.oauth2.grant.ClientCredentialsGrantHandler
-import io.ktor.auth.oauth2.grant.PasswordGrantHandler
 import io.ktor.auth.oauth2.repository.ClientIdPrincipal
-import io.ktor.auth.oauth2.repository.ClientRepository
-import io.ktor.auth.oauth2.repository.JwtAccessTokenRepository
-import io.ktor.auth.oauth2.repository.UserRepository
-import io.ktor.auth.oauth2.repository.JwtConfiguration as JwtOAuthConfiguration
+import nl.tudelft.booklab.backend.services.user.User
 
 /**
- * A service for the OAuth authorization server.
- *
- * @property clientRepository The repository for looking up and validating clients.
- * @property userRepository The repository for looking up and validating users.
- * @property jwt The [JwtService] for generating JWT tokens.
+ * A typealias for the fully specified [OAuthServer] type for this module.
  */
-data class OAuthService(
-    val clientRepository: ClientRepository<ClientIdPrincipal>,
-    val userRepository: UserRepository<UserIdPrincipal>,
-    val jwt: JwtService
-) {
-    /**
-     * The [OAuthServer] object.
-     */
-    val server = OAuthServer(
-        handlers = mapOf(
-            "password" to PasswordGrantHandler(userRepository),
-            "client_credentials" to ClientCredentialsGrantHandler()
-        ),
-        clientRepository = clientRepository,
-        tokenRepository = JwtAccessTokenRepository(
-            configuration = JwtOAuthConfiguration(jwt.issuer, jwt.audience, jwt.algorithm),
-            userRepository = userRepository,
-            clientRepository = clientRepository,
-            validity = jwt.validity
-        )
-    )
-}
+typealias BooklabOAuthServer = OAuthServer<ClientIdPrincipal, User>
