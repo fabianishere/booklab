@@ -40,8 +40,9 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "org.jetbrains.kotlin:kotlin-reflect"
 
-    implementation project(":booklab-catalogue")
-    implementation project(":booklab-vision")
+    implementation project(":booklab-catalogue-gbooks")
+    implementation project(":booklab-vision-gvision")
+    implementation project(":booklab-vision-tensorflow")
     implementation project(":ktor-auth-oauth2")
 
     compile "io.ktor:ktor-server-core:$ktor_version"

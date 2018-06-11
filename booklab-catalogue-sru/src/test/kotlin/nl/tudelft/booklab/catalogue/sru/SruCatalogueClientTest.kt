@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-rootProject.name = "booklab"
+package nl.tudelft.booklab.catalogue.sru
 
-include 'booklab-backend'
-include 'booklab-catalogue'
-include 'booklab-catalogue-gbooks'
-include 'booklab-catalogue-sru'
-include 'booklab-frontend'
-include 'booklab-proxy'
-include 'booklab-recommender'
-include 'booklab-vision'
-include 'booklab-vision-gvision'
-include 'booklab-vision-tensorflow'
-include 'booklab-vision-tesseract'
-include 'ktor-auth-oauth2'
+import kotlinx.coroutines.experimental.runBlocking
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+
+internal class SruCatalogueClientTest {
+    private val sruClient = SruCatalogueClient()
+
+    @Test
+    fun `smoke test`() {
+        runBlocking {
+            val books = sruClient.query("de ontdekking van de hemel harry mullish", 5)
+
+            assertEquals(5, books.size)
+        }
+    }
+}

@@ -28,12 +28,14 @@ apply from: '../gradle/kotlin.gradle'
 /* Project configuration */
 repositories {
     jcenter()
-    mavenCentral()
 }
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    compile "org.openpnp:opencv:3.2.0-1"
+    compile project(":booklab-vision")
+    compile "com.google.cloud:google-cloud-vision:1.28.0"
+    /* Fix for https://stackoverflow.com/questions/35157642 */
+    implementation "com.google.guava:guava:20.0"
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
