@@ -1,13 +1,13 @@
 version: "3"
 services:
   frontend:
-    image: "booklab-frontend:${TAG-latest}"
+    image: "booklab-frontend:${TAG-1.0}"
     networks:
       - frontend
     restart: on-failure
 
   backend:
-    image: "booklab-backend:${TAG-latest}"
+    image: "booklab-deployment-${ENV-testing}:${TAG-1.0}"
     networks:
       - backend
     restart: on-failure
@@ -15,9 +15,10 @@ services:
       - ./config:/config:ro
     environment:
       - PORT=80
+      - ENV=${ENV}
 
   proxy:
-    image: "booklab-proxy:${TAG-latest}"
+    image: "booklab-proxy:${TAG-1.0}"
     ports:
       - "80:80"
     networks:

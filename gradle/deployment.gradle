@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.backend
+/* Gradle settings for deployment projects */
 
-import io.ktor.util.AttributeKey
-import nl.tudelft.booklab.catalogue.CatalogueClient
+/* Docker build setup */
+dockerDistTar {
+    volume "/config"
+    environmentVariable('GOOGLE_APPLICATION_CREDENTIALS', '/config/keys.json')
+}
 
-/**
- * The configuration used for looking up books in a catalogue.
- */
-data class CatalogueConfiguration(val client: CatalogueClient) {
-    companion object {
-        /**
-         * The attribute key that allows the user to access the [CatalogueConfiguration] object within an application.
-         */
-        val KEY = AttributeKey<CatalogueConfiguration>("CatalogueConfiguration")
+docker {
+    if (System.env["GITLAB_CI"] != null) {
+        registryCredentials {
+            url = System.env["CI_REGISTRY"]
+            username = System.env["CI_REGISTRY_USER"]
+            password = System.env["CI_REGISTRY_PASSWORD"]
+        }
+    }
+
+    javaApplication {
+        maintainer = 'Fabian Mastenbroek "f.s.mastenbroek@student.tudelft.nl"'
+        tag = "${project.name}:${project.version}"
     }
 }

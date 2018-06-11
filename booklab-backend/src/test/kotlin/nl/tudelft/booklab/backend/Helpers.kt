@@ -17,43 +17,52 @@
 package nl.tudelft.booklab.backend
 
 import com.typesafe.config.ConfigFactory
+import io.ktor.application.Application
+import io.ktor.application.ApplicationEnvironment
 import io.ktor.config.HoconApplicationConfig
-import io.ktor.http.HttpHeaders
+import io.ktor.server.engine.ApplicationEngineEnvironment
 import io.ktor.server.testing.TestApplicationEngine
-import io.ktor.server.testing.TestApplicationRequest
 import io.ktor.server.testing.createTestEnvironment
 import io.ktor.server.testing.withApplication
-import nl.tudelft.booklab.backend.auth.JwtConfiguration
-import java.time.Instant
-import java.util.Date
+import nl.tudelft.booklab.backend.spring.configure
+import org.springframework.context.support.GenericApplicationContext
+import org.springframework.context.support.beans
 
 /**
  * Construct a [TestApplicationEngine] from a configuration file and run the given block in its scope.
  *
+ * @param module The Ktor module to run in test.
  * @param test The block to run in its scope.
  */
-fun <R> withTestEngine(test: TestApplicationEngine.() -> R) =
-    withApplication(createTestEnvironment {
-        config = HoconApplicationConfig(ConfigFactory.load("application-test.conf"))
-        module { booklab() }
-    }, test = test)
+fun <R> withTestEngine(module: Application.() -> Unit, test: TestApplicationEngine.() -> R) =
+    withApplication(createTestEnvironment(module), test = test)
 
 /**
- * Configure the authorization header for calls that require an access token.
+ * Construct a [ApplicationEnvironment] for the given module.
+ *
+ * @param module The Ktor module to run in test.
  */
-fun TestApplicationRequest.configureAuthorization() {
-    val token = call.application.attributes[JwtConfiguration.KEY].run {
-        val now = Instant.now()
+fun createTestEnvironment(module: Application.() -> Unit): ApplicationEngineEnvironment = createTestEnvironment {
+    config = HoconApplicationConfig(ConfigFactory.load("application-test.conf"))
+    module { module() }
+}
 
-        creator
-            .withSubject("access-token")
-            .withIssuedAt(Date.from(now))
-            .withExpiresAt(Date.from(Instant.now().plus(validity)))
-            .withClaim("user", "test@example.com")
-            .withClaim("client", "test")
-            .withArrayClaim("scopes", arrayOf("detection"))
-            .sign(algorithm)
+/**
+ * Create a [GenericApplicationContext] for testing purposes.
+ *
+ * @param builder The builder to create the context.
+ * @return The created context.
+ */
+fun Application.createTestContext(builder: GenericApplicationContext.() -> Unit = {}): GenericApplicationContext {
+    val root = GenericApplicationContext {
+        beans {
+            auth()
+        }.initialize(this)
     }
-
-    addHeader(HttpHeaders.Authorization, "Bearer $token")
+    root.refresh()
+    root.configure(this)
+    return GenericApplicationContext(root).apply {
+        configure(this@createTestContext)
+        builder()
+    }
 }

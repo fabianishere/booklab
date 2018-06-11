@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2018 The BookLab Authors.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!-- Google Books CatalogueClient -->
+    <bean name="google-books:request-initializer" class="com.google.api.services.books.BooksRequestInitializer">
+        <constructor-arg name="key" value="${catalogue.google-books.key}" />
+    </bean>
+    <bean name="google-books:transport" class="com.google.api.client.googleapis.javanet.GoogleNetHttpTransport" factory-method="newTrustedTransport" />
+    <bean name="google-books:json-factory" class="com.google.api.client.json.jackson2.JacksonFactory" factory-method="getDefaultInstance" />
+    <bean name="google-books:builder" class="com.google.api.services.books.Books$Builder">
+        <constructor-arg name="transport" ref="google-books:transport" />
+        <constructor-arg name="jsonFactory" ref="google-books:json-factory" />
+        <constructor-arg name="httpRequestInitializer">
+            <null />
+        </constructor-arg>
+        <property name="applicationName" value="booklab" />
+        <property name="googleClientRequestInitializer" ref="google-books:request-initializer" />
+    </bean>
+    <bean class="com.google.api.services.books.Books" factory-bean="google-books:builder" factory-method="build" />
+    <bean name="catalogue" class="nl.tudelft.booklab.catalogue.google.GoogleCatalogueClient" />
+</beans>

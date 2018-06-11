@@ -20,43 +20,43 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import io.ktor.application.application
 import io.ktor.application.call
 import io.ktor.application.log
+import io.ktor.auth.authenticate
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.header
 import io.ktor.request.receiveStream
 import io.ktor.response.respond
 import io.ktor.routing.Route
+import io.ktor.routing.application
 import io.ktor.routing.post
-import kotlinx.coroutines.experimental.async
-import nl.tudelft.booklab.backend.VisionConfiguration
+import nl.tudelft.booklab.backend.services.vision.VisionService
+import nl.tudelft.booklab.backend.spring.inject
 import nl.tudelft.booklab.catalogue.Book
 import nl.tudelft.booklab.vision.toMat
 
 /**
  * Define vision endpoints at the current route for the REST api.
- *
- * @param vision The vision configuration to use.
  */
-fun Route.detection(vision: VisionConfiguration) {
+fun Route.detection() {
+    val vision: VisionService = application.inject()
+    authenticate("rest:detection") { detect(vision) }
+}
+
+/**
+ * Define the endpoint for detecting a books based on an image.
+ */
+internal fun Route.detect(vision: VisionService) {
     post {
-        val estimated = call.request.header(HttpHeaders.ContentLength)?.toIntOrNull() ?: DEFAULT_BUFFER_SIZE
+        val size = call.request.header(HttpHeaders.ContentLength)?.toIntOrNull() ?: DEFAULT_BUFFER_SIZE
         val response = try {
-            call.receiveStream().use { input ->
-                val image = input.toMat(estimated)
-                vision.extractor.batch(vision.detector.detect(image))
-                    .map { part ->
-                        async {
-                            part
-                                .takeUnless { it.isBlank() }
-                                ?.let { vision.catalogue.client.query(it, max = 1).firstOrNull() }
-                        }
-                    }
-                    .mapNotNull { it.await() }
-                    .distinct()
-            }
+            val image = call.receiveStream().use { it.toMat(size) }
+            vision.detect(image)
         } catch (e: Throwable) {
             application.log.warn("An error occurred while processing an image", e)
-            call.respond(HttpStatusCode.InternalServerError, DetectionFailure("server_error", "An internal server error occurred."))
+            call.respond(
+                HttpStatusCode.InternalServerError,
+                DetectionFailure("server_error", "An internal server error occurred.")
+            )
             return@post
         }
 
@@ -64,7 +64,10 @@ fun Route.detection(vision: VisionConfiguration) {
     }
 
     handle {
-        call.respond(HttpStatusCode.MethodNotAllowed, DetectionFailure("invalid_method", "The requested method is not allowed."))
+        call.respond(
+            HttpStatusCode.MethodNotAllowed,
+            DetectionFailure("invalid_method", "The requested method is not allowed.")
+        )
     }
 }
 

@@ -17,32 +17,32 @@
 package nl.tudelft.booklab.backend.api.v1
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.stub
-import com.typesafe.config.ConfigFactory
 import io.ktor.application.Application
 import io.ktor.application.install
-import io.ktor.config.HoconApplicationConfig
+import io.ktor.auth.Authentication
 import io.ktor.features.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.jackson.jackson
 import io.ktor.routing.route
 import io.ktor.routing.routing
-import io.ktor.server.testing.createTestEnvironment
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
-import io.ktor.server.testing.withApplication
-import nl.tudelft.booklab.backend.CatalogueConfiguration
-import nl.tudelft.booklab.backend.VisionConfiguration
+import nl.tudelft.booklab.backend.configureAuthorization
+import nl.tudelft.booklab.backend.configureJackson
+import nl.tudelft.booklab.backend.configureOAuth
+import nl.tudelft.booklab.backend.createTestContext
+import nl.tudelft.booklab.backend.services.vision.VisionService
+import nl.tudelft.booklab.backend.spring.bootstrap
+import nl.tudelft.booklab.backend.spring.inject
+import nl.tudelft.booklab.backend.withTestEngine
 import nl.tudelft.booklab.catalogue.Book
 import nl.tudelft.booklab.catalogue.CatalogueClient
 import nl.tudelft.booklab.catalogue.Title
@@ -56,6 +56,7 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.opencv.core.Mat
+import org.springframework.context.support.beans
 
 /**
  * Unit test suite for the detection endpoint of the BookLab REST api.
@@ -88,19 +89,19 @@ internal class DetectionTest {
     fun setUp() {
         mapper = jacksonObjectMapper()
         detector = mock {
-            on { detect(any()) } doReturn(emptyList<Mat>())
+            on { detect(any()) } doReturn (emptyList<Mat>())
         }
         extractor = mock()
         catalogue = mock()
     }
 
     @Test
-    fun `post returns proper interface`() = withApplication(detectionEnvironment()) {
+    fun `post returns proper interface`() = withTestEngine({ module() }) {
         extractor.stub {
-            on { batch(any()) } doReturn(listOf("De ontdekking van Harry Mulisch"))
+            on { batch(any()) } doReturn (listOf("De ontdekking van Harry Mulisch"))
         }
         catalogue.stub {
-            onBlocking { query(anyString(), anyInt()) } doReturn(listOf(
+            onBlocking { query(anyString(), anyInt()) } doReturn (listOf(
                 Book(
                     titles = listOf(Title("The ontdekking van de hemel", TitleType.MAIN)),
                     authors = listOf("Harry Mulisch"),
@@ -112,6 +113,7 @@ internal class DetectionTest {
         val image = DetectionTest::class.java.getResourceAsStream("/test-image.jpg").readBytes()
         val request = handleRequest(HttpMethod.Post, "/api/detection") {
             setBody(image)
+            configureAuthorization("test", listOf("detection"))
             addHeader(HttpHeaders.ContentType, ContentType.Application.OctetStream.toString())
         }
         with(request) {
@@ -123,12 +125,12 @@ internal class DetectionTest {
     }
 
     @Test
-    fun `post does not return duplicates`() = withApplication(detectionEnvironment()) {
+    fun `post does not return duplicates`() = withTestEngine({ module() }) {
         extractor.stub {
-            on { batch(any()) } doReturn(listOf("De ontdekking van", "Harry Mulisch"))
+            on { batch(any()) } doReturn (listOf("De ontdekking van", "Harry Mulisch"))
         }
         catalogue.stub {
-            onBlocking { query(anyString(), anyInt()) } doReturn(listOf(
+            onBlocking { query(anyString(), anyInt()) } doReturn (listOf(
                 Book(
                     titles = listOf(Title("The ontdekking van de hemel", TitleType.MAIN)),
                     authors = listOf("Harry Mulisch"),
@@ -136,10 +138,10 @@ internal class DetectionTest {
                 )
             ))
         }
-
         val image = DetectionTest::class.java.getResourceAsStream("/test-image.jpg").readBytes()
         val request = handleRequest(HttpMethod.Post, "/api/detection") {
             setBody(image)
+            configureAuthorization("test", listOf("detection"))
             addHeader(HttpHeaders.ContentType, ContentType.Application.OctetStream.toString())
         }
         with(request) {
@@ -151,35 +153,33 @@ internal class DetectionTest {
     }
 
     @Test
-    fun `non-post method not allowed`() = withApplication(detectionEnvironment()) {
-        val request = handleRequest(HttpMethod.Get, "/api/detection")
+    fun `non-post method not allowed`() = withTestEngine({ module() }) {
+        val request = handleRequest(HttpMethod.Get, "/api/detection") {
+            configureAuthorization("test", listOf("detection"))
+        }
         with(request) {
             assertEquals(HttpStatusCode.MethodNotAllowed, response.status())
         }
     }
 
-    private fun detectionEnvironment() = createTestEnvironment {
-        config = HoconApplicationConfig(ConfigFactory.load("application-test.conf"))
-        module { detectionModule() }
-    }
+    private fun Application.module() {
+        val context = createTestContext {
+            beans {
+                bean { detector }
+                bean { extractor }
+                bean { catalogue }
 
-    private fun Application.detectionModule() {
-        install(ContentNegotiation) {
-            jackson {
-                configure(SerializationFeature.INDENT_OUTPUT, true)
-                registerModule(JavaTimeModule())
-            }
+                // VisionService
+                bean { VisionService(ref(), ref(), ref()) }
+            }.initialize(this)
         }
 
-        routing {
-            route("/api/detection") {
-                detection(
-                    VisionConfiguration(
-                        detector = detector,
-                        extractor = extractor,
-                        catalogue = CatalogueConfiguration(catalogue)
-                    )
-                )
+        context.bootstrap(this) {
+            install(ContentNegotiation) { configureJackson() }
+            install(Authentication) { configureOAuth(inject()) }
+
+            routing {
+                route("/api/detection") { detection() }
             }
         }
     }

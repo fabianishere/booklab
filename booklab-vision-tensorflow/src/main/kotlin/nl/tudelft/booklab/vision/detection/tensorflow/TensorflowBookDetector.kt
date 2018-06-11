@@ -26,6 +26,7 @@ import org.tensorflow.Session
 import org.tensorflow.Tensor
 import org.tensorflow.types.UInt8
 import java.io.Closeable
+import java.io.InputStream
 import java.nio.ByteBuffer
 
 /**
@@ -36,6 +37,16 @@ import java.nio.ByteBuffer
  */
 class TensorflowBookDetector(private val graph: Graph, private val score: Float = 0.5f) : BookDetector, Closeable {
     private val session = Session(graph)
+
+    /**
+     * A convenience constructor for constructing the detector from a model given as [InputStream].
+     *
+     * @param input The input stream to read the definition from.
+     * @param estimatedSize The estimated size of the input stream.
+     */
+    constructor(input: InputStream, estimatedSize: Int = DEFAULT_BUFFER_SIZE) : this(Graph().apply {
+        importGraphDef(input.readBytes(estimatedSize))
+    })
 
     override fun detect(mat: Mat): List<Mat> {
         val outputs = mat.toImageTensor().use { input ->
@@ -75,6 +86,11 @@ class TensorflowBookDetector(private val graph: Graph, private val score: Float 
         session.close()
     }
 
+    /**
+     * Convert the given OpenCV matrix to an image tensor.
+     *
+     * @return The matrix represented as an image tensor.
+     */
     private fun Mat.toImageTensor(): Tensor<UInt8> {
         val rgb = Mat()
         Imgproc.cvtColor(this, rgb, Imgproc.COLOR_BGR2RGB, 0)
