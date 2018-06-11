@@ -23,7 +23,7 @@ import io.ktor.routing.Route
 import io.ktor.routing.application
 import io.ktor.routing.get
 import io.ktor.routing.route
-import nl.tudelft.booklab.backend.services.auth.OAuthService
+import nl.tudelft.booklab.backend.services.auth.BooklabOAuthServer
 import nl.tudelft.booklab.backend.spring.inject
 
 /**
@@ -39,10 +39,10 @@ fun Route.meta() {
  *
  */
 internal fun Route.auth() {
-    val service: OAuthService = application.inject()
+    val server: BooklabOAuthServer = application.inject()
 
     // Define OAuth token endpoint
-    route("/token") { oauthTokenEndpoint(service.server) }
+    route("/token") { oauthTokenEndpoint(server) }
 
     // TODO define proper OAuth authorization endpoint
     // This is already supported by the ktor-auth-oauth2 package, but needs some implementation on our side.

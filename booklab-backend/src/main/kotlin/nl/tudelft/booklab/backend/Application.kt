@@ -33,7 +33,7 @@ import io.ktor.routing.Routing
 import io.ktor.routing.route
 import io.ktor.routing.routing
 import nl.tudelft.booklab.backend.api.v1.api
-import nl.tudelft.booklab.backend.services.auth.OAuthService
+import nl.tudelft.booklab.backend.services.auth.BooklabOAuthServer
 import nl.tudelft.booklab.backend.spring.inject
 
 /**
@@ -82,10 +82,10 @@ internal fun ContentNegotiation.Configuration.configureJackson() {
 /**
  * Configure the OAuth authentication providers for an application.
  *
- * @param oauth The [OAuthService] to use for the authentication provider.
+ * @param oauth The [BooklabOAuthServer] to use for the authentication provider.
  */
-internal fun Authentication.Configuration.configureOAuth(oauth: OAuthService) {
+internal fun Authentication.Configuration.configureOAuth(server: BooklabOAuthServer) {
     // Create an unnamed authentication provider for protecting resources using
     // the OAuth authorization server
-    oauth(oauth.server)
+    oauth(server)
 }

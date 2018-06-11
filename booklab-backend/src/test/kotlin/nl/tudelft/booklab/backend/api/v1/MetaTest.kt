@@ -19,13 +19,8 @@ package nl.tudelft.booklab.backend.api.v1
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
 import io.ktor.application.Application
 import io.ktor.application.install
-import io.ktor.auth.UserIdPrincipal
-import io.ktor.auth.oauth2.OAuthServer
-import io.ktor.auth.oauth2.repository.ClientIdPrincipal
 import io.ktor.features.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
@@ -36,14 +31,12 @@ import io.ktor.server.testing.contentType
 import io.ktor.server.testing.handleRequest
 import nl.tudelft.booklab.backend.configureJackson
 import nl.tudelft.booklab.backend.createTestContext
-import nl.tudelft.booklab.backend.services.auth.OAuthService
 import nl.tudelft.booklab.backend.spring.bootstrap
 import nl.tudelft.booklab.backend.withTestEngine
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.context.support.beans
 
 /**
  * Unit test suite for the meta endpoint of the BookLab REST api.
@@ -73,17 +66,7 @@ internal class MetaTest {
     }
 
     private fun Application.module() {
-        val context = createTestContext {
-            beans {
-                // OAuthService
-                bean {
-                    mock<OAuthService> {
-                        on { server } doReturn(mock<OAuthServer<ClientIdPrincipal, UserIdPrincipal>>())
-                    }
-                }
-            }.initialize(this)
-        }
-
+        val context = createTestContext()
         context.bootstrap(this) {
             install(ContentNegotiation) { configureJackson() }
             routing {

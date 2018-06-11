@@ -25,7 +25,6 @@ import io.ktor.auth.oauth2.repository.parseUsers
 import io.ktor.routing.Routing
 import io.ktor.util.getDigestFunction
 import nl.tudelft.booklab.backend.services.auth.JwtService
-import nl.tudelft.booklab.backend.services.auth.OAuthService
 import nl.tudelft.booklab.backend.services.vision.VisionService
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
@@ -70,7 +69,7 @@ class BooklabSpringConfiguration {
             JwtService(issuer, audience, realm, validity, Algorithm.HMAC512(passphrase))
         }
 
-        bean("auth:clients", isLazyInit = true) {
+        bean("oauth:repository:client", isLazyInit = true) {
             // TODO Remove reliance on the application for configuring the clients
             val application: Application = ref()
             ClientHashedTableRepository(
@@ -79,14 +78,12 @@ class BooklabSpringConfiguration {
             )
         }
 
-        bean("auth:users", isLazyInit = true) {
+        bean("oauth:repository:user", isLazyInit = true) {
             val application: Application = ref()
             UserHashedTableRepository(
                 digester = getDigestFunction("SHA-256", salt = "ktor"),
                 table = application.environment.config.config("auth").parseUsers()
             )
         }
-
-        bean(isLazyInit = true) { OAuthService(ref("auth:clients"), ref("auth:users"), ref()) }
     }
 }

@@ -23,7 +23,8 @@
 
     <context:property-placeholder />
 
-    <import resource="classpath:/spring/persistence.xml" />
+    <import resource="classpath:spring/persistence.xml" />
+    <import resource="classpath:spring/auth.xml" />
     <import resource="classpath:spring/catalogue.xml" />
     <import resource="classpath:spring/vision.xml" />
 </beans>

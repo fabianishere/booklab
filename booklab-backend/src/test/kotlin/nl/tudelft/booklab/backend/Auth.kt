@@ -16,19 +16,26 @@
 
 package nl.tudelft.booklab.backend
 
+import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.application.Application
+import io.ktor.auth.oauth2.grant.ClientCredentialsGrantHandler
+import io.ktor.auth.oauth2.grant.PasswordGrantHandler
 import io.ktor.auth.oauth2.repository.ClientHashedTableRepository
+import io.ktor.auth.oauth2.repository.ClientIdPrincipal
+import io.ktor.auth.oauth2.repository.JwtAccessTokenRepository
+import io.ktor.auth.oauth2.repository.JwtConfiguration
 import io.ktor.auth.oauth2.repository.UserHashedTableRepository
 import io.ktor.auth.oauth2.repository.parseClients
 import io.ktor.auth.oauth2.repository.parseUsers
 import io.ktor.http.HttpHeaders
 import io.ktor.server.testing.TestApplicationRequest
 import io.ktor.util.getDigestFunction
-import nl.tudelft.booklab.backend.services.auth.JwtService
-import nl.tudelft.booklab.backend.services.auth.OAuthService
+import nl.tudelft.booklab.backend.services.auth.BooklabOAuthServer
+import nl.tudelft.booklab.backend.services.user.User
 import nl.tudelft.booklab.backend.spring.inject
 import org.springframework.context.support.BeanDefinitionDsl
+import org.springframework.core.env.Environment
 import org.springframework.core.env.get
 import java.time.Duration
 import java.time.Instant
@@ -38,30 +45,44 @@ import java.util.Date
  * Define default authorization related beans for the Spring container.
  */
 fun BeanDefinitionDsl.auth() {
-    // JwtService
-    bean(isLazyInit = true) {
+    bean("oauth:repository:token", isLazyInit = true) {
         val issuer = env["auth.jwt.domain"]
         val audience = env["auth.jwt.audience"]
-        val realm = env["auth.jwt.realm"]
         val validity = Duration.parse(env["auth.jwt.validity"])
         val passphrase = env["auth.jwt.passphrase"]
 
-        JwtService(issuer, audience, realm, validity, Algorithm.HMAC512(passphrase))
+        JwtAccessTokenRepository<ClientIdPrincipal, User>(
+            JwtConfiguration(issuer, audience, Algorithm.HMAC512(passphrase)),
+            userRepository = ref("oauth:repository:user"),
+            clientRepository = ref("oauth:repository:client"),
+            validity = validity
+        )
     }
-
-    // OAuthService
-    bean(isLazyInit = true) {
-        // TODO Remove reliance on the application for configuring the clients
+    bean("oauth:repository:client", isLazyInit = true) {
         val application: Application = ref()
-        val clients = ClientHashedTableRepository(
+        ClientHashedTableRepository(
             digester = getDigestFunction("SHA-256", salt = "ktor"),
             table = application.environment.config.config("auth").parseClients()
         )
-        val users = UserHashedTableRepository(
+    }
+    bean("oauth:repository:user", isLazyInit = true) {
+        val application: Application = ref()
+        UserHashedTableRepository(
             digester = getDigestFunction("SHA-256", salt = "ktor"),
             table = application.environment.config.config("auth").parseUsers()
         )
-        OAuthService(clients, users, ref())
+    }
+
+    // OAuthService
+    bean("oauth:server", isLazyInit = true) {
+        BooklabOAuthServer(
+            handlers = mapOf(
+                "password" to PasswordGrantHandler(ref("oauth:repository:user")),
+                "client_credentials" to ClientCredentialsGrantHandler()
+            ),
+            clientRepository = ref(),
+            tokenRepository = ref()
+        )
     }
 }
 
@@ -69,17 +90,25 @@ fun BeanDefinitionDsl.auth() {
  * Configure the authorization header for calls that require an access token.
  */
 fun TestApplicationRequest.configureAuthorization(id: String, scopes: List<String> = emptyList()) {
-    val token = call.application.inject<JwtService>().run {
+    val env = call.application.inject<Environment>()
+    val token = let {
+        val issuer = env["auth.jwt.domain"]
+        val audience = env["auth.jwt.audience"]
+        val validity = Duration.parse(env["auth.jwt.validity"])
+        val passphrase = env["auth.jwt.passphrase"]
+
         val now = Instant.now()
 
-        creator
+        JWT.create()
+            .withIssuer(issuer)
+            .withAudience(audience)
             .withSubject("access-token")
             .withIssuedAt(Date.from(now))
             .withExpiresAt(Date.from(Instant.now().plus(validity)))
             .withClaim("user", "test@example.com")
             .withClaim("client", id)
             .withArrayClaim("scopes", scopes.toTypedArray())
-            .sign(algorithm)
+            .sign(Algorithm.HMAC512(passphrase))
     }
 
     addHeader(HttpHeaders.Authorization, "Bearer $token")
