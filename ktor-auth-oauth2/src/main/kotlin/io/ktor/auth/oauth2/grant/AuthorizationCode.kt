@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Fabian Mastenbroek.
+ * Copyright 2018 The BookLab Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import io.ktor.auth.oauth2.InvalidClient
 import io.ktor.auth.oauth2.InvalidRequest
 import io.ktor.auth.oauth2.InvalidScope
 import io.ktor.auth.oauth2.ServerError
-import io.ktor.auth.oauth2.getNonBlank
-import io.ktor.auth.oauth2.redirectUri
 import io.ktor.auth.oauth2.repository.AuthorizationCodeRepository
+import io.ktor.auth.oauth2.util.getNonBlank
+import io.ktor.auth.oauth2.util.redirectUri
 import io.ktor.http.Parameters
 import java.net.URI
 import java.time.Duration
@@ -76,6 +76,8 @@ open class AuthorizationCodeGrantHandler<C : Principal, U : Principal>(
     override val clientCredentialsRequired: Boolean = true
 
     override val supportsAuthorization: Boolean = true
+
+    override val supportsGranting: Boolean = true
 
     override suspend fun AuthorizationRequest<C, U>.authorize(user: U): Authorization {
         val code = codeRepository.generate(this, user)

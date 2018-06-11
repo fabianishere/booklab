@@ -363,7 +363,7 @@ internal class TokenEndpointTest {
             addHeader("Authorization", "Bearer $token")
         }
         with(request) {
-            assertEquals(HttpStatusCode.Unauthorized, response.status())
+            assertEquals(HttpStatusCode.Forbidden, response.status())
         }
     }
 

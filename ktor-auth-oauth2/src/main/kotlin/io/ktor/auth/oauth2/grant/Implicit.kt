@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Fabian Mastenbroek.
+ * Copyright 2018 The BookLab Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ open class ImplicitGrantHandler<C : Principal, U : Principal> : GrantHandler<C, 
     override val clientCredentialsRequired: Boolean = true
 
     override val supportsAuthorization: Boolean = true
+
+    override val supportsGranting: Boolean = true
 
     override suspend fun AuthorizationRequest<C, U>.authorize(user: U): Authorization {
         val scopes = server.clientRepository.validateScopes(client, scopes) ?: throw InvalidScope("The requested scopes are not accepted.")
