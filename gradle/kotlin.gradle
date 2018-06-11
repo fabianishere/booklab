@@ -61,6 +61,17 @@ task benchmark(type: Test) {
     }
 }
 
+/* Coverage */
+repositories {
+    // This repository is needed to get the latest snapshot of Jacoco
+    maven { url = "https://oss.sonatype.org/content/repositories/snapshots" }
+}
+
+jacoco {
+    // We use the latest snapshot of Jacoco in order to get it to ignore Kotlin-generated code
+    toolVersion = jacoco_version
+}
+
 jacocoTestReport {
     reports {
         html.enabled = true
