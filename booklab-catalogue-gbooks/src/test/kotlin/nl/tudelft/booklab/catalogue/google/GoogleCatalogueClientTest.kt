@@ -23,6 +23,7 @@ import com.google.api.services.books.BooksRequestInitializer
 import kotlinx.coroutines.experimental.runBlocking
 import nl.tudelft.booklab.catalogue.CatalogueClient
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -46,7 +47,7 @@ class GoogleCatalogueClientTest {
         runBlocking {
             val results = client.query("harry potter steen der wijzen", 5)
 
-            assertEquals(4, results.size)
+            assertTrue(results.size > 2)
         }
     }
 
