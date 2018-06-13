@@ -2,8 +2,10 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {Book, BookItem} from "../../dataTypes";
 import {ImageSearchComponent} from "../image-search/image-search.component";
 import {BooklistComponent} from "../booklist/booklist.component";
-import {Subject} from "rxjs/Rx";
 import {AddTo} from "../../interfaces";
+import {UserService} from "../../services/user/user.service";
+import {HttpService} from "../../services/http/http.service";
+import {RecommendationsListComponent} from "../recommendations-list/recommendations-list.component";
 
 @Component({
     selector: 'app-recommendations',
@@ -14,15 +16,24 @@ export class RecommendationsComponent implements OnInit, AddTo {
 
     @ViewChild(ImageSearchComponent) image: ImageSearchComponent;
     @ViewChild(BooklistComponent) booklist: BooklistComponent;
+    @ViewChild(RecommendationsListComponent) recommendationslist: RecommendationsListComponent;
 
-    constructor() {
+    public books: Book[];
+    public candidates: Book[];
+
+    constructor(private http: HttpService, private user: UserService) {
     }
 
     ngOnInit() {
+        this.candidates = [];
+        this.books = [];
+        this.user.getBookshelf().subscribe(b => {
+            this.books = b;
+        });
     }
 
     addTo(books: Book[]) {
-        console.log('Stuff works!');
+        this.candidates = books;
     }
 
     onSubmit(event) {
@@ -32,5 +43,13 @@ export class RecommendationsComponent implements OnInit, AddTo {
             .subscribe(res => {
                 this.booklist.books = res;
             });
+    }
+
+    recommend() {
+        this.candidates = this.booklist.books.map(b => b.book);
+        this.recommendationslist.recommendations = [];
+        this.http.getRecommendations(this.books, this.candidates).subscribe((res) => {
+            this.recommendationslist.recommendations = res.map(book => new BookItem(book))
+        });
     }
 }

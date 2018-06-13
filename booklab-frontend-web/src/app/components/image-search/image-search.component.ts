@@ -37,7 +37,10 @@ export class ImageSearchComponent implements OnInit {
         this.searching = true;
         this.http.putImg(img).subscribe((res) => {
             this.searching = false;
-            subject.next(res.map((b: BookDetection) => new BookItem(b.matches[0])));
+            const books = res
+                .filter(b => b.matches.length > 0)
+                .map((b: BookDetection) => new BookItem(b.matches[0]));
+            subject.next(books);
         }, error => {
             this.searching = false;
             this.http.handleError(error)

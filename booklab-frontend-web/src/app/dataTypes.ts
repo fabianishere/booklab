@@ -89,7 +89,12 @@ export interface UserRegistration {
  */
 export interface Book {
     /**
-     * The identifiers of the book.
+     * The internal identifier of the book.
+     */
+    id: string;
+
+    /**
+     * The external identifiers of the book.
      */
     identifiers: any;
 

@@ -8,7 +8,7 @@ describe('UserService should..', () => {
     let user: UserService;
 
     function initBookShelf(): Book[] {
-        const book: Book = { title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} };
+        const book: Book = { id: '123', title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} };
         user.setBookshelf([book]);
         return [book];
     }
@@ -31,8 +31,8 @@ describe('UserService should..', () => {
         let result: Book[];
         user.getBookshelf().subscribe(b => result = b);
         const books = [
-            { title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} },
-            { title: 'test2', authors: ['auth'], identifiers: { internal: '1233' }, categories: [], images: {} },
+            { id: '123', title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} },
+            { id: '1233', title: 'test2', authors: ['auth'], identifiers: { internal: '1233' }, categories: [], images: {} },
         ];
         user.setBookshelf(books);
         expect(result).toBe(books);
@@ -41,7 +41,7 @@ describe('UserService should..', () => {
     it('add a book to its bookshelf', () => {
         let result: Book[], content = initBookShelf();
         user.getBookshelf().subscribe(b => result = b);
-        const book: Book = { title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} };
+        const book: Book = { id:' 123', title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} };
         user.addToBookshelf(book);
         expect(result).toEqual(content.concat([book]));
     });
@@ -50,8 +50,8 @@ describe('UserService should..', () => {
         let content = initBookShelf(), result: Book[];
         user.getBookshelf().subscribe(b => result = b);
         const books = [
-            { title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} },
-            { title: 'test2', authors: ['auth'], identifiers: { internal: '1233' }, categories: [], images: {} },
+            { id: '123', title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} },
+            { id: '1233', title: 'test2', authors: ['auth'], identifiers: { internal: '1233' }, categories: [], images: {} },
         ];
         user.addMultToBookshelf(books);
         expect(result).toEqual(content.concat(books));
@@ -61,8 +61,8 @@ describe('UserService should..', () => {
         let result: Book[];
         user.getBookshelf().subscribe(b => result = b);
         const books = [
-            { title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} },
-            { title: 'test2', authors: ['auth'], identifiers: { internal: '1233' }, categories: [], images: {} },
+            { id: '123', title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} },
+            { id: '1233', title: 'test2', authors: ['auth'], identifiers: { internal: '1233' }, categories: [], images: {} },
         ];
         user.setBookshelf(books);
         user.deleteFromBookshelf(books[1]);

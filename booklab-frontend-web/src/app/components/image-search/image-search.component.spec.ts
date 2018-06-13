@@ -1,8 +1,7 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, TestBed } from '@angular/core/testing';
 
 import { ImageSearchComponent } from './image-search.component';
 import {HttpService} from "../../services/http/http.service";
-import {BookSearchComponent} from "../image-upload/book-search.component";
 
 describe('ImageSearchComponent', () => {
     let component: ImageSearchComponent;

@@ -22,6 +22,7 @@ import {RecommendationsComponent} from "./components/recommendations/recommendat
 import {RegistrationComponent} from "./components/registration/registration.component";
 import {BooklistComponent} from "./components/booklist/booklist.component";
 import {ImageSearchComponent} from "./components/image-search/image-search.component";
+import {RecommendationsListComponent} from "./components/recommendations-list/recommendations-list.component";
 
 describe('AppComponent', () => {
     beforeEach(async(() => {
@@ -38,6 +39,7 @@ describe('AppComponent', () => {
                 AboutComponent,
                 HomeComponent,
                 RecommendationsComponent,
+                RecommendationsListComponent,
                 RegistrationComponent,
                 BooklistComponent,
                 ImageSearchComponent

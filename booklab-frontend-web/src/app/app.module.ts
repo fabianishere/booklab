@@ -27,6 +27,7 @@ import {RegistrationComponent} from './components/registration/registration.comp
 import {LoginService} from "./services/login/login.service";
 import {BooklistComponent} from './components/booklist/booklist.component';
 import {ImageSearchComponent} from './components/image-search/image-search.component';
+import {RecommendationsListComponent} from "./components/recommendations-list/recommendations-list.component";
 
 @NgModule({
     declarations: [
@@ -44,6 +45,7 @@ import {ImageSearchComponent} from './components/image-search/image-search.compo
         RegistrationComponent,
         BooklistComponent,
         ImageSearchComponent,
+        RecommendationsListComponent
     ],
     imports: [
         BrowserModule,
