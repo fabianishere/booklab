@@ -29,9 +29,9 @@ import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.application
 import io.ktor.routing.post
+import nl.tudelft.booklab.backend.services.vision.BookDetection
 import nl.tudelft.booklab.backend.services.vision.VisionService
 import nl.tudelft.booklab.backend.spring.inject
-import nl.tudelft.booklab.catalogue.Book
 import nl.tudelft.booklab.vision.toMat
 
 /**
@@ -74,7 +74,7 @@ internal fun Route.detect(vision: VisionService) {
 /**
  * This class defines the shape of the detection results returned by the Detection API.
  */
-data class DetectionResult(val size: Int, val results: List<Book>)
+data class DetectionResult(val size: Int, val results: List<BookDetection>)
 
 /**
  * This class defines the shape of an error that occurred during the detection of books.

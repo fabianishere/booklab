@@ -147,7 +147,7 @@ sealed class DetectionBenchmark {
             with(request) {
                 assertEquals(HttpStatusCode.OK, response.status())
                 val response: DetectionResult? = response.content?.let { mapper.readValue(it) }
-                val responseTitles = response?.results?.map { book -> book.titles[0].value }
+                val responseTitles = response?.results?.map { res -> res.matches.first().titles[0].value }
                 val intersection = titles.intersect(responseTitles!!)
 
                 correct += intersection.size

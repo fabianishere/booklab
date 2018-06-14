@@ -48,7 +48,7 @@ class TensorflowBookDetector(private val graph: Graph, private val score: Float 
         importGraphDef(input.readBytes(estimatedSize))
     })
 
-    override fun detect(mat: Mat): List<Mat> {
+    override fun detect(mat: Mat): List<Rect> {
         val outputs = mat.toImageTensor().use { input ->
             session.runner()
                 .feed("image_tensor", input)
@@ -74,7 +74,7 @@ class TensorflowBookDetector(private val graph: Graph, private val score: Float 
                 val min = Point(box[1].toDouble() * mat.width(), box[0].toDouble() * mat.height())
                 val max = Point(box[3].toDouble() * mat.width(), box[2].toDouble() * mat.height())
                 if (score >= this.score)
-                    Mat(mat, Rect(min, max))
+                    Rect(min, max)
                 else
                     null
             }

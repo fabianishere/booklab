@@ -55,7 +55,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
-import org.opencv.core.Mat
+import org.opencv.core.Rect
 import org.springframework.context.support.beans
 
 /**
@@ -88,15 +88,16 @@ internal class DetectionTest {
     @BeforeEach
     fun setUp() {
         mapper = jacksonObjectMapper()
-        detector = mock {
-            on { detect(any()) } doReturn (emptyList<Mat>())
-        }
+        detector = mock()
         extractor = mock()
         catalogue = mock()
     }
 
     @Test
     fun `post returns proper interface`() = withTestEngine({ module() }) {
+        detector.stub {
+            on { detect(any()) } doReturn(listOf(Rect()))
+        }
         extractor.stub {
             on { batch(any()) } doReturn (listOf("De ontdekking van Harry Mulisch"))
         }
@@ -118,6 +119,7 @@ internal class DetectionTest {
         }
         with(request) {
             assertEquals(HttpStatusCode.OK, response.status())
+
             val response: DetectionResult? = response.content?.let { mapper.readValue(it) }
             assertNotNull(response)
             assertEquals(1, response?.size)
@@ -126,11 +128,14 @@ internal class DetectionTest {
 
     @Test
     fun `post does not return duplicates`() = withTestEngine({ module() }) {
+        detector.stub {
+            on { detect(any()) } doReturn(listOf(Rect()))
+        }
         extractor.stub {
-            on { batch(any()) } doReturn (listOf("De ontdekking van", "Harry Mulisch"))
+            on { batch(any()) } doReturn(listOf("De ontdekking van", "Harry Mulisch"))
         }
         catalogue.stub {
-            onBlocking { query(anyString(), anyInt()) } doReturn (listOf(
+            onBlocking { query(anyString(), anyInt()) } doReturn(listOf(
                 Book(
                     titles = listOf(Title("The ontdekking van de hemel", TitleType.MAIN)),
                     authors = listOf("Harry Mulisch"),

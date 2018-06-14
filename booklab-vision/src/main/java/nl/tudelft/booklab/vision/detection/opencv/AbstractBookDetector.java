@@ -1,3 +1,19 @@
+/*
+ * Copyright 2018 The BookLab Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package nl.tudelft.booklab.vision.detection.opencv;
 
 import nl.tudelft.booklab.vision.detection.BookDetector;
@@ -27,10 +43,10 @@ public abstract class AbstractBookDetector implements BookDetector {
      * @return list of separated book segments
      */
     @NotNull
-    static List<Mat> cropBooks(Mat image, List<Integer> cropLocations, boolean strictCrop) {
-        List<Mat> books = new ArrayList<>();
+    static List<Rect> cropBooks(Mat image, List<Integer> cropLocations, boolean strictCrop) {
+        List<Rect> books = new ArrayList<>();
         for (int i = 0; i < cropLocations.size() - 1; i++) {
-            Mat book = cropBook(image, cropLocations.get(i), cropLocations.get(i + 1) - cropLocations.get(i), strictCrop);
+            Rect book = cropBook(image, cropLocations.get(i), cropLocations.get(i + 1) - cropLocations.get(i), strictCrop);
             books.add(book);
         }
         return books;
@@ -46,7 +62,7 @@ public abstract class AbstractBookDetector implements BookDetector {
      * @return cropped image
      */
     @NotNull
-    static Mat cropBook(Mat image, int x, int width, boolean strictCrop) {
+    static Rect cropBook(Mat image, int x, int width, boolean strictCrop) {
         if (!strictCrop) {
             width = (int) (1.1 * (width + 0.05 * x));
             x = (int) (0.95 * x);
@@ -56,8 +72,7 @@ public abstract class AbstractBookDetector implements BookDetector {
             width = width - (x + width - image.cols());
         }
 
-        Rect roi = new Rect(x, 0, width, image.rows());
-        return new Mat(image, roi);
+        return new Rect(x, 0, width, image.rows());
     }
 
 

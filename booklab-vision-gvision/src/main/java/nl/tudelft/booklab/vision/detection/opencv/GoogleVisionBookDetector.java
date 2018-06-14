@@ -5,14 +5,12 @@ import nl.tudelft.booklab.vision.ocr.gvision.GoogleVisionTextExtractor;
 import org.jetbrains.annotations.NotNull;
 import org.opencv.core.*;
 import org.opencv.imgproc.Imgproc;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.opencv.core.Core.*;
-import static org.opencv.imgcodecs.Imgcodecs.imwrite;
 import static org.opencv.imgproc.Imgproc.*;
 
 public class GoogleVisionBookDetector extends AbstractBookDetector {
@@ -25,7 +23,7 @@ public class GoogleVisionBookDetector extends AbstractBookDetector {
 
     @NotNull
     @Override
-    public List<Mat> detect(@NotNull Mat mat) {
+    public List<Rect> detect(@NotNull Mat mat) {
         return detectBooks(mat);
     }
 
@@ -35,9 +33,9 @@ public class GoogleVisionBookDetector extends AbstractBookDetector {
      * @param image openCV matrix containing an image
      * @return list of images (openCV matrices)
      */
-    private List<Mat> detectBooks(Mat image) {
+    private List<Rect> detectBooks(Mat image) {
         image = ImageProcessingHelper.colorhistEqualize(image);
-        List<Mat> books = new ArrayList<>();
+        List<Rect> books = new ArrayList<>();
 
         Mat mask = findTextRegions(image);
         dilate(mask, mask, getStructuringElement(MORPH_ELLIPSE, new Size(10,10)));
@@ -57,7 +55,7 @@ public class GoogleVisionBookDetector extends AbstractBookDetector {
      * @param mask openCV matrix containing a binary image containing the text regions of the shelf
      * @return
      */
-    static List<Mat> findBooks(Mat shelf, Mat mask) {
+    static List<Rect> findBooks(Mat shelf, Mat mask) {
         List<Integer> cropLocations = findCropLocations(mask, REDUCE_MAX);
         return cropBooks(shelf, cropLocations, false);
     }
