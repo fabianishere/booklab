@@ -7,7 +7,7 @@ services:
     restart: on-failure
 
   backend:
-    image: "booklab-deployment-${ENV-testing}:${TAG-1.0}"
+    image: "booklab-deployment-${ENV-production}:${TAG-1.0}"
     networks:
       - backend
     restart: on-failure
@@ -16,6 +16,20 @@ services:
     environment:
       - PORT=80
       - ENV=${ENV}
+      - GOOGLE_BOOKS_API_KEY=${GOOGLE_BOOKS_API_KEY}
+
+  database:
+      image: postgres
+      networks:
+        - backend
+      restart: on-failure
+# uncomment in production
+#      volumes:
+#        - "/data/booklab:/var/lib/postgresql/data"
+      environment:
+        - POSTGRES_DB=booklab
+        - POSTGRES_USER=booklab-backend
+        - POSTGRES_PASSWORD=booklabpassword
 
   proxy:
     image: "booklab-proxy:${TAG-1.0}"

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2018 The BookLab Authors.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/data/jpa
+        http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+    <!-- Setup JPA and data source -->
+    <jpa:repositories base-package="nl.tudelft.booklab.backend" />
+
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${persistence.datasource.driver}" />
+        <property name="url" value="${persistence.datasource.url}" />
+        <property name="username" value="${persistence.datasource.username}" />
+        <property name="password" value="${persistence.datasource.password}" />
+    </bean>
+
+    <!-- Setup JPA entity manager factory using Hibernate -->
+    <bean id="entityManagerFactory"
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="persistenceUnitRootLocation" value="file:${java.io.tmpdir}" />
+        <property name="persistenceUnitName" value="booklab-production" />
+        <property name="mappingResources">
+            <array>
+                <value>/jpa/schema.xml</value>
+            </array>
+        </property>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+                <property name="showSql" value="false" />
+                <property name="generateDdl" value="true" />
+            </bean>
+        </property>
+    </bean>
+
+    <!-- Setup Spring Transaction manager -->
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory" />
+    </bean>
+</beans>
