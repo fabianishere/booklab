@@ -42,8 +42,8 @@
 		<srw:record>
 			<srw:recordData>
 				<srw_dc:dc>
-					<dc:identifier xsi:type="dcterms:ISBN">1234</dc:identifier>
-					<dc:identifier xsi:type="dcterms:ISBN">5678</dc:identifier>
+					<dc:identifier xsi:type="dcterms:ISBN">1234567891</dc:identifier>
+					<dc:identifier xsi:type="dcterms:ISBN">1234567892</dc:identifier>
 				</srw_dc:dc>
 			</srw:recordData>
 		</srw:record>
@@ -76,7 +76,7 @@
 					<dc:title xsi:type="dcx:subtitle">sub title</dc:title>
 					<dc:creator>author 2</dc:creator>
 					<dc:identifier xsi:type="dcterms:ISBN">0123456789</dc:identifier>
-					<dc:identifier xsi:type="dcterms:ISBN">0123456789</dc:identifier>		
+					<dc:identifier xsi:type="dcterms:ISBN">0123456789</dc:identifier>
 					<dc:identifier xsi:type="dcterms:ISBN">0123456789</dc:identifier>
 					<dc:title xsi:type="dcx:subtitle">sub title</dc:title>
 					<dc:creator>author 3</dc:creator>

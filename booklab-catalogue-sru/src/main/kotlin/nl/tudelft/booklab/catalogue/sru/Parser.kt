@@ -17,8 +17,7 @@
 package nl.tudelft.booklab.catalogue.sru
 
 import nl.tudelft.booklab.catalogue.Book
-import nl.tudelft.booklab.catalogue.Title
-import nl.tudelft.booklab.catalogue.TitleType
+import nl.tudelft.booklab.catalogue.Identifier
 import org.w3c.dom.Document
 import org.w3c.dom.Element
 import java.io.File
@@ -30,7 +29,7 @@ import javax.xml.parsers.DocumentBuilderFactory
  *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
-class ParseException : Exception()
+class SruParseException : Exception()
 
 /**
  * A parser that parses Dublin Core XML results into a list of [Book]s
@@ -38,7 +37,6 @@ class ParseException : Exception()
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
 object SruParser {
-
     /**
      * Using a [File] with the XML source (can be a temporary file)
      * creates a [Document] that can be parsed
@@ -53,22 +51,39 @@ object SruParser {
     }
 
     /**
-     * parses a list of titles from a record
+     * Parse the main title from the book.
      *
      * @param record the record containing the title [Element]s
-     * @return a list of [Title]s
+     * @return The main title of the book.
      */
-    private fun parseTitles(record: Element): List<Title> {
+    private fun parseTitle(record: Element): String {
         val titleElements = record.getElementsByTagName("dc:title")
-        val titles: MutableList<Title> = mutableListOf()
 
         for (i in 0 until titleElements.length) {
             val e = titleElements.item(i) as Element
-            val type = if (e.getAttribute("xsi:type") == "dcx:maintitle") TitleType.MAIN else TitleType.SUB
-            titles.add(Title(e.textContent, type))
+            if (e.getAttribute("xsi:type") == "dcx:maintitle")
+                return e.textContent
         }
 
-        return titles
+        return "<NO TITLE>"
+    }
+
+    /**
+     * Parse the sub title from the book.
+     *
+     * @param record the record containing the title [Element]s
+     * @return The sub title of the book.
+     */
+    private fun parseSubtitle(record: Element): String? {
+        val titleElements = record.getElementsByTagName("dc:title")
+
+        for (i in 0 until titleElements.length) {
+            val e = titleElements.item(i) as Element
+            if (e.getAttribute("xsi:type") == "dcx:subtitle")
+                return e.textContent
+        }
+
+        return null
     }
 
     /**
@@ -78,14 +93,15 @@ object SruParser {
      * @param record the record [Element] the be parsed
      * @return list of isbn numbers
      */
-    private fun parseIds(record: Element): List<String> {
+    private fun parseIds(record: Element): Map<Identifier, String> {
         val idElements = record.getElementsByTagName("dc:identifier")
-        val ids: MutableList<String> = mutableListOf()
+        val ids: MutableMap<Identifier, String> = mutableMapOf()
 
         for (i in 0 until idElements.length) {
             val id = idElements.item(i) as Element
             if (id.getAttribute("xsi:type") == "dcterms:ISBN") {
-                ids.add(id.textContent)
+                val type = if (id.textContent.length == 13) Identifier.ISBN_13 else Identifier.ISBN_10
+                ids[type] = id.textContent
             }
         }
 
@@ -110,6 +126,22 @@ object SruParser {
     }
 
     /**
+     * Parses a publisher from a record.
+     *
+     * @param record the record [Element] to be parsed
+     * @return The name of the publisher or `null` if it could not be found.
+     */
+    private fun parsePublisher(record: Element): String? {
+        val publisherElements = record.getElementsByTagName("dc:publisher")
+
+        if (publisherElements.length > 0) {
+            return publisherElements.item(0).textContent
+        }
+
+        return null
+    }
+
+    /**
      * parses Dublin Core XML to a list of [Book]s.
      * the source is passed using a [InputStream]
      *
@@ -123,10 +155,18 @@ object SruParser {
             val records = createDocument(stream).documentElement.getElementsByTagName("srw:record")
             for (i in 0 until records.length) {
                 val record = records.item(i) as Element
-                books.add(Book(parseTitles(record), parseAuthors(record), parseIds(record)))
+                books.add(
+                    SruBook(
+                        parseIds(record),
+                        parseTitle(record),
+                        parseSubtitle(record),
+                        parseAuthors(record),
+                        parsePublisher(record)
+                    )
+                )
             }
         } catch (e: Exception) {
-            throw ParseException()
+            throw SruParseException()
         }
 
         return books

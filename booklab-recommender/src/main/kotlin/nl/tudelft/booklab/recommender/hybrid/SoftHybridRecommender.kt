@@ -67,24 +67,24 @@ class SoftHybridRecommender(
                 o1, o2 ->
                 fun Book.isRecommended(): Boolean = authorRecommendations.contains(this)
                 fun Book.notRecommended(): Boolean = !this.isRecommended()
-                fun Book.hasRating(): Boolean = this.rating != null
-                fun Book.noRating(): Boolean = !this.hasRating()
+                fun Book.hasRatings(): Boolean = this.ratings != null
+                fun Book.noRatings(): Boolean = !this.hasRatings()
                 fun Book.index(): Int = authorRecommendations.indexOf(this)
-                fun compareRating() = Comparator.comparingDouble<Book> { it.rating!! }.reversed().compare(o1, o2)
+                fun compareRating() = Comparator.comparingDouble<Book> { it.ratings!!.average }.reversed().compare(o1, o2)
                 when {
-                    o1.isRecommended() && o2.isRecommended() && !(o1.hasRating() && o2.hasRating()) ->
+                    o1.isRecommended() && o2.isRecommended() && !(o1.hasRatings() && o2.hasRatings()) ->
                         compare(o1.index(), o2.index())
-                    o1.hasRating() && o1.notRecommended() && o2.hasRating() && o2.notRecommended() ->
+                    o1.hasRatings() && o1.notRecommended() && o2.hasRatings() && o2.notRecommended() ->
                         compareRating()
-                    o1.noRating() && o1.isRecommended() && o2.hasRating() && o2.notRecommended() ->
+                    o1.noRatings() && o1.isRecommended() && o2.hasRatings() && o2.notRecommended() ->
                         -1 // favor o1, not expected to happen often
-                    o1.hasRating() && o1.notRecommended() && o2.noRating() && o2.isRecommended() ->
+                    o1.hasRatings() && o1.notRecommended() && o2.noRatings() && o2.isRecommended() ->
                         1 // favor o2, not expected to happen often
-                    o1.hasRating() && o1.notRecommended() && o2.hasRating() && o2.isRecommended() ->
-                        if (o1.rating!! - o2.rating!! < softness) 1 else compareRating()
-                    o1.hasRating() && o1.isRecommended() && o2.hasRating() && o2.notRecommended() ->
-                        if (o2.rating!! - o1.rating!! < softness) -1 else compareRating()
-                    o1.hasRating() && o1.isRecommended() && o2.hasRating() && o2.isRecommended() ->
+                    o1.hasRatings() && o1.notRecommended() && o2.hasRatings() && o2.isRecommended() ->
+                        if (o1.ratings!!.average - o2.ratings!!.average < softness) 1 else compareRating()
+                    o1.hasRatings() && o1.isRecommended() && o2.hasRatings() && o2.notRecommended() ->
+                        if (o2.ratings!!.average - o1.ratings!!.average < softness) -1 else compareRating()
+                    o1.hasRatings() && o1.isRecommended() && o2.hasRatings() && o2.isRecommended() ->
                         compareRating()
                     else -> throw IllegalStateException() // should be impossible to reach since this means that
                     // either o1 or o2 besides not having a rating also does not have a recommended author. this cannot

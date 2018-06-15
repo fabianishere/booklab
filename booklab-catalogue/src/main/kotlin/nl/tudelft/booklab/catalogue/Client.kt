@@ -17,15 +17,21 @@
 package nl.tudelft.booklab.catalogue
 
 /**
- * a interface that standardizes a book catalogue client that is
- * used to query lists of [Book]
+ * An interface that standardizes a book catalogue client that is used to query lists of [Book]
  *
  * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
  */
 interface CatalogueClient {
+    /**
+     * Find a book by its identifier.
+     *
+     * @param isbn The identifier of the book to find.
+     * @return The book or `null` when the book could not be found.
+     */
+    suspend fun find(isbn: String): Book?
 
     /**
-     * queries the catalogue for a list of [Book]s based on keywords.
+     * Queries the catalogue for a list of [Book]s based on keywords.
      * fuzzy search is used for matching the keywords
      *
      * @param keywords is a space separated string of keywords

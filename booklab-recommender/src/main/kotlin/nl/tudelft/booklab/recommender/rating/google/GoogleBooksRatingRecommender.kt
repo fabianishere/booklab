@@ -30,8 +30,8 @@ class GoogleBooksRatingRecommender : Recommender {
 
     override suspend fun recommend(collection: Set<Book>, candidates: Set<Book>): List<Book> {
         return candidates
-            .filter { it.rating != null }
+            .filter { it.ratings != null }
             .filter { !collection.contains(it) }
-            .sortedByDescending { it.rating }
+            .sortedByDescending { it.ratings!!.average }
     }
 }

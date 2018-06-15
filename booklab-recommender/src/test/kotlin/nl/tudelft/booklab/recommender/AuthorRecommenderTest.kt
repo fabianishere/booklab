@@ -17,8 +17,7 @@
 package nl.tudelft.booklab.recommender
 
 import kotlinx.coroutines.experimental.runBlocking
-import nl.tudelft.booklab.catalogue.Book
-import nl.tudelft.booklab.catalogue.Title
+import nl.tudelft.booklab.catalogue.Identifier
 import nl.tudelft.booklab.recommender.author.AuthorRecommender
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -36,17 +35,17 @@ class AuthorRecommenderTest {
     @Test
     fun `default test`() {
         val collection = listOf(
-            Book(listOf(Title("title 1")), listOf("author 1"), listOf("isbn 1")),
-            Book(listOf(Title("title 2")), listOf("author 2"), listOf("isbn 2")),
-            Book(listOf(Title("title 3")), listOf("author 2"), listOf("isbn 3")),
-            Book(listOf(Title("title 4")), listOf("author 2"), listOf("isbn 4")),
-            Book(listOf(Title("title 5")), listOf("author 3"), listOf("isbn 5")),
-            Book(listOf(Title("title 6")), listOf("author 3"), listOf("isbn 6"))
+            TestBook(mapOf(Identifier.INTERNAL to "1"), "title 1", listOf("author 1")),
+            TestBook(mapOf(Identifier.INTERNAL to "2"), "title 2", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "3"), "title 3", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "4"), "title 4", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "5"), "title 5", listOf("author 3")),
+            TestBook(mapOf(Identifier.INTERNAL to "6"), "title 6", listOf("author 3"))
         )
         val candidates = listOf(
-            Book(listOf(Title("title 7")), listOf("author 1"), listOf("isbn 7")),
-            Book(listOf(Title("title 8")), listOf("author 2"), listOf("isbn 8")),
-            Book(listOf(Title("title 9")), listOf("author 3"), listOf("isbn 9"))
+            TestBook(mapOf(Identifier.INTERNAL to "7"), "title 7", listOf("author 1")),
+            TestBook(mapOf(Identifier.INTERNAL to "8"), "title 8", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "9"), "title 9", listOf("author 3"))
         )
 
         val results = runBlocking { recommender.recommend(collection.toSet(), candidates.toSet()) }
@@ -59,17 +58,17 @@ class AuthorRecommenderTest {
     @Test
     fun `collected books are discarded from candidates`() {
         val collection = listOf(
-            Book(listOf(Title("title 1")), listOf("author 1"), listOf("isbn 1")),
-            Book(listOf(Title("title 2")), listOf("author 2"), listOf("isbn 2")),
-            Book(listOf(Title("title 3")), listOf("author 2"), listOf("isbn 3")),
-            Book(listOf(Title("title 4")), listOf("author 2"), listOf("isbn 4")),
-            Book(listOf(Title("title 5")), listOf("author 3"), listOf("isbn 5")),
-            Book(listOf(Title("title 6")), listOf("author 3"), listOf("isbn 6"))
+            TestBook(mapOf(Identifier.INTERNAL to "1"), "title 1", listOf("author 1")),
+            TestBook(mapOf(Identifier.INTERNAL to "2"), "title 2", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "3"), "title 3", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "4"), "title 4", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "5"), "title 5", listOf("author 3")),
+            TestBook(mapOf(Identifier.INTERNAL to "6"), "title 6", listOf("author 3"))
         )
         val candidates = listOf(
-            Book(listOf(Title("title 6")), listOf("author 3"), listOf("isbn 6")),
-            Book(listOf(Title("title 8")), listOf("author 2"), listOf("isbn 8")),
-            Book(listOf(Title("title 9")), listOf("author 3"), listOf("isbn 9"))
+            TestBook(mapOf(Identifier.INTERNAL to "6"), "title 6", listOf("author 3")),
+            TestBook(mapOf(Identifier.INTERNAL to "8"), "title 8", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "9"), "title 9", listOf("author 3"))
         )
 
         val results = runBlocking { recommender.recommend(collection.toSet(), candidates.toSet()) }
@@ -80,9 +79,9 @@ class AuthorRecommenderTest {
     @Test
     fun `empty collection returns no recommendations`() {
         val candidates = listOf(
-            Book(listOf(Title("title 6")), listOf("author 3"), listOf("isbn 6")),
-            Book(listOf(Title("title 8")), listOf("author 2"), listOf("isbn 8")),
-            Book(listOf(Title("title 9")), listOf("author 3"), listOf("isbn 9"))
+            TestBook(mapOf(Identifier.INTERNAL to "6"), "title 6", listOf("author 3")),
+            TestBook(mapOf(Identifier.INTERNAL to "8"), "title 8", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "9"), "title 9", listOf("author 3"))
         )
 
         val results = runBlocking { recommender.recommend(emptySet(), candidates.toSet()) }
@@ -93,17 +92,17 @@ class AuthorRecommenderTest {
     @Test
     fun `books with authors not in the collection are discarded`() {
         val collection = listOf(
-            Book(listOf(Title("title 1")), listOf("author 1"), listOf("isbn 1")),
-            Book(listOf(Title("title 2")), listOf("author 2"), listOf("isbn 2")),
-            Book(listOf(Title("title 3")), listOf("author 2"), listOf("isbn 3")),
-            Book(listOf(Title("title 4")), listOf("author 2"), listOf("isbn 4")),
-            Book(listOf(Title("title 5")), listOf("author 3"), listOf("isbn 5")),
-            Book(listOf(Title("title 6")), listOf("author 3"), listOf("isbn 6"))
+            TestBook(mapOf(Identifier.INTERNAL to "1"), "title 1", listOf("author 1")),
+            TestBook(mapOf(Identifier.INTERNAL to "2"), "title 2", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "3"), "title 3", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "4"), "title 4", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "5"), "title 5", listOf("author 3")),
+            TestBook(mapOf(Identifier.INTERNAL to "6"), "title 6", listOf("author 3"))
         )
         val candidates = listOf(
-            Book(listOf(Title("title 7")), listOf("author 4"), listOf("isbn 7")),
-            Book(listOf(Title("title 8")), listOf("author 2"), listOf("isbn 8")),
-            Book(listOf(Title("title 9")), listOf("author 3"), listOf("isbn 9"))
+            TestBook(mapOf(Identifier.INTERNAL to "7"), "title 7", listOf("author 4")),
+            TestBook(mapOf(Identifier.INTERNAL to "8"), "title 8", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "9"), "title 9", listOf("author 3"))
         )
 
         val results = runBlocking { recommender.recommend(collection.toSet(), candidates.toSet()) }
@@ -114,12 +113,12 @@ class AuthorRecommenderTest {
     @Test
     fun `no candidates returns a empty list`() {
         val collection = listOf(
-            Book(listOf(Title("title 1")), listOf("author 1"), listOf("isbn 1")),
-            Book(listOf(Title("title 2")), listOf("author 2"), listOf("isbn 2")),
-            Book(listOf(Title("title 3")), listOf("author 2"), listOf("isbn 3")),
-            Book(listOf(Title("title 4")), listOf("author 2"), listOf("isbn 4")),
-            Book(listOf(Title("title 5")), listOf("author 3"), listOf("isbn 5")),
-            Book(listOf(Title("title 6")), listOf("author 3"), listOf("isbn 6"))
+            TestBook(mapOf(Identifier.INTERNAL to "1"), "title 1", listOf("author 1")),
+            TestBook(mapOf(Identifier.INTERNAL to "2"), "title 2", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "3"), "title 3", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "4"), "title 4", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "5"), "title 5", listOf("author 3")),
+            TestBook(mapOf(Identifier.INTERNAL to "6"), "title 6", listOf("author 3"))
         )
 
         val results = runBlocking { recommender.recommend(collection.toSet(), emptySet()) }
@@ -130,17 +129,17 @@ class AuthorRecommenderTest {
     @Test
     fun `remove duplicates from candidates`() {
         val collection = listOf(
-            Book(listOf(Title("title 1")), listOf("author 1"), listOf("isbn 1")),
-            Book(listOf(Title("title 2")), listOf("author 2"), listOf("isbn 2")),
-            Book(listOf(Title("title 3")), listOf("author 2"), listOf("isbn 3")),
-            Book(listOf(Title("title 4")), listOf("author 2"), listOf("isbn 4")),
-            Book(listOf(Title("title 5")), listOf("author 3"), listOf("isbn 5")),
-            Book(listOf(Title("title 6")), listOf("author 3"), listOf("isbn 6"))
+            TestBook(mapOf(Identifier.INTERNAL to "1"), "title 1", listOf("author 1")),
+            TestBook(mapOf(Identifier.INTERNAL to "2"), "title 2", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "3"), "title 3", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "4"), "title 4", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "5"), "title 5", listOf("author 3")),
+            TestBook(mapOf(Identifier.INTERNAL to "6"), "title 6", listOf("author 3"))
         )
         val candidates = listOf(
-            Book(listOf(Title("title 8")), listOf("author 2"), listOf("isbn 8")),
-            Book(listOf(Title("title 8")), listOf("author 2"), listOf("isbn 8")),
-            Book(listOf(Title("title 9")), listOf("author 3"), listOf("isbn 9"))
+            TestBook(mapOf(Identifier.INTERNAL to "8"), "title 8", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "8"), "title 8", listOf("author 2")),
+            TestBook(mapOf(Identifier.INTERNAL to "9"), "title 9", listOf("author 3"))
         )
 
         runBlocking {

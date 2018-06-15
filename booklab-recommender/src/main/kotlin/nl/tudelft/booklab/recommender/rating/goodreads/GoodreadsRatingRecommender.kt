@@ -45,7 +45,7 @@ class GoodreadsRatingRecommender(
     override suspend fun recommend(collection: Set<Book>, candidates: Set<Book>): List<Book> {
         val response = client.call {
             url(createUrl(candidates
-                .map { it.ids }
+                .map { it.identifiers.values }
                 .fold(emptyList()) { list, it -> list.plus(it) }))
             method = HttpMethod.Get
         }.response
@@ -53,12 +53,12 @@ class GoodreadsRatingRecommender(
         val ratings = parser.parse(response.content.toInputStream())
         val map = candidates
             .filter { !collection.contains(it) }
-            .filter { ratings.contains(it.ids) }
+            .filter { ratings.contains(it.identifiers.values.toList()) }
             .map { it to 0.0 }
             .toMap().toMutableMap()
         map.forEach {
-            if (ratings.contains(it.key.ids)) {
-                map.replace(it.key, ratings.get(it.key.ids).rating.toDouble())
+            if (ratings.contains(it.key.identifiers.values.toList())) {
+                map.replace(it.key, ratings.get(it.key.identifiers.values.toList()).rating.toDouble())
             }
         }
         return map
@@ -75,8 +75,7 @@ class GoodreadsRatingRecommender(
      * @return the string represented url
      */
     private fun createUrl(isbns: List<String>): String {
-        return "https://www.goodreads.com/book/review_counts.json?key=$key&isbns=" +
-            "${isbns.joinToString(",")}"
+        return "https://www.goodreads.com/book/review_counts.json?key=$key&isbns=${isbns.joinToString(",")}"
     }
 
     /**

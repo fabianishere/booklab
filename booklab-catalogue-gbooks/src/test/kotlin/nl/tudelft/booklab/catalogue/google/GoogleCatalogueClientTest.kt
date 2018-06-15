@@ -56,7 +56,7 @@ class GoogleCatalogueClientTest {
         runBlocking {
             val results = client.query("de ontdekking van de hemel", "harry mullish", 5)
 
-            assertEquals(5, results.size)
+            assertEquals(2, results.size)
         }
     }
 }
