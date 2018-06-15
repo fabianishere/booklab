@@ -18,11 +18,8 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
-    <!-- User -->
-    <bean class="nl.tudelft.booklab.backend.services.user.UserService" />
-
     <!-- Password -->
-    <bean class="nl.tudelft.booklab.backend.services.user.BCryptPasswordService" />
+    <bean id="password:password-service" class="nl.tudelft.booklab.backend.services.user.BCryptPasswordService" />
 
     <!-- The OAuthServer OAuth provider to use -->
     <bean id="oauth:server" class="io.ktor.auth.oauth2.OAuthServer">
@@ -56,7 +53,24 @@
     <bean id="oauth:handler:client-credentials" class="io.ktor.auth.oauth2.grant.ClientCredentialsGrantHandler" />
 
     <!-- Persistent user repository -->
-    <bean id="oauth:repository:user" class="nl.tudelft.booklab.backend.services.auth.PersistentUserRepository" />
+    <bean id="oauth:repository:user" class="nl.tudelft.booklab.backend.services.auth.PersistentUserRepository">
+        <constructor-arg name="userService" ref="user:user-service" />
+        <constructor-arg name="passwordService" ref="password:password-service" />
+    </bean>
+
+    <!-- Client Repository -->
+    <bean id="oauth:repository:client" class="nl.tudelft.booklab.backend.services.auth.ClientHashedTableRepositoryFactoryBean">
+        <constructor-arg name="config" ref="oauth:repository:client:configuration" />
+        <constructor-arg name="name" value="entries" />
+        <constructor-arg name="digester" ref="oauth:repository:client:digester" />
+    </bean>
+    <bean id="oauth:repository:client:configuration" class="nl.tudelft.booklab.backend.spring.KtorApplicationConfigFactoryBean">
+        <constructor-arg name="path" value="auth.clients" />
+    </bean>
+    <bean id="oauth:repository:client:digester" class="nl.tudelft.booklab.backend.services.auth.DigesterFunctionFactoryBean">
+        <constructor-arg name="algorithm" value="${auth.clients.digester.algorithm}" />
+        <constructor-arg name="salt" value="${auth.clients.digester.salt}" />
+    </bean>
 
     <!-- JWT token repository -->
     <bean id="oauth:repository:token" class="io.ktor.auth.oauth2.repository.JwtAccessTokenRepository">

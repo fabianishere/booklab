@@ -62,14 +62,14 @@ fun BeanDefinitionDsl.auth() {
         val application: Application = ref()
         ClientHashedTableRepository(
             digester = getDigestFunction("SHA-256", salt = "ktor"),
-            table = application.environment.config.config("auth").parseClients()
+            table = application.environment.config.config("auth.clients").parseClients("entries")
         )
     }
     bean("oauth:repository:user", isLazyInit = true) {
         val application: Application = ref()
         UserHashedTableRepository(
             digester = getDigestFunction("SHA-256", salt = "ktor"),
-            table = application.environment.config.config("auth").parseUsers()
+            table = application.environment.config.config("auth.users").parseUsers("entries")
         )
     }
 

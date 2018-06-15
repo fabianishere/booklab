@@ -15,17 +15,18 @@
   ~ limitations under the License.
   -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans.xsd">
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <!-- Tensorflow BookDetector -->
-    <bean name="detector" class="nl.tudelft.booklab.vision.detection.tensorflow.TensorflowBookDetector">
-        <constructor-arg name="input" value="classpath:/tensorflow/inception-book-model.pb" />
-        <constructor-arg name="estimatedSize" value="50000000" />
-    </bean>
+    <context:property-placeholder />
 
-    <!-- Google Vision TextExtractor -->
-    <bean class="com.google.cloud.vision.v1.ImageAnnotatorClient" factory-method="create" />
-    <bean name="extractor" class="nl.tudelft.booklab.vision.ocr.gvision.GoogleVisionTextExtractor" />
+    <!-- Base Spring configuration for Booklab backend -->
+    <bean id="routes" class="nl.tudelft.booklab.backend.BooklabRoutes" />
+
+    <import resource="classpath:spring/base/auth.xml" />
+    <import resource="classpath:spring/base/user.xml" />
+    <import resource="classpath:spring/base/vision.xml" />
 </beans>
