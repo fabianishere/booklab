@@ -18,6 +18,7 @@ package nl.tudelft.booklab.backend.api.v1
 
 import io.ktor.application.call
 import io.ktor.auth.oauth2.oauthTokenEndpoint
+import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.application
@@ -31,7 +32,10 @@ import nl.tudelft.booklab.backend.spring.inject
  */
 fun Route.meta() {
     route("/auth") { auth() }
-    get("/health") { call.respond(HealthCheck(true)) }
+    route("/health") {
+        get { call.respond(Success(HealthCheck(true))) }
+        handle { call.respond(HttpStatusCode.MethodNotAllowed, MethodNotAllowed()) }
+    }
 }
 
 /**

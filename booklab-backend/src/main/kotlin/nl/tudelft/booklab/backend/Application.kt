@@ -16,8 +16,10 @@
 
 package nl.tudelft.booklab.backend
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.module.SimpleModule
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.auth.Authentication
@@ -25,17 +27,21 @@ import io.ktor.auth.oauth2.oauth
 import io.ktor.features.CORS
 import io.ktor.features.Compression
 import io.ktor.features.ContentNegotiation
+import io.ktor.features.DataConversion
 import io.ktor.features.DefaultHeaders
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.jackson.jackson
+import io.ktor.locations.Locations
 import io.ktor.routing.Routing
 import io.ktor.routing.route
 import io.ktor.routing.routing
 import nl.tudelft.booklab.backend.api.v1.api
 import nl.tudelft.booklab.backend.ktor.Routes
+import nl.tudelft.booklab.backend.ktor.TypedConversionService
 import nl.tudelft.booklab.backend.services.auth.BooklabOAuthServer
 import nl.tudelft.booklab.backend.spring.inject
+import nl.tudelft.booklab.backend.spring.injectAll
 
 /**
  * Configure the given Ktor [Application] as Booklab backend application.
@@ -43,8 +49,33 @@ import nl.tudelft.booklab.backend.spring.inject
 fun Application.booklab() {
     install(DefaultHeaders)
     install(Compression)
-    install(ContentNegotiation) { configureJackson() }
-    install(Authentication) { configureOAuth(inject()) }
+    install(ContentNegotiation) {
+        jackson {
+            configure(SerializationFeature.INDENT_OUTPUT, true)
+            setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            registerModule(SimpleModule().apply {
+                val deserializers: List<StdDeserializer<*>> = injectAll()
+                for (deserializer in deserializers) {
+                    // We can suppress the cast as we know it must be correct for StdDeserializer instances since they
+                    // specify their types during construction.
+                    @Suppress("UNCHECKED_CAST")
+                    addDeserializer(deserializer.handledType() as Class<Any>, deserializer)
+                }
+            })
+        }
+    }
+    install(Authentication) {
+        oauth(inject<BooklabOAuthServer>())
+    }
+    install(Locations)
+    install(DataConversion) {
+        val services: List<TypedConversionService> = injectAll()
+        for (service in services) {
+            for (type in service.types) {
+                convert(type, service)
+            }
+        }
+    }
 
     // Allow the different hosts to connect to the REST API
     install(CORS) {
@@ -61,34 +92,13 @@ fun Application.booklab() {
 }
 
 /**
- * This type represents the routes of a Ktor application.
+ * Retrieve the base url of the server.
  */
-typealias ApplicationRoutes = Routing.() -> Unit
+val Application.baseUrl: String get() = environment.config.propertyOrNull("ktor.deployment.base-url")?.getString() ?: ""
 
 /**
  * The routes of the application.
  */
 internal fun Routing.routes() {
     route("/api") { api() }
-}
-
-/**
- * Configure the Jackson support for the [ContentNegotiation] feature.
- */
-internal fun ContentNegotiation.Configuration.configureJackson() {
-    jackson {
-        configure(SerializationFeature.INDENT_OUTPUT, true)
-        registerModule(JavaTimeModule())
-    }
-}
-
-/**
- * Configure the OAuth authentication providers for an application.
- *
- * @param oauth The [BooklabOAuthServer] to use for the authentication provider.
- */
-internal fun Authentication.Configuration.configureOAuth(server: BooklabOAuthServer) {
-    // Create an unnamed authentication provider for protecting resources using
-    // the OAuth authorization server
-    oauth(server)
 }

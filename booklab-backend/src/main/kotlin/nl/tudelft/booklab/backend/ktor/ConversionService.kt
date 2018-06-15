@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.backend.api.v1
+package nl.tudelft.booklab.backend.ktor
 
-import io.ktor.auth.authenticate
-import io.ktor.routing.Route
-import io.ktor.routing.route
+import io.ktor.util.ConversionService
+import kotlin.reflect.KClass
 
 /**
- * Describe the routes for the REST API of the BookLab backend.
+ * A [ConversionService] that specifies which types it can convert.
  */
-fun Route.api() {
-    authenticate {
-        route("detection") { detection() }
-        route("catalogue") { catalogue() }
-        route("users") { users() }
-    }
-    meta()
+interface TypedConversionService : ConversionService {
+    /**
+     * The list of types that can be converted.
+     */
+    val types: List<KClass<*>>
 }

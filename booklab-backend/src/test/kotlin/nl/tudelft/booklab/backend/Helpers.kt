@@ -54,15 +54,13 @@ fun createTestEnvironment(module: Application.() -> Unit): ApplicationEngineEnvi
  * @return The created context.
  */
 fun Application.createTestContext(builder: GenericApplicationContext.() -> Unit = {}): GenericApplicationContext {
-    val root = GenericApplicationContext {
+    val context = GenericApplicationContext {
         beans {
             auth()
         }.initialize(this)
-    }
-    root.refresh()
-    root.configure(this)
-    return GenericApplicationContext(root).apply {
-        configure(this@createTestContext)
+
         builder()
     }
+    context.configure(this)
+    return context
 }

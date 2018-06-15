@@ -17,37 +17,38 @@
 package nl.tudelft.booklab.backend.api.v1
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.doThrow
+import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.stub
 import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.auth.Authentication
 import io.ktor.auth.authenticate
-import io.ktor.features.ContentNegotiation
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.routing.Routing
 import io.ktor.routing.route
-import io.ktor.routing.routing
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
+import nl.tudelft.booklab.backend.booklab
 import nl.tudelft.booklab.backend.configureAuthorization
-import nl.tudelft.booklab.backend.configureJackson
-import nl.tudelft.booklab.backend.configureOAuth
 import nl.tudelft.booklab.backend.createTestContext
+import nl.tudelft.booklab.backend.ktor.Routes
 import nl.tudelft.booklab.backend.services.auth.PersistentUserRepository
-import nl.tudelft.booklab.backend.services.user.BCryptPasswordService
+import nl.tudelft.booklab.backend.services.password.BCryptPasswordService
+import nl.tudelft.booklab.backend.services.user.JacksonUserDeserializer
 import nl.tudelft.booklab.backend.services.user.User
+import nl.tudelft.booklab.backend.services.user.UserConversionService
 import nl.tudelft.booklab.backend.services.user.UserService
 import nl.tudelft.booklab.backend.services.user.UserServiceException
 import nl.tudelft.booklab.backend.spring.bootstrap
-import nl.tudelft.booklab.backend.spring.inject
 import nl.tudelft.booklab.backend.withTestEngine
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.support.beans
@@ -57,7 +58,7 @@ import org.springframework.context.support.beans
  *
  * @author Fabian Mastenbroek (f.s.mastenbroek@student.tudelft.nl)
  */
-internal class UserTest {
+internal class UserRegistrationTest {
     /**
      * The Jackson mapper class that maps JSON to objects.
      */
@@ -72,10 +73,13 @@ internal class UserTest {
     fun setUp() {
         mapper = jacksonObjectMapper()
         userService = mock()
+        mapper.registerModule(SimpleModule().apply {
+            addDeserializer(User::class.java, JacksonUserDeserializer(userService))
+        })
     }
 
     @Test
-    fun `registration - client should be authorized`() = withTestEngine({ module() }) {
+    fun `client should be authorized`() = withTestEngine({ module() }) {
         val request = handleRequest(HttpMethod.Post, "/api/users")
         with(request) {
             assertEquals(HttpStatusCode.Unauthorized, response.status())
@@ -83,7 +87,7 @@ internal class UserTest {
     }
 
     @Test
-    fun `registration - client should have correct scope`() = withTestEngine({ module() }) {
+    fun `client should have correct scope`() = withTestEngine({ module() }) {
         val request = handleRequest(HttpMethod.Post, "/api/users") {
             configureAuthorization("test", listOf("detection"))
         }
@@ -93,19 +97,19 @@ internal class UserTest {
     }
 
     @Test
-    fun `registration - empty body not allowed`() = withTestEngine({ module() }) {
+    fun `empty body not allowed`() = withTestEngine({ module() }) {
         val request = handleRequest(HttpMethod.Post, "/api/users") {
             configureAuthorization("test", listOf("user:registration"))
         }
         with(request) {
             assertEquals(HttpStatusCode.BadRequest, response.status())
-            val body: UserRegistrationFailure? = response.content?.let { mapper.readValue(it) }
-            assertEquals("invalid_request", body?.type)
+            val body: ApiResponse.Failure? = response.content?.let { mapper.readValue(it) }
+            assertEquals("invalid_request", body?.error?.code)
         }
     }
 
     @Test
-    fun `registration - user already exists`() = withTestEngine({ module() }) {
+    fun `user already exists`() = withTestEngine({ module() }) {
         userService.stub {
             on { save(any()) } doThrow(UserServiceException.UserAlreadyExistsException("test"))
         }
@@ -115,15 +119,15 @@ internal class UserTest {
         }
         with(request) {
             assertEquals(HttpStatusCode.Conflict, response.status())
-            val body: UserRegistrationFailure? = response.content?.let { mapper.readValue(it) }
-            assertEquals("invalid_request", body?.type)
+            val body: ApiResponse.Failure? = response.content?.let { mapper.readValue(it) }
+            assertEquals("resource_exists", body?.error?.code)
         }
     }
 
     @Test
-    fun `registration - invalid user information`() = withTestEngine({ module() }) {
+    fun `invalid user information`() = withTestEngine({ module() }) {
         userService.stub {
-            on { save(any()) } doThrow(UserServiceException.InvalidUserInformationException("test"))
+            on { save(any()) } doThrow(UserServiceException.InvalidInformationException("test"))
         }
         val request = handleRequest(HttpMethod.Post, "/api/users") {
             configureAuthorization("test", listOf("user:registration"))
@@ -131,48 +135,57 @@ internal class UserTest {
         }
         with(request) {
             assertEquals(HttpStatusCode.BadRequest, response.status())
-            val body: UserRegistrationFailure? = response.content?.let { mapper.readValue(it) }
-            assertEquals("invalid_request", body?.type)
+            val body: ApiResponse.Failure? = response.content?.let { mapper.readValue(it) }
+            assertEquals("invalid_request", body?.error?.code)
         }
     }
 
     @Test
-    fun `registration - success`() = withTestEngine({ module() }) {
+    fun success() = withTestEngine({ module() }) {
         userService.stub {
-            on { save(any()) } doReturn(User(1, "test@example.com", "hashed"))
+            val user = User(1, "test@example.com", "hashed")
+            on { save(any()) } doReturn user
+            on { findById(eq(1)) } doReturn user
         }
         val request = handleRequest(HttpMethod.Post, "/api/users") {
             configureAuthorization("test", listOf("user:registration"))
             setBody("""{ "email" : "test@example.com", "password" : "test" }""")
         }
         with(request) {
-            assertEquals(HttpStatusCode.OK, response.status())
-            val body: UserRegistrationSuccess? = response.content?.let { mapper.readValue(it) }
-            assertEquals(1, body?.id)
+            assertEquals(HttpStatusCode.Created, response.status())
+            val body: ApiResponse.Success<User>? = response.content?.let { mapper.readValue(it) }
+            assertEquals(1, body?.data?.id)
+            assertNotNull(response.headers["Location"])
         }
     }
 
     private fun Application.module() {
         val context = createTestContext {
             beans {
+                // Application routes
+                bean("routes") { Routes.from { routes() } }
+
                 bean("oauth:repository:user") { PersistentUserRepository(ref(), ref()) }
 
                 // UserService
-                bean { userService }
+                bean("user:user-service") { userService }
+                bean("user:conversion-service") { UserConversionService(ref()) }
 
                 // PasswordService
                 bean { BCryptPasswordService() }
             }.initialize(this)
         }
 
-        context.bootstrap(this) {
-            install(ContentNegotiation) { configureJackson() }
-            install(Authentication) { configureOAuth(inject()) }
+        context.bootstrap(this) { booklab() }
+    }
 
-            routing {
-                authenticate {
-                    route("/api/users") { users() }
-                }
+    /**
+     * The routes of the application.
+     */
+    private fun Routing.routes() {
+        authenticate {
+            route("/api/users") {
+                users()
             }
         }
     }

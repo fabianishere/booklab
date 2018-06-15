@@ -26,9 +26,11 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.contentType
 import io.ktor.server.testing.handleRequest
+import nl.tudelft.booklab.backend.api.v1.ApiResponse
 import nl.tudelft.booklab.backend.api.v1.HealthCheck
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -78,8 +80,8 @@ internal class SmokeTest {
             Assertions.assertEquals(HttpStatusCode.OK, response.status())
             Assertions.assertTrue(response.contentType().match(ContentType.Application.Json))
 
-            val response: HealthCheck? = response.content?.let { mapper.readValue(it) }
-            Assertions.assertEquals(HealthCheck(true), response)
+            val response: ApiResponse.Success<HealthCheck>? = response.content?.let { mapper.readValue(it) }
+            assertEquals(HealthCheck(true), response?.data)
         }
     }
 }

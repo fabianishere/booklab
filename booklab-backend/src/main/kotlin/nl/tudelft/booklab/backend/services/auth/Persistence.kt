@@ -17,7 +17,7 @@
 package nl.tudelft.booklab.backend.services.auth
 
 import io.ktor.auth.UserPasswordCredential
-import nl.tudelft.booklab.backend.services.user.PasswordService
+import nl.tudelft.booklab.backend.services.password.PasswordService
 import nl.tudelft.booklab.backend.services.user.User
 import nl.tudelft.booklab.backend.services.user.UserService
 import io.ktor.auth.oauth2.repository.UserRepository as OAuthUserRepository

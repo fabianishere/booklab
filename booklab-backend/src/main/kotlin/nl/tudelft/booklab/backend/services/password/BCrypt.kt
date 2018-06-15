@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.backend.api.v1
+package nl.tudelft.booklab.backend.services.password
 
-import io.ktor.auth.authenticate
-import io.ktor.routing.Route
-import io.ktor.routing.route
+import org.mindrot.jbcrypt.BCrypt
 
 /**
- * Describe the routes for the REST API of the BookLab backend.
+ * A [PasswordService] that uses the BCrypt algorithm for hashing passwords.
  */
-fun Route.api() {
-    authenticate {
-        route("detection") { detection() }
-        route("catalogue") { catalogue() }
-        route("users") { users() }
-    }
-    meta()
+class BCryptPasswordService : PasswordService {
+    override fun hash(password: String): String = BCrypt.hashpw(password, BCrypt.gensalt())
+    override fun verify(password: String, hash: String): Boolean = BCrypt.checkpw(password, hash)
 }

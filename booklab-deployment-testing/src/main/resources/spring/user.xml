@@ -16,16 +16,11 @@
   -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-        http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context
-        http://www.springframework.org/schema/context/spring-context.xsd">
-    <context:property-placeholder />
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <import resource="classpath:spring/base/base.xml" />
-    <import resource="classpath:spring/hibernate.xml" />
-    <import resource="classpath:spring/google-books.xml" />
-    <import resource="classpath:spring/google-vision.xml" />
-    <import resource="classpath:spring/tensorflow.xml" />
+    <bean id="user:user-service" class="nl.tudelft.booklab.backend.services.user.UserService" />
+
+    <!-- Ktor -->
+    <bean id="user:conversion-service" class="nl.tudelft.booklab.backend.services.user.UserConversionService" />
 </beans>
