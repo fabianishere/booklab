@@ -51,6 +51,12 @@ inline fun <reified T : Any> Application.inject(): T = applicationContext.getBea
 inline fun <reified T : Any> Application.inject(name: String): T = applicationContext.getBean(name, T::class.java)
 
 /**
+ * Inject all beans of a given type into the application.
+ */
+inline fun <reified T : Any> Application.injectAll(): List<T> =
+    applicationContext.getBeansOfType(T::class.java).values.toList()
+
+/**
  * Configure the Spring [GenericApplicationContext] for the given Ktor [Application].
  */
 fun GenericApplicationContext.configure(application: Application) {

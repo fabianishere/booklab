@@ -25,26 +25,23 @@ import com.google.api.services.books.Books
 import com.google.api.services.books.BooksRequestInitializer
 import com.google.cloud.vision.v1.ImageAnnotatorClient
 import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.auth.Authentication
-import io.ktor.features.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.routing.Routing
 import io.ktor.routing.route
-import io.ktor.routing.routing
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.createTestEnvironment
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
+import nl.tudelft.booklab.backend.booklab
 import nl.tudelft.booklab.backend.configureAuthorization
-import nl.tudelft.booklab.backend.configureJackson
-import nl.tudelft.booklab.backend.configureOAuth
 import nl.tudelft.booklab.backend.createTestContext
+import nl.tudelft.booklab.backend.ktor.Routes
+import nl.tudelft.booklab.backend.services.vision.BookDetection
 import nl.tudelft.booklab.backend.services.vision.VisionService
 import nl.tudelft.booklab.backend.spring.bootstrap
-import nl.tudelft.booklab.backend.spring.inject
 import nl.tudelft.booklab.catalogue.CatalogueClient
 import nl.tudelft.booklab.catalogue.google.GoogleCatalogueClient
 import nl.tudelft.booklab.vision.detection.BookDetector
@@ -67,7 +64,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.system.measureTimeMillis
 
 /**
- * This class provides a benchmark for the book recognition algorithms which we use to evaluate the
+ * This class provides a benchmark for the collection recognition algorithms which we use to evaluate the
  * accuracy of the algorithms.
  *
  */
@@ -146,8 +143,8 @@ sealed class DetectionBenchmark {
             }
             with(request) {
                 assertEquals(HttpStatusCode.OK, response.status())
-                val response: DetectionResult? = response.content?.let { mapper.readValue(it) }
-                val responseTitles = response?.results?.map { res -> res.matches.first().title }
+                val response: ApiResponse.Success<List<BookDetection>>? = response.content?.let { mapper.readValue(it) }
+                val responseTitles = response?.data?.map { res -> res.matches.first().title }
                 val intersection = titles.intersect(responseTitles!!)
 
                 correct += intersection.size
@@ -169,19 +166,22 @@ sealed class DetectionBenchmark {
     fun Application.test() {
         val context = createTestContext {
             beans {
+                // Application routes
+                bean("routes") { Routes.from { routes() } }
+
                 // VisionService
                 bean { VisionService(detector = ref(), extractor = ref(), catalogue = ref()) }
                 beans(this)
             }.initialize(this)
         }
-        context.bootstrap(this) {
-            install(ContentNegotiation) { configureJackson() }
-            install(Authentication) { configureOAuth(inject()) }
+        context.bootstrap(this) { booklab() }
+    }
 
-            routing {
-                route("/api/detection") { detection() }
-            }
-        }
+    /**
+     * The routes of the application.
+     */
+    private fun Routing.routes() {
+        route("/api/detection") { detection() }
     }
 
     /**

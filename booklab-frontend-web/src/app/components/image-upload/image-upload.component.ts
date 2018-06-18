@@ -50,7 +50,7 @@ export class ImageUploadComponent implements OnInit {
         this.results = [];
         this.http.putImg(files[0]).subscribe((res) => {
             this.searching = false;
-            this.results = res.results
+            this.results = res
                 .filter(b => b.matches.length > 0)
                 .map(b => new BookItem(Book.getBook(b.matches[0])));
         }, error => {

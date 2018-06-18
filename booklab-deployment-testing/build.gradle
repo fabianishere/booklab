@@ -38,6 +38,7 @@ dependencies {
 
     runtimeOnly "io.ktor:ktor-server-netty:$ktor_version"
     runtimeOnly "org.hibernate:hibernate-core:5.3.1.Final"
+    runtimeOnly "org.hibernate.validator:hibernate-validator:6.0.10.Final"
     runtimeOnly "com.h2database:h2:1.4.197"
     runtimeOnly "org.slf4j:slf4j-jdk14:1.7.25"
 }

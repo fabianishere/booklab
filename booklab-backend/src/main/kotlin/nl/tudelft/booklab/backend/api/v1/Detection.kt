@@ -16,7 +16,6 @@
 
 package nl.tudelft.booklab.backend.api.v1
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import io.ktor.application.application
 import io.ktor.application.call
 import io.ktor.application.log
@@ -29,7 +28,6 @@ import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.application
 import io.ktor.routing.post
-import nl.tudelft.booklab.backend.services.vision.BookDetection
 import nl.tudelft.booklab.backend.services.vision.VisionService
 import nl.tudelft.booklab.backend.spring.inject
 import nl.tudelft.booklab.vision.toMat
@@ -55,33 +53,13 @@ internal fun Route.detect(vision: VisionService) {
             application.log.warn("An error occurred while processing an image", e)
             call.respond(
                 HttpStatusCode.InternalServerError,
-                DetectionFailure("server_error", "An internal server error occurred.")
+                ServerError("An error occurred while processing the image.")
             )
             return@post
         }
 
-        call.respond(DetectionResult(response.size, response))
+        call.respond(Success(response, meta = mapOf("count" to response.size)))
     }
 
-    handle {
-        call.respond(
-            HttpStatusCode.MethodNotAllowed,
-            DetectionFailure("invalid_method", "The requested method is not allowed.")
-        )
-    }
+    handle { call.respond(HttpStatusCode.MethodNotAllowed, MethodNotAllowed()) }
 }
-
-/**
- * This class defines the shape of the detection results returned by the Detection API.
- */
-data class DetectionResult(val size: Int, val results: List<BookDetection>)
-
-/**
- * This class defines the shape of an error that occurred during the detection of books.
- */
-data class DetectionFailure(
-    @JsonProperty("error")
-    val type: String,
-    @JsonProperty("error_description")
-    val description: String
-)

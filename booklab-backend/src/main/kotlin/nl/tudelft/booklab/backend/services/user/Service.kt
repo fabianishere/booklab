@@ -16,29 +16,21 @@
 
 package nl.tudelft.booklab.backend.services.user
 
-import io.ktor.auth.Principal
-import org.springframework.data.repository.CrudRepository
 import org.springframework.transaction.annotation.Transactional
-import javax.persistence.Entity
-
-/**
- * An entity representing a user account.
- *
- * @property id The identifier of the user.
- * @property email The email address of the user.
- * @property password A hashed password associated with the user.
- */
-@Entity
-data class User(
-    val id: Int,
-    val email: String,
-    val password: String
-) : Principal
+import javax.validation.ConstraintViolationException
 
 /**
  * A service for managing users.
  */
 class UserService(private val repository: UserRepository) {
+    /**
+     * Find a user by its identifier.
+     *
+     * @return The user that has been found or `null`.
+     */
+    @Transactional
+    fun findById(id: Int): User? = repository.findById(id).orElse(null)
+
     /**
      * Find a user by its email address.
      *
@@ -46,6 +38,15 @@ class UserService(private val repository: UserRepository) {
      */
     @Transactional
     fun findByEmail(email: String): User? = repository.findByEmail(email)
+
+    /**
+     * Determine whether a user exists by its identifier.
+     *
+     * @param id The identifier of the user to find.
+     * @return `true` if the user exists, `false` otherwise.
+     */
+    @Transactional
+    fun existsById(id: Int): Boolean = repository.existsById(id)
 
     /**
      * Register the given user to the specified repository.
@@ -56,15 +57,14 @@ class UserService(private val repository: UserRepository) {
     @Transactional
     @Throws(UserServiceException::class)
     fun save(user: User): User {
-        // TODO validate whether email is correct
-        if (user.email.isBlank()) {
-            throw UserServiceException.InvalidUserInformationException("No valid email address given")
-        } else if (user.password.isEmpty()) {
-            throw UserServiceException.InvalidUserInformationException("No password given")
-        } else if (repository.existsByEmail(user.email)) {
+        if (repository.existsByEmail(user.email)) {
             throw UserServiceException.UserAlreadyExistsException("There exists already a user with email ${user.email}.")
         }
-        return repository.save(user)
+        try {
+            return repository.save(user)
+        } catch (e: ConstraintViolationException) {
+            throw UserServiceException.InvalidInformationException(e.message ?: "A constraint violation occurred")
+        }
     }
 }
 
@@ -75,27 +75,10 @@ sealed class UserServiceException(description: String) : Exception(description) 
     /**
      * The given information to register the user was invalid.
      */
-    class InvalidUserInformationException(description: String) : UserServiceException(description)
+    class InvalidInformationException(description: String) : UserServiceException(description)
 
     /**
      * This [UserServiceException] is thrown when the user already exists.
      */
     class UserAlreadyExistsException(description: String) : UserServiceException(description)
-}
-
-/**
- * A repository for accessing users from a database.
- */
-interface UserRepository : CrudRepository<User, Int> {
-    /**
-     * Find a user by its email address.
-     *
-     * @return The user that has been found or `null`.
-     */
-    fun findByEmail(email: String): User?
-
-    /**
-     * Determine whether the given user exists by email.
-     */
-    fun existsByEmail(email: String): Boolean
 }

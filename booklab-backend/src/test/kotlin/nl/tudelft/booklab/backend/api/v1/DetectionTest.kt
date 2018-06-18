@@ -37,6 +37,8 @@ import io.ktor.server.testing.setBody
 import nl.tudelft.booklab.backend.booklab
 import nl.tudelft.booklab.backend.configureAuthorization
 import nl.tudelft.booklab.backend.createTestContext
+import nl.tudelft.booklab.backend.ktor.Routes
+import nl.tudelft.booklab.backend.services.vision.BookDetection
 import nl.tudelft.booklab.backend.services.vision.VisionService
 import nl.tudelft.booklab.backend.spring.bootstrap
 import nl.tudelft.booklab.backend.withTestEngine
@@ -126,15 +128,14 @@ internal class DetectionTest {
         extractor.stub {
             on { batch(any()) } doReturn (listOf("De ontdekking van Harry Mulisch"))
         }
+        val book = Book(
+            id = "test",
+            identifiers = mapOf(Identifier.INTERNAL to "test"),
+            title = "The ontdekking van de hemel",
+            authors = listOf("Harry Mulisch")
+        )
         catalogue.stub {
-            onBlocking { query(anyString(), anyInt()) } doReturn (listOf(
-                Book(
-                    id = "test",
-                    identifiers = mapOf(Identifier.INTERNAL to "test"),
-                    title = "The ontdekking van de hemel",
-                    authors = listOf("Harry Mulisch")
-                )
-            ))
+            onBlocking { query(anyString(), anyInt()) } doReturn listOf(book)
         }
 
         val image = DetectionTest::class.java.getResourceAsStream("/test-image.jpg").readBytes()
@@ -145,9 +146,9 @@ internal class DetectionTest {
         }
         with(request) {
             assertEquals(HttpStatusCode.OK, response.status())
-            val response: DetectionResult? = response.content?.let { mapper.readValue(it) }
+            val response: ApiResponse.Success<List<BookDetection>>? = response.content?.let { mapper.readValue(it) }
             assertNotNull(response)
-            assertEquals(1, response?.size)
+            assertEquals(1, response?.data?.size)
         }
     }
 
@@ -160,15 +161,15 @@ internal class DetectionTest {
         extractor.stub {
             on { batch(any()) } doReturn (listOf("De ontdekking van Harry Mulisch"))
         }
+
+        val book = Book(
+            id = "test",
+            identifiers = mapOf(Identifier.INTERNAL to "test"),
+            title = "The ontdekking van de hemel",
+            authors = listOf("Harry Mulisch")
+        )
         catalogue.stub {
-            onBlocking { query(anyString(), anyInt()) } doReturn (listOf(
-                Book(
-                    id = "test",
-                    identifiers = mapOf(Identifier.INTERNAL to "test"),
-                    title = "The ontdekking van de hemel",
-                    authors = listOf("Harry Mulisch")
-                )
-            ))
+            onBlocking { query(anyString(), anyInt()) } doReturn listOf(book)
         }
 
         val image = DetectionTest::class.java.getResourceAsStream("/test-image.jpg").readBytes()
@@ -180,9 +181,9 @@ internal class DetectionTest {
         }
         with(request) {
             assertEquals(HttpStatusCode.OK, response.status())
-            val response: DetectionResult? = response.content?.let { mapper.readValue(it) }
+            val response: ApiResponse.Success<List<BookDetection>>? = response.content?.let { mapper.readValue(it) }
             assertNotNull(response)
-            assertEquals(1, response?.size)
+            assertEquals(1, response?.data?.size)
         }
     }
 
@@ -195,15 +196,14 @@ internal class DetectionTest {
         extractor.stub {
             on { batch(any()) } doReturn (listOf("De ontdekking van Harry Mulisch"))
         }
+        val book = Book(
+            id = "test",
+            identifiers = mapOf(Identifier.INTERNAL to "test"),
+            title = "The ontdekking van de hemel",
+            authors = listOf("Harry Mulisch")
+        )
         catalogue.stub {
-            onBlocking { query(anyString(), anyInt()) } doReturn (listOf(
-                Book(
-                    id = "test",
-                    identifiers = mapOf(Identifier.INTERNAL to "test"),
-                    title = "The ontdekking van de hemel",
-                    authors = listOf("Harry Mulisch")
-                )
-            ))
+            onBlocking { query(anyString(), anyInt()) } doReturn listOf(book)
         }
 
         val image = DetectionTest::class.java.getResourceAsStream("/test-image.jpg").readBytes()
@@ -215,9 +215,9 @@ internal class DetectionTest {
         }
         with(request) {
             assertEquals(HttpStatusCode.OK, response.status())
-            val response: DetectionResult? = response.content?.let { mapper.readValue(it) }
+            val response: ApiResponse.Success<List<BookDetection>>? = response.content?.let { mapper.readValue(it) }
             assertNotNull(response)
-            assertEquals(1, response?.size)
+            assertEquals(1, response?.data?.size)
         }
     }
 
@@ -226,15 +226,14 @@ internal class DetectionTest {
         extractor.stub {
             on { batch(any()) } doThrow RuntimeException("This is staged.")
         }
+        val book = Book(
+            id = "test",
+            identifiers = mapOf(Identifier.INTERNAL to "test"),
+            title = "The ontdekking van de hemel",
+            authors = listOf("Harry Mulisch")
+        )
         catalogue.stub {
-            onBlocking { query(anyString(), anyInt()) } doReturn (listOf(
-                Book(
-                    id = "test",
-                    identifiers = mapOf(Identifier.INTERNAL to "test"),
-                    title = "The ontdekking van de hemel",
-                    authors = listOf("Harry Mulisch")
-                )
-            ))
+            onBlocking { query(anyString(), anyInt()) } doReturn listOf(book)
         }
 
         val image = DetectionTest::class.java.getResourceAsStream("/test-image.jpg").readBytes()
@@ -245,9 +244,9 @@ internal class DetectionTest {
         }
         with(request) {
             assertEquals(HttpStatusCode.InternalServerError, response.status())
-            val response: DetectionFailure? = response.content?.let { mapper.readValue(it) }
+            val response: ApiResponse.Failure? = response.content?.let { mapper.readValue(it) }
             assertNotNull(response)
-            assertEquals("server_error", response?.type)
+            assertEquals("server_error", response?.error?.code)
         }
     }
 
@@ -265,7 +264,8 @@ internal class DetectionTest {
         val context = createTestContext {
             beans {
                 // Application routes
-                bean { { routing: Routing -> routing.routes() } }
+                bean("routes") { Routes.from { routes() } }
+
                 bean { detector }
                 bean { extractor }
                 bean { catalogue }

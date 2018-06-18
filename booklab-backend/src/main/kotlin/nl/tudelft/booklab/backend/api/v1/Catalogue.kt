@@ -17,37 +17,46 @@
 package nl.tudelft.booklab.backend.api.v1
 
 import io.ktor.application.call
+import io.ktor.auth.oauth2.scoped
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
-import io.ktor.response.respondText
 import io.ktor.routing.Route
 import io.ktor.routing.application
 import io.ktor.routing.get
 import nl.tudelft.booklab.backend.spring.inject
-import nl.tudelft.booklab.catalogue.Book
 import nl.tudelft.booklab.catalogue.CatalogueClient
 
 /**
- * Define catalogue search endpoints at the current route for the REST api.
+ * Define catalogue endpoints at the current route for the REST api.
  */
-fun Route.search() {
-    val catalogue: CatalogueClient = application.inject()
-
-    get {
-        val title = call.parameters["title"]
-        val author = call.parameters["author"]
-        val max = call.parameters["max"]?.toIntOrNull() ?: 5
-
-        if (title != null && author != null) {
-            val results = catalogue.query(title, author, max)
-            call.respond(SearchResults(results.size, results))
-        } else {
-            call.respondText("Failed to process query", status = HttpStatusCode.BadRequest)
-        }
+fun Route.catalogue() {
+    scoped("catalogue") {
+        catalogueCollection()
     }
 }
 
 /**
- * This class defines the shape of the search results returned by the Search API.
+ * Define an endpoint for querying the catalogue as collection.
  */
-data class SearchResults(val size: Int, val results: List<Book>)
+internal fun Route.catalogueCollection() {
+    val catalogue: CatalogueClient = application.inject()
+
+    get {
+        val query = call.parameters["query"]
+        val title = call.parameters["title"]
+        val author = call.parameters["author"]
+        val max = call.parameters["max"]?.toIntOrNull() ?: 5
+
+        if (query != null) {
+            val results = catalogue.query(query, max)
+            call.respond(Success(results, meta = mapOf("count" to results.size)))
+        } else if (title != null && author != null) {
+            val results = catalogue.query(title, author, max)
+            call.respond(Success(results, meta = mapOf("count" to results.size)))
+        } else {
+            call.respond(HttpStatusCode.BadRequest, InvalidRequest("No valid query given."))
+        }
+    }
+
+    handle { call.respond(HttpStatusCode.MethodNotAllowed, MethodNotAllowed()) }
+}

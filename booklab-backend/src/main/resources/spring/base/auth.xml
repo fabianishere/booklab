@@ -19,7 +19,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
     <!-- Password -->
-    <bean id="password:password-service" class="nl.tudelft.booklab.backend.services.user.BCryptPasswordService" />
+    <bean id="password:password-service" class="nl.tudelft.booklab.backend.services.password.BCryptPasswordService" />
 
     <!-- The OAuthServer OAuth provider to use -->
     <bean id="oauth:server" class="io.ktor.auth.oauth2.OAuthServer">

@@ -16,67 +16,74 @@
 
 package nl.tudelft.booklab.backend.api.v1
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import io.ktor.application.ApplicationCallPipeline
 import io.ktor.application.call
 import io.ktor.auth.oauth2.scoped
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.URLBuilder
+import io.ktor.http.takeFrom
+import io.ktor.locations.Location
+import io.ktor.locations.locations
 import io.ktor.request.receive
+import io.ktor.request.uri
+import io.ktor.response.header
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.accept
 import io.ktor.routing.application
 import io.ktor.routing.post
-import nl.tudelft.booklab.backend.services.user.PasswordService
+import io.ktor.routing.route
+import nl.tudelft.booklab.backend.baseUrl
+import nl.tudelft.booklab.backend.services.password.PasswordService
 import nl.tudelft.booklab.backend.services.user.User
 import nl.tudelft.booklab.backend.services.user.UserService
 import nl.tudelft.booklab.backend.services.user.UserServiceException
 import nl.tudelft.booklab.backend.spring.inject
+import io.ktor.locations.get as getLocation
 
 /**
  * Define user endpoints at the current route of the REST API.
  */
 fun Route.users() {
-    scoped("user:registration") { register() }
+    scoped("user:registration") { userCreate() }
+    scoped("user:profile") { userResource() }
 }
 
 /**
  * Define the endpoint to register a user.
  */
-internal fun Route.register() {
+internal fun Route.userCreate() {
     val users: UserService = application.inject()
     val passwordService: PasswordService = application.inject()
 
-    fun Route.handle() {
+    val post = {
         post {
             val registration: UserRegistrationRequest? = try { call.receive() } catch (e: Exception) { null }
 
             if (registration == null) {
-                call.respond(
-                    HttpStatusCode.BadRequest,
-                    UserRegistrationFailure("invalid_request", "The body of the request is invalid.")
-                )
+                call.respond(HttpStatusCode.BadRequest, InvalidRequest("The body of the request is invalid."))
                 return@post
             }
 
             try {
                 val user = users.save(User(0, registration.email, passwordService.hash(registration.password)))
-                call.respond(UserRegistrationSuccess(user.id, user.email))
-            } catch (e: UserServiceException.InvalidUserInformationException) {
-                call.respond(
-                    HttpStatusCode.BadRequest,
-                    UserRegistrationFailure("invalid_request", e.message)
-                )
+                val location = URLBuilder().run {
+                    takeFrom(this@userCreate.application.baseUrl)
+                    encodedPath = call.request.uri.removeSurrounding("/") + call.locations.href(UserProfileRoute(user))
+                    buildString()
+                }
+                call.response.header("Location", location)
+                call.respond(HttpStatusCode.Created, Success(user))
+            } catch (e: UserServiceException.InvalidInformationException) {
+                call.respond(HttpStatusCode.BadRequest, InvalidRequest(e.message))
             } catch (e: UserServiceException.UserAlreadyExistsException) {
-                call.respond(
-                    HttpStatusCode.Conflict,
-                    UserRegistrationFailure("invalid_request", e.message)
-                )
+                call.respond(HttpStatusCode.Conflict, ResourceAlreadyExists(e.message))
             }
         }
     }
 
-    accept(ContentType.Application.Json) { handle() }
+    accept(ContentType.Application.Json) { post() }
 }
 
 /**
@@ -88,19 +95,34 @@ internal fun Route.register() {
 data class UserRegistrationRequest(val email: String, val password: String)
 
 /**
- * This class defines the shape of a registration response that is sent to the client.
- *
- * @param id The unique identifier of the user.
- * @param email The email address of the user.
+ * Define the endpoint to view the profile of a user.
  */
-data class UserRegistrationSuccess(val id: Int, val email: String)
+internal fun Route.userResource() {
+    val userService: UserService = application.inject()
+
+    route("/{user}") {
+        intercept(ApplicationCallPipeline.Call) {
+            val param = call.parameters["user"]!!
+            val id = param.toIntOrNull()
+
+            if (id == null || !userService.existsById(id)) {
+                call.respond(HttpStatusCode.NotFound, NotFound("The user '$param' was not found on the server."))
+                finish()
+            }
+        }
+    }
+    getLocation<UserProfileRoute> { (user) ->
+        call.respond(Success(user))
+    }
+    route("/{user}") {
+        handle { call.respond(HttpStatusCode.MethodNotAllowed, MethodNotAllowed()) }
+    }
+}
 
 /**
- * This class defines the shape of an error that occurred during the registration of a user.
+ * A route to a user profile.
+ *
+ * @property user The user associated with the route or `null`.
  */
-data class UserRegistrationFailure(
-    @JsonProperty("error")
-    val type: String,
-    @JsonProperty("error_description")
-    val description: String?
-)
+@Location("/{user}")
+data class UserProfileRoute(val user: User?)

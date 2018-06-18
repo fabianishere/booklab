@@ -17,27 +17,24 @@
 package nl.tudelft.booklab.backend.api.v1
 
 import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.auth.Authentication
-import io.ktor.features.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
 import io.ktor.http.formUrlEncode
+import io.ktor.routing.Routing
 import io.ktor.routing.route
-import io.ktor.routing.routing
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
-import nl.tudelft.booklab.backend.configureJackson
-import nl.tudelft.booklab.backend.configureOAuth
+import nl.tudelft.booklab.backend.booklab
 import nl.tudelft.booklab.backend.createTestContext
+import nl.tudelft.booklab.backend.ktor.Routes
 import nl.tudelft.booklab.backend.spring.bootstrap
-import nl.tudelft.booklab.backend.spring.inject
 import nl.tudelft.booklab.backend.withTestEngine
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.springframework.context.support.beans
 
 /**
  * Unit test suite for the authentication endpoints of the BookLab REST api.
@@ -82,14 +79,19 @@ internal class AuthTest {
     }
 
     private fun Application.module() {
-        val context = createTestContext()
-        context.bootstrap(this) {
-            install(ContentNegotiation) { configureJackson() }
-            install(Authentication) { configureOAuth(inject()) }
-
-            routing {
-                route("/api/auth") { auth() }
-            }
+        val context = createTestContext {
+            beans {
+                // Application routes
+                bean("routes") { Routes.from { routes() } }
+            }.initialize(this)
         }
+        context.bootstrap(this) { booklab() }
+    }
+
+    /**
+     * The routes of the application.
+     */
+    private fun Routing.routes() {
+        route("/api") { meta() }
     }
 }

@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.backend.api.v1
+package nl.tudelft.booklab.backend.services.user
 
-import io.ktor.auth.authenticate
-import io.ktor.routing.Route
-import io.ktor.routing.route
+import org.springframework.data.repository.CrudRepository
 
 /**
- * Describe the routes for the REST API of the BookLab backend.
+ * A repository for accessing users from a database.
  */
-fun Route.api() {
-    authenticate {
-        route("detection") { detection() }
-        route("catalogue") { catalogue() }
-        route("users") { users() }
-    }
-    meta()
+interface UserRepository : CrudRepository<User, Int> {
+    /**
+     * Find a user by its email address.
+     *
+     * @return The user that has been found or `null`.
+     */
+    fun findByEmail(email: String): User?
+
+    /**
+     * Determine whether the given user exists by email.
+     */
+    fun existsByEmail(email: String): Boolean
 }

@@ -1,6 +1,5 @@
 import {UserService} from './user.service';
 import {OAuthService} from "angular-oauth2-oidc";
-import {Observable} from "rxjs/Observable";
 import {Book, Title} from "../../dataTypes";
 
 
@@ -25,7 +24,7 @@ describe('UserService should..', () => {
     });
 
     it('return its bookshelf', () => {
-        expect(user.getBookshelf()).toBeTruthy()
+        expect(user.getBookshelf()).toBeTruthy();
     });
 
     it('set its bookshelf', () => {
@@ -84,5 +83,4 @@ describe('UserService should..', () => {
         expect(authSpy.logOut.calls.count()).toBe(1);
 
     });
-
 });

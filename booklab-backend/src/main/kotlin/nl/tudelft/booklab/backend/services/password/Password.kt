@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.backend.services.user
-
-import org.mindrot.jbcrypt.BCrypt
+package nl.tudelft.booklab.backend.services.password
 
 /**
  * An interface for a class that manages passwords by hashing them and verifying whether existing passwords match.
@@ -37,12 +35,4 @@ interface PasswordService {
      * @return `true` if the password matches, `false` otherwise.
      */
     fun verify(password: String, hash: String): Boolean
-}
-
-/**
- * A [PasswordService] that uses the BCrypt algorithm for hashing passwords.
- */
-class BCryptPasswordService : PasswordService {
-    override fun hash(password: String): String = BCrypt.hashpw(password, BCrypt.gensalt())
-    override fun verify(password: String, hash: String): Boolean = BCrypt.checkpw(password, hash)
 }

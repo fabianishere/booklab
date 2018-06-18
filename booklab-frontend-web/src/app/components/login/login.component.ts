@@ -10,9 +10,9 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
     styleUrls: ['./login.component.less']
 })
 export class LoginComponent implements OnInit {
-
     @Input() public app;
     invalid = false;
+    error = {};
 
     constructor(private user: UserService, private router: Router, private activeModal: NgbActiveModal){
     }
@@ -32,13 +32,15 @@ export class LoginComponent implements OnInit {
         username = Secure.checkInput(username);
         password = Secure.checkInput(password);
         this.invalid = false;
-        this.user.login(username, password).then((resp) => {
-            if (resp) {
+        this.user.login(username, password).then((res) => {
+            if (res) {
                 this.user.loggedIn = true;
                 this.router.navigate(['upload']);
                 this.goBack();
             }
-        }, rejected => this.invalid = true);
+        }, (e) => {
+            this.invalid = true;
+            this.error = e.error;
+        });
     }
-
 }
