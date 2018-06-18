@@ -1,0 +1,776 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1F2193FE20CE9E6C005A632D /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = 1F2193FD20CE9E6C005A632D /* Cartfile */; };
+		1F21940120CE9F46005A632D /* Swinject.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F21940020CE9F46005A632D /* Swinject.framework */; };
+		1F21940420CE9F54005A632D /* URLNavigator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F21940320CE9F53005A632D /* URLNavigator.framework */; };
+		1F21940620CEA080005A632D /* SwinjectAutoregistration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F21940520CEA080005A632D /* SwinjectAutoregistration.framework */; };
+		1F21940820CEA0E1005A632D /* Routes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F21940720CEA0E1005A632D /* Routes.swift */; };
+		1F21940C20CEA46D005A632D /* SwinjectStoryboard.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F21940B20CEA46D005A632D /* SwinjectStoryboard.framework */; };
+		1F21940F20CEAA9C005A632D /* Swinject.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F21940E20CEAA9C005A632D /* Swinject.framework */; };
+		1F21941120CEAAA7005A632D /* URLMatcher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F21941020CEAAA7005A632D /* URLMatcher.framework */; };
+		1F30DFE020D6DB34000B0652 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F30DFDF20D6DB34000B0652 /* Info.plist */; };
+		1F30DFE520D6DB68000B0652 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F30DFE320D6DB68000B0652 /* LaunchScreen.storyboard */; };
+		1F30DFE620D6DB68000B0652 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F30DFE420D6DB68000B0652 /* Main.storyboard */; };
+		1F30DFE920D6DBE5000B0652 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F30DFE820D6DBE5000B0652 /* Info.plist */; };
+		1F30DFF020D6DC2B000B0652 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F30DFEF20D6DC2B000B0652 /* Info.plist */; };
+		1F35E72520CA01010076ED0D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F35E72420CA01010076ED0D /* AppDelegate.swift */; };
+		1F35E72720CA01010076ED0D /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F35E72620CA01010076ED0D /* art.scnassets */; };
+		1F35E72920CA01010076ED0D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F35E72820CA01010076ED0D /* ViewController.swift */; };
+		1F35E73C20CA01020076ED0D /* Booklab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F35E73B20CA01020076ED0D /* Booklab.swift */; };
+		1F35E74720CA01020076ED0D /* BooklabUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F35E74620CA01020076ED0D /* BooklabUITests.swift */; };
+		1F35E75920CA01C20076ED0D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F35E75820CA01C20076ED0D /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		1F35E73820CA01020076ED0D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1F35E71920CA01010076ED0D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1F35E72020CA01010076ED0D;
+			remoteInfo = Booklab;
+		};
+		1F35E74320CA01020076ED0D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1F35E71920CA01010076ED0D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1F35E72020CA01010076ED0D;
+			remoteInfo = Booklab;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		1F2193FD20CE9E6C005A632D /* Cartfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Cartfile; sourceTree = "<group>"; };
+		1F21940020CE9F46005A632D /* Swinject.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Swinject.framework; path = Carthage/Build/iOS/Swinject.framework; sourceTree = "<group>"; };
+		1F21940320CE9F53005A632D /* URLNavigator.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = URLNavigator.framework; path = Carthage/Build/iOS/URLNavigator.framework; sourceTree = "<group>"; };
+		1F21940520CEA080005A632D /* SwinjectAutoregistration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwinjectAutoregistration.framework; path = Carthage/Build/iOS/SwinjectAutoregistration.framework; sourceTree = "<group>"; };
+		1F21940720CEA0E1005A632D /* Routes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Routes.swift; sourceTree = "<group>"; };
+		1F21940B20CEA46D005A632D /* SwinjectStoryboard.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwinjectStoryboard.framework; path = Carthage/Build/iOS/SwinjectStoryboard.framework; sourceTree = "<group>"; };
+		1F21940E20CEAA9C005A632D /* Swinject.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Swinject.framework; path = Carthage/Build/iOS/Swinject.framework; sourceTree = "<group>"; };
+		1F21941020CEAAA7005A632D /* URLMatcher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = URLMatcher.framework; path = Carthage/Build/iOS/URLMatcher.framework; sourceTree = "<group>"; };
+		1F30DFDF20D6DB34000B0652 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1F30DFE320D6DB68000B0652 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		1F30DFE420D6DB68000B0652 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		1F30DFE820D6DBE5000B0652 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1F30DFEF20D6DC2B000B0652 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1F35E72120CA01010076ED0D /* Booklab.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Booklab.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F35E72420CA01010076ED0D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		1F35E72620CA01010076ED0D /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
+		1F35E72820CA01010076ED0D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		1F35E73720CA01020076ED0D /* BooklabTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BooklabTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F35E73B20CA01020076ED0D /* Booklab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Booklab.swift; sourceTree = "<group>"; };
+		1F35E74220CA01020076ED0D /* BooklabUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BooklabUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1F35E74620CA01020076ED0D /* BooklabUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooklabUITests.swift; sourceTree = "<group>"; };
+		1F35E75820CA01C20076ED0D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		1F35E71E20CA01010076ED0D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F21940120CE9F46005A632D /* Swinject.framework in Frameworks */,
+				1F21940420CE9F54005A632D /* URLNavigator.framework in Frameworks */,
+				1F21940C20CEA46D005A632D /* SwinjectStoryboard.framework in Frameworks */,
+				1F21941120CEAAA7005A632D /* URLMatcher.framework in Frameworks */,
+				1F21940F20CEAA9C005A632D /* Swinject.framework in Frameworks */,
+				1F21940620CEA080005A632D /* SwinjectAutoregistration.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1F35E73420CA01020076ED0D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1F35E73F20CA01020076ED0D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1F21940220CE9F53005A632D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1F21941020CEAAA7005A632D /* URLMatcher.framework */,
+				1F21940E20CEAA9C005A632D /* Swinject.framework */,
+				1F21940B20CEA46D005A632D /* SwinjectStoryboard.framework */,
+				1F21940520CEA080005A632D /* SwinjectAutoregistration.framework */,
+				1F21940320CE9F53005A632D /* URLNavigator.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		1F30DFDE20D6DB1F000B0652 /* config */ = {
+			isa = PBXGroup;
+			children = (
+				1F30DFDF20D6DB34000B0652 /* Info.plist */,
+			);
+			path = config;
+			sourceTree = "<group>";
+		};
+		1F30DFE220D6DB51000B0652 /* views */ = {
+			isa = PBXGroup;
+			children = (
+				1F30DFE320D6DB68000B0652 /* LaunchScreen.storyboard */,
+				1F30DFE420D6DB68000B0652 /* Main.storyboard */,
+			);
+			path = views;
+			sourceTree = "<group>";
+		};
+		1F30DFE720D6DBC2000B0652 /* config */ = {
+			isa = PBXGroup;
+			children = (
+				1F30DFE820D6DBE5000B0652 /* Info.plist */,
+			);
+			path = config;
+			sourceTree = "<group>";
+		};
+		1F30DFEA20D6DC01000B0652 /* config */ = {
+			isa = PBXGroup;
+			children = (
+				1F30DFEF20D6DC2B000B0652 /* Info.plist */,
+			);
+			path = config;
+			sourceTree = "<group>";
+		};
+		1F35E71820CA01010076ED0D = {
+			isa = PBXGroup;
+			children = (
+				1F2193FD20CE9E6C005A632D /* Cartfile */,
+				1F35E75420CA01920076ED0D /* src */,
+				1F35E72220CA01010076ED0D /* build */,
+				1F21940220CE9F53005A632D /* Frameworks */,
+			);
+			sourceTree = "<group>";
+			usesTabs = 0;
+		};
+		1F35E72220CA01010076ED0D /* build */ = {
+			isa = PBXGroup;
+			children = (
+				1F21940020CE9F46005A632D /* Swinject.framework */,
+				1F35E72120CA01010076ED0D /* Booklab.app */,
+				1F35E73720CA01020076ED0D /* BooklabTests.xctest */,
+				1F35E74220CA01020076ED0D /* BooklabUITests.xctest */,
+			);
+			name = build;
+			sourceTree = "<group>";
+		};
+		1F35E72320CA01010076ED0D /* Booklab */ = {
+			isa = PBXGroup;
+			children = (
+				1F35E72420CA01010076ED0D /* AppDelegate.swift */,
+				1F35E72820CA01010076ED0D /* ViewController.swift */,
+				1F21940720CEA0E1005A632D /* Routes.swift */,
+			);
+			path = Booklab;
+			sourceTree = "<group>";
+		};
+		1F35E73A20CA01020076ED0D /* BooklabTests */ = {
+			isa = PBXGroup;
+			children = (
+				1F35E73B20CA01020076ED0D /* Booklab.swift */,
+			);
+			path = BooklabTests;
+			sourceTree = "<group>";
+		};
+		1F35E74520CA01020076ED0D /* BooklabUITests */ = {
+			isa = PBXGroup;
+			children = (
+				1F35E74620CA01020076ED0D /* BooklabUITests.swift */,
+			);
+			path = BooklabUITests;
+			sourceTree = "<group>";
+		};
+		1F35E75420CA01920076ED0D /* src */ = {
+			isa = PBXGroup;
+			children = (
+				1F35E75F20CA023F0076ED0D /* ui-test */,
+				1F35E75B20CA01FE0076ED0D /* test */,
+				1F35E75520CA01970076ED0D /* main */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
+		1F35E75520CA01970076ED0D /* main */ = {
+			isa = PBXGroup;
+			children = (
+				1F35E75720CA01A90076ED0D /* resources */,
+				1F35E75620CA01A40076ED0D /* swift */,
+			);
+			path = main;
+			sourceTree = "<group>";
+		};
+		1F35E75620CA01A40076ED0D /* swift */ = {
+			isa = PBXGroup;
+			children = (
+				1F35E72320CA01010076ED0D /* Booklab */,
+			);
+			path = swift;
+			sourceTree = "<group>";
+		};
+		1F35E75720CA01A90076ED0D /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				1F30DFE220D6DB51000B0652 /* views */,
+				1F30DFDE20D6DB1F000B0652 /* config */,
+				1F35E75A20CA01E00076ED0D /* assets */,
+			);
+			path = resources;
+			sourceTree = "<group>";
+		};
+		1F35E75A20CA01E00076ED0D /* assets */ = {
+			isa = PBXGroup;
+			children = (
+				1F35E75820CA01C20076ED0D /* Assets.xcassets */,
+				1F35E72620CA01010076ED0D /* art.scnassets */,
+			);
+			path = assets;
+			sourceTree = "<group>";
+		};
+		1F35E75B20CA01FE0076ED0D /* test */ = {
+			isa = PBXGroup;
+			children = (
+				1F35E75D20CA02100076ED0D /* resources */,
+				1F35E75C20CA02050076ED0D /* swift */,
+			);
+			path = test;
+			sourceTree = "<group>";
+		};
+		1F35E75C20CA02050076ED0D /* swift */ = {
+			isa = PBXGroup;
+			children = (
+				1F35E73A20CA01020076ED0D /* BooklabTests */,
+			);
+			path = swift;
+			sourceTree = "<group>";
+		};
+		1F35E75D20CA02100076ED0D /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				1F30DFE720D6DBC2000B0652 /* config */,
+			);
+			path = resources;
+			sourceTree = "<group>";
+		};
+		1F35E75F20CA023F0076ED0D /* ui-test */ = {
+			isa = PBXGroup;
+			children = (
+				1F35E76120CA024D0076ED0D /* resources */,
+				1F35E76020CA02450076ED0D /* swift */,
+			);
+			path = "ui-test";
+			sourceTree = "<group>";
+		};
+		1F35E76020CA02450076ED0D /* swift */ = {
+			isa = PBXGroup;
+			children = (
+				1F35E74520CA01020076ED0D /* BooklabUITests */,
+			);
+			path = swift;
+			sourceTree = "<group>";
+		};
+		1F35E76120CA024D0076ED0D /* resources */ = {
+			isa = PBXGroup;
+			children = (
+				1F30DFEA20D6DC01000B0652 /* config */,
+			);
+			path = resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		1F35E72020CA01010076ED0D /* Booklab */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1F35E74B20CA01020076ED0D /* Build configuration list for PBXNativeTarget "Booklab" */;
+			buildPhases = (
+				1F35E71D20CA01010076ED0D /* Sources */,
+				1F35E71E20CA01010076ED0D /* Frameworks */,
+				1F35E71F20CA01010076ED0D /* Resources */,
+				1F2193FF20CE9EAD005A632D /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Booklab;
+			productName = Booklab;
+			productReference = 1F35E72120CA01010076ED0D /* Booklab.app */;
+			productType = "com.apple.product-type.application";
+		};
+		1F35E73620CA01020076ED0D /* BooklabTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1F35E74E20CA01020076ED0D /* Build configuration list for PBXNativeTarget "BooklabTests" */;
+			buildPhases = (
+				1F35E73320CA01020076ED0D /* Sources */,
+				1F35E73420CA01020076ED0D /* Frameworks */,
+				1F35E73520CA01020076ED0D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1F35E73920CA01020076ED0D /* PBXTargetDependency */,
+			);
+			name = BooklabTests;
+			productName = BooklabTests;
+			productReference = 1F35E73720CA01020076ED0D /* BooklabTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		1F35E74120CA01020076ED0D /* BooklabUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1F35E75120CA01020076ED0D /* Build configuration list for PBXNativeTarget "BooklabUITests" */;
+			buildPhases = (
+				1F35E73E20CA01020076ED0D /* Sources */,
+				1F35E73F20CA01020076ED0D /* Frameworks */,
+				1F35E74020CA01020076ED0D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1F35E74420CA01020076ED0D /* PBXTargetDependency */,
+			);
+			name = BooklabUITests;
+			productName = BooklabUITests;
+			productReference = 1F35E74220CA01020076ED0D /* BooklabUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		1F35E71920CA01010076ED0D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 0940;
+				LastUpgradeCheck = 0940;
+				ORGANIZATIONNAME = "TU Delft";
+				TargetAttributes = {
+					1F35E72020CA01010076ED0D = {
+						CreatedOnToolsVersion = 9.4;
+					};
+					1F35E73620CA01020076ED0D = {
+						CreatedOnToolsVersion = 9.4;
+						TestTargetID = 1F35E72020CA01010076ED0D;
+					};
+					1F35E74120CA01020076ED0D = {
+						CreatedOnToolsVersion = 9.4;
+						TestTargetID = 1F35E72020CA01010076ED0D;
+					};
+				};
+			};
+			buildConfigurationList = 1F35E71C20CA01010076ED0D /* Build configuration list for PBXProject "Booklab" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 1F35E71820CA01010076ED0D;
+			productRefGroup = 1F35E72220CA01010076ED0D /* build */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				1F35E72020CA01010076ED0D /* Booklab */,
+				1F35E73620CA01020076ED0D /* BooklabTests */,
+				1F35E74120CA01020076ED0D /* BooklabUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		1F35E71F20CA01010076ED0D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F2193FE20CE9E6C005A632D /* Cartfile in Resources */,
+				1F35E72720CA01010076ED0D /* art.scnassets in Resources */,
+				1F30DFE020D6DB34000B0652 /* Info.plist in Resources */,
+				1F30DFE620D6DB68000B0652 /* Main.storyboard in Resources */,
+				1F30DFE520D6DB68000B0652 /* LaunchScreen.storyboard in Resources */,
+				1F35E75920CA01C20076ED0D /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1F35E73520CA01020076ED0D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F30DFE920D6DBE5000B0652 /* Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1F35E74020CA01020076ED0D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F30DFF020D6DC2B000B0652 /* Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		1F2193FF20CE9EAD005A632D /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/Carthage/Build/iOS/Swinject.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/SwinjectAutoregistration.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/SwinjectStoryboard.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/URLNavigator.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/URLMatcher.framework",
+			);
+			outputPaths = (
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Swinject.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SwinjectAutoregistration.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SwinjectStoryboard.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/URLNavigator.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/URLMatcher.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/carthage copy-frameworks";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		1F35E71D20CA01010076ED0D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F35E72920CA01010076ED0D /* ViewController.swift in Sources */,
+				1F21940820CEA0E1005A632D /* Routes.swift in Sources */,
+				1F35E72520CA01010076ED0D /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1F35E73320CA01020076ED0D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F35E73C20CA01020076ED0D /* Booklab.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1F35E73E20CA01020076ED0D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1F35E74720CA01020076ED0D /* BooklabUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		1F35E73920CA01020076ED0D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1F35E72020CA01010076ED0D /* Booklab */;
+			targetProxy = 1F35E73820CA01020076ED0D /* PBXContainerItemProxy */;
+		};
+		1F35E74420CA01020076ED0D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1F35E72020CA01010076ED0D /* Booklab */;
+			targetProxy = 1F35E74320CA01020076ED0D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		1F35E74920CA01020076ED0D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		1F35E74A20CA01020076ED0D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		1F35E74C20CA01020076ED0D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = JD7Y55HTTY;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = "$(SRCROOT)/src/main/resources/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = nl.tudelft.booklab.Booklab;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		1F35E74D20CA01020076ED0D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = JD7Y55HTTY;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
+				INFOPLIST_FILE = "$(SRCROOT)/src/main/resources/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = nl.tudelft.booklab.Booklab;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		1F35E74F20CA01020076ED0D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = JD7Y55HTTY;
+				INFOPLIST_FILE = BooklabTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = nl.tudelft.booklab.BooklabTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Booklab.app/Booklab";
+			};
+			name = Debug;
+		};
+		1F35E75020CA01020076ED0D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = JD7Y55HTTY;
+				INFOPLIST_FILE = BooklabTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = nl.tudelft.booklab.BooklabTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Booklab.app/Booklab";
+			};
+			name = Release;
+		};
+		1F35E75220CA01020076ED0D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = JD7Y55HTTY;
+				INFOPLIST_FILE = BooklabUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = nl.tudelft.booklab.BooklabUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Booklab;
+			};
+			name = Debug;
+		};
+		1F35E75320CA01020076ED0D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = JD7Y55HTTY;
+				INFOPLIST_FILE = BooklabUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = nl.tudelft.booklab.BooklabUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = Booklab;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1F35E71C20CA01010076ED0D /* Build configuration list for PBXProject "Booklab" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F35E74920CA01020076ED0D /* Debug */,
+				1F35E74A20CA01020076ED0D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1F35E74B20CA01020076ED0D /* Build configuration list for PBXNativeTarget "Booklab" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F35E74C20CA01020076ED0D /* Debug */,
+				1F35E74D20CA01020076ED0D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1F35E74E20CA01020076ED0D /* Build configuration list for PBXNativeTarget "BooklabTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F35E74F20CA01020076ED0D /* Debug */,
+				1F35E75020CA01020076ED0D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1F35E75120CA01020076ED0D /* Build configuration list for PBXNativeTarget "BooklabUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1F35E75220CA01020076ED0D /* Debug */,
+				1F35E75320CA01020076ED0D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 1F35E71920CA01010076ED0D /* Project object */;
+}
