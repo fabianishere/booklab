@@ -1,6 +1,5 @@
 import {BookshelfComponent} from './bookshelf.component';
 import {UserService} from "../../services/user/user.service";
-import {Book, Title} from "../../dataTypes";
 
 describe('BookshelfComponent should..', () => {
     let component: BookshelfComponent;
@@ -17,7 +16,7 @@ describe('BookshelfComponent should..', () => {
     });
 
     it('delete a book', () => {
-        const book: Book = new Book([new Title('test', 'MAIN')], ['auth'], ['123']);
+        const book = { title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} };
         component.deleteBook(book);
         expect(user.deleteFromBookshelf.calls.count()).toBe(1);
         expect(user.deleteFromBookshelf.calls.mostRecent().args[0]).toBe(book);

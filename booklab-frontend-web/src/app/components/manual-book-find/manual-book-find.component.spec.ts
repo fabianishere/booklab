@@ -31,11 +31,14 @@ describe('ManualBookFindComponent should..', () => {
     });
 
     it('add a book to the bookshelf', () => {
-        const book = new BookItem(Book.create('Kaas', 'Willem Elsschot', '123456'));
-        component.results = [book];
+        const books = [
+            { title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} },
+            { title: 'test2', authors: ['auth'], identifiers: { internal: '1233' }, categories: [], images: {} },
+        ];
+        component.results = [new BookItem(books[0])];
         component.addManualToBookshelf();
         expect(user.addToBookshelf.calls.count()).toBe(1);
-        expect(user.addToBookshelf.calls.mostRecent().args[0]).toEqual(book.book);
+        expect(user.addToBookshelf.calls.mostRecent().args[0]).toEqual(books[0]);
 
     })
 });

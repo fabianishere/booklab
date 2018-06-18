@@ -55,67 +55,66 @@ export interface HealthCheck {
 }
 
 /**
- * Class to model a book title.
- */
-export class Title {
-
-    /**
-     * Constructor for Title.
-     * @param {string} value
-     * @param {string} type
-     */
-    constructor(public value: string,
-                public type: string) {
-    }
-}
-
-/**
  * Class to model a book.
  */
-export class Book {
+export interface Book {
+    /**
+     * The identifiers of the book.
+     */
+    identifiers: any;
 
     /**
-     * Constructor for Book.
-     * @param {Title[]} titles
-     * @param {string[]} authors
-     * @param {string[]} ids
-     * @param {boolean} isSearched
+     * The title of the book.
      */
-    constructor(public titles: Title[],
-                public authors: string[],
-                public ids: string[],
-                public isSearched: boolean = false) {
+    title: string;
+
+    /**
+     * The subtitle of the book.
+     */
+    subtitle?: string;
+
+    /**
+     * The authors of the book.
+     */
+    authors: string[];
+
+    /**
+     * The publisher of the book.
+     */
+    publisher?: string;
+
+    /**
+     * The categories of the book.
+     */
+    categories: string[];
+
+    /**
+     * The date of publishing of the book.
+     */
+    published?: string;
+
+    /**
+     * A description of the book.
+     */
+    description?: string;
+
+    /**
+     * The language of the book.
+     */
+    language?: string;
+
+    /**
+     * The ratings of the book.
+     */
+    ratings?: {
+        average: number;
+        count: number;
     }
 
     /**
-     * Returns a new book with given data.
-     * @param b container for data in the book
-     * @returns {Book} a new Book
+     * A map of images of the book.
      */
-    static getBook(b: any): Book {
-        if (isUndefined(b)) {
-            return new Book([new Title('Didn\'t find your book!', 'MAIN')], [''], ['']);
-        }
-        return new Book(b.titles, b.authors, b.ids);
-    }
-
-    static create(title: string, author: string, id: string): Book {
-        return new Book([new Title(title, 'MAIN')], [author], [id]);
-    }
-
-
-    /**
-     * Searches the main title of the book.
-     * @returns {string} result of the search, string is empty if the book didn't have a main title
-     */
-    getMainTitle(): string {
-        if (this.titles.length === 0) {
-            return '';
-        }
-        const res = this.titles.find(t => t.type === 'MAIN');
-        return isUndefined(res) ? '' : res.value;
-    }
-
+    images: any;
 }
 
 /**
@@ -139,7 +138,6 @@ export class BookItem {
 }
 
 export class Secure {
-
     static checkInput(input: string): string {
         let res: string;
         res = input.replace('%0d%0a', '');

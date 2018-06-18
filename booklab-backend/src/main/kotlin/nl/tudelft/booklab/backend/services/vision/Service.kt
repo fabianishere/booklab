@@ -17,8 +17,8 @@
 package nl.tudelft.booklab.backend.services.vision
 
 import kotlinx.coroutines.experimental.async
+import nl.tudelft.booklab.backend.services.catalogue.CatalogueService
 import nl.tudelft.booklab.catalogue.Book
-import nl.tudelft.booklab.catalogue.CatalogueClient
 import nl.tudelft.booklab.vision.detection.BookDetector
 import nl.tudelft.booklab.vision.ocr.TextExtractor
 import org.opencv.core.Mat
@@ -29,12 +29,12 @@ import org.opencv.core.Rect
  *
  * @property detector The detector to detect the books in an image.
  * @property extractor The extractor to extract the text from the image.
- * @property catalogue The catalogue configuration to cross match the books.
+ * @property catalogue The catalogue service to cross match the books.
  */
 class VisionService(
     private val detector: BookDetector,
     private val extractor: TextExtractor,
-    private val catalogue: CatalogueClient
+    private val catalogue: CatalogueService
 ) {
     /**
      * Detect the books in the given image.

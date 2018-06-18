@@ -21,17 +21,17 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.stub
 import kotlinx.coroutines.experimental.runBlocking
-import nl.tudelft.booklab.backend.api.v1.Book
-import nl.tudelft.booklab.catalogue.CatalogueClient
+import nl.tudelft.booklab.backend.services.catalogue.Book
+import nl.tudelft.booklab.backend.services.catalogue.CatalogueService
 import nl.tudelft.booklab.catalogue.Identifier
 import nl.tudelft.booklab.vision.detection.BookDetector
 import nl.tudelft.booklab.vision.ocr.TextExtractor
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.opencv.core.Mat
 import org.opencv.core.Rect
 import org.opencv.core.Size
-import kotlin.test.assertEquals
 
 /**
  * Test suite for the [VisionService] class.
@@ -50,7 +50,7 @@ internal class VisionServiceTest {
     /**
      * The [CatalogueService] to use.
      */
-    private lateinit var catalogue: CatalogueClient
+    private lateinit var catalogue: CatalogueService
 
     /**
      * The [VisionService] to test.

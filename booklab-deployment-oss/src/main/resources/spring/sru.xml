@@ -19,7 +19,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
     <!-- Service -->
-    <bean name="catalogue:catalogue-service" class="nl.tudelft.booklab.catalogue.sru.SruCatalogueClient">
+    <bean name="catalogue:client" class="nl.tudelft.booklab.catalogue.sru.SruCatalogueClient">
         <constructor-arg name="baseUrl" value="${catalogue.sru.url}" />
     </bean>
 </beans>

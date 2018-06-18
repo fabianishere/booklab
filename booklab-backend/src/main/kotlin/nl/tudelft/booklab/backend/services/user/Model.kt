@@ -16,8 +16,10 @@
 
 package nl.tudelft.booklab.backend.services.user
 
+import com.fasterxml.jackson.annotation.JsonBackReference
 import com.fasterxml.jackson.annotation.JsonIgnore
 import io.ktor.auth.Principal
+import nl.tudelft.booklab.backend.services.collection.BookCollection
 import javax.persistence.Entity
 import javax.validation.constraints.Email
 
@@ -35,5 +37,7 @@ data class User(
     @Email(message = "Please provide a valid email address for this user")
     val email: String,
     @JsonIgnore
-    val password: String
+    val password: String,
+    @JsonBackReference
+    val collections: List<BookCollection> = emptyList()
 ) : Principal

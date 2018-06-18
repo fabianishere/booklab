@@ -1,6 +1,6 @@
 import {UserService} from './user.service';
 import {OAuthService} from "angular-oauth2-oidc";
-import {Book, Title} from "../../dataTypes";
+import {Book} from "../../dataTypes";
 
 
 describe('UserService should..', () => {
@@ -8,7 +8,7 @@ describe('UserService should..', () => {
     let user: UserService;
 
     function initBookShelf(): Book[] {
-        const book = new Book([new Title('test', 'MAIN')], ['auth'], ['123']);
+        const book: Book = { title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} };
         user.setBookshelf([book]);
         return [book];
     }
@@ -30,8 +30,10 @@ describe('UserService should..', () => {
     it('set its bookshelf', () => {
         let result: Book[];
         user.getBookshelf().subscribe(b => result = b);
-        const books = [new Book([new Title('test', 'MAIN')], ['auth'], ['123']),
-            new Book([new Title('test2', 'MAIN')], ['auth2'], ['1223'])];
+        const books = [
+            { title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} },
+            { title: 'test2', authors: ['auth'], identifiers: { internal: '1233' }, categories: [], images: {} },
+        ];
         user.setBookshelf(books);
         expect(result).toBe(books);
     });
@@ -39,7 +41,7 @@ describe('UserService should..', () => {
     it('add a book to its bookshelf', () => {
         let result: Book[], content = initBookShelf();
         user.getBookshelf().subscribe(b => result = b);
-        const book = new Book([new Title('test2', 'MAIN')], ['auth2'], ['1223']);
+        const book: Book = { title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} };
         user.addToBookshelf(book);
         expect(result).toEqual(content.concat([book]));
     });
@@ -47,8 +49,10 @@ describe('UserService should..', () => {
     it('add multiple books to its bookshelf', () => {
         let content = initBookShelf(), result: Book[];
         user.getBookshelf().subscribe(b => result = b);
-        const books = [new Book([new Title('test', 'MAIN')], ['auth'], ['123']),
-            new Book([new Title('test2', 'MAIN')], ['auth2'], ['1223'])];
+        const books = [
+            { title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} },
+            { title: 'test2', authors: ['auth'], identifiers: { internal: '1233' }, categories: [], images: {} },
+        ];
         user.addMultToBookshelf(books);
         expect(result).toEqual(content.concat(books));
     });
@@ -56,23 +60,16 @@ describe('UserService should..', () => {
     it('delete a book from its bookshelf', () => {
         let result: Book[];
         user.getBookshelf().subscribe(b => result = b);
-        const books = [new Book([new Title('test', 'MAIN')], ['auth'], ['123']),
-            new Book([new Title('test2', 'MAIN')], ['auth2'], ['1223'])];
+        const books = [
+            { title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} },
+            { title: 'test2', authors: ['auth'], identifiers: { internal: '1233' }, categories: [], images: {} },
+        ];
         user.setBookshelf(books);
-        user.deleteFromBookshelf(new Book([new Title('test', 'MAIN')], ['auth'], ['123']));
-        expect(result).toEqual([new Book([new Title('test2', 'MAIN')], ['auth2'], ['1223'])]);
+        user.deleteFromBookshelf(books[1]);
+        expect(result).toEqual([books[0]]);
     });
 
-    it('replace a searched book with its found values', () => {
-        let result: Book[];
-        user.getBookshelf().subscribe(b => result = b);
-        user.addToBookshelf(new Book([new Title('test2', 'MAIN')], ['auth2'], ['1223'], true));
-        const found = new Book([new Title('found', 'MAIN')], ['author'], ['waddup']);
-        user.bookSearchComplete(found);
-        expect(result).toEqual([found]);
-    });
-
-    it('try to login with given usernamen and password', () => {
+    it('try to login with given username and password', () => {
         user.login('test', 'password');
         expect(authSpy.fetchTokenUsingPasswordFlow.calls.count()).toBe(1);
         expect(authSpy.fetchTokenUsingPasswordFlow.calls.mostRecent().args).toEqual(['test', 'password']);

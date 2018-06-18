@@ -4,7 +4,7 @@ import {ImageUploadComponent} from './image-upload.component';
 import {HttpService} from "../../services/http/http.service";
 import {UserService} from '../../services/user/user.service';
 import {Observable} from "rxjs/Rx";
-import {Book, BookItem, Title} from "../../dataTypes";
+import {BookItem} from "../../dataTypes";
 
 class MockEvent {
     public srcElement = new MockSourceElement();
@@ -37,8 +37,10 @@ describe('ImageUploadComponent should..', () => {
     });
 
     it('add found books to the bookshelf', () => {
-        let books = [new Book([new Title('test', 'MAIN')], ['auth'], ['123']),
-            new Book([new Title('test2', 'MAIN')], ['auth2'], ['1223'])];
+        const books = [
+            { title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} },
+            { title: 'test2', authors: ['auth'], identifiers: { internal: '1233' }, categories: [], images: {} },
+        ];
         component.results = books.map(b => new BookItem(b));
         component.addToBookShelf();
         expect(user.addMultToBookshelf.calls.count()).toBe(1);
