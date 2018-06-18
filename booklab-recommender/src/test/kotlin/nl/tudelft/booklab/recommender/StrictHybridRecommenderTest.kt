@@ -17,8 +17,8 @@
 package nl.tudelft.booklab.recommender
 
 import kotlinx.coroutines.experimental.runBlocking
-import nl.tudelft.booklab.catalogue.Book
-import nl.tudelft.booklab.catalogue.Title
+import nl.tudelft.booklab.catalogue.Identifier
+import nl.tudelft.booklab.catalogue.Ratings
 import nl.tudelft.booklab.recommender.hybrid.StrictHybridRecommender
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
@@ -35,12 +35,12 @@ class StrictHybridRecommenderTest {
     @Test
     fun `recommended authors are always recommended more than ratings`() {
         val collection = listOf(
-            Book(listOf(Title("AMAZING")), listOf("GREAT_AUTHOR"))
+            TestBook(mapOf(Identifier.INTERNAL to "1"), "AMAZING", listOf("GREAT_AUTHOR"))
         )
         val candidates = listOf(
-            Book(listOf(Title("book 0")), listOf("GREAT_AUTHOR")),
-            Book(listOf(Title("book 1")), listOf("author"), rating = 5.0),
-            Book(listOf(Title("book 2")), listOf("author"), rating = 3.0)
+            TestBook(mapOf(Identifier.INTERNAL to "2"), "book 0", listOf("GREAT_AUTHOR")),
+            TestBook(mapOf(Identifier.INTERNAL to "3"), "book 1", listOf("GREAT_AUTHOR"), ratings = Ratings(5.0, 0)),
+            TestBook(mapOf(Identifier.INTERNAL to "4"), "book 2", listOf("GREAT_AUTHOR"), ratings = Ratings(3.0, 0))
         )
 
         runBlocking {

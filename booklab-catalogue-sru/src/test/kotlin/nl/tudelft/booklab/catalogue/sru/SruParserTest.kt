@@ -17,7 +17,7 @@
 package nl.tudelft.booklab.catalogue.sru
 
 import nl.tudelft.booklab.catalogue.Book
-import nl.tudelft.booklab.catalogue.TitleType
+import nl.tudelft.booklab.catalogue.Identifier
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -38,11 +38,9 @@ internal class SruParserTest {
         val result = books[0]
 
         assertEquals("author name", result.authors[0])
-        assertEquals("0123456789", result.ids[0])
-        assertEquals(TitleType.MAIN, result.titles[0].type)
-        assertEquals("main title", result.titles[0].value)
-        assertEquals(TitleType.SUB, result.titles[1].type)
-        assertEquals("sub title", result.titles[1].value)
+        assertEquals("0123456789", result.identifiers[Identifier.ISBN_10])
+        assertEquals("main title", result.title)
+        assertEquals("sub title", result.subtitle)
     }
 
     @Test
@@ -65,48 +63,29 @@ internal class SruParserTest {
     fun `no isbn`() {
         val result = books[3]
 
-        assertEquals(0, result.ids.size)
+        assertEquals(0, result.identifiers.size)
     }
 
     @Test
     fun `multiple isbn`() {
         val result = books[4]
 
-        assertEquals(2, result.ids.size)
-        assertEquals("1234", result.ids[0])
-        assertEquals("5678", result.ids[1])
+        assertEquals(1, result.identifiers.size)
     }
 
     @Test
     fun `no titles`() {
         val result = books[5]
 
-        assertEquals(0, result.titles.size)
-    }
-
-    @Test
-    fun `multiple titles`() {
-        val result = books[6]
-
-        assertEquals(2, result.titles.size)
-    }
-
-    @Test
-    fun `multiple elements but no in a row`() {
-        val result = books[7]
-
-        assertEquals(3, result.authors.size)
-        assertEquals(3, result.titles.size)
-        assertEquals(4, result.ids.size)
+        assertEquals("<NO TITLE>", result.title)
     }
 
     @Test
     fun `realistic test (de ontdekking van de hemel)`() {
         assertEquals(20, realBooks.size)
 
-        assertEquals("De ontdekking van de hemel", realBooks[0].titles[0].value)
-        assertEquals(TitleType.MAIN, realBooks[0].titles[0].type)
+        assertEquals("De ontdekking van de hemel", realBooks[0].title)
         assertEquals("Cornelissen, Ignace", realBooks[0].authors[0])
-        assertEquals("9789491396311", realBooks[0].ids[0])
+        assertEquals("9789491396311", realBooks[0].identifiers[Identifier.ISBN_13])
     }
 }

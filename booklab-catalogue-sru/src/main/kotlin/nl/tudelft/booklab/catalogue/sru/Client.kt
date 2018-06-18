@@ -26,6 +26,8 @@ import io.ktor.http.formUrlEncode
 import kotlinx.coroutines.experimental.io.jvm.javaio.toInputStream
 import nl.tudelft.booklab.catalogue.Book
 import nl.tudelft.booklab.catalogue.CatalogueClient
+import nl.tudelft.booklab.catalogue.Identifier
+import java.net.URL
 
 /**
  * A SRU client that is used to query lists of [Book]s from a SRU catalogue.
@@ -42,6 +44,10 @@ class SruCatalogueClient (
     private val client: HttpClient = HttpClient(Apache.config { socketTimeout = 100000 }),
     private val baseUrl: String = "http://jsru.kb.nl/sru"
 ) : CatalogueClient {
+
+    override suspend fun find(isbn: String): Book? {
+        return queryHelper("dc.identifier =/isbn $isbn", 1).firstOrNull()
+    }
 
     override suspend fun query(keywords: String, max: Int): List<Book> {
         return queryHelper(createCqlQuery(keywords), max)
@@ -70,7 +76,7 @@ class SruCatalogueClient (
 
     /**
      * creates a CQL query based on the authors name and the
-     * book title
+     * collection title
      *
      * @param title keywords matching the title
      * @param author keywords matching the author name
@@ -86,7 +92,7 @@ class SruCatalogueClient (
     /**
      * creates a CQL query based on keywords
      *
-     * @param keywords some keywords matching the book
+     * @param keywords some keywords matching the collection
      * @return a string represented CQl query
      */
     private fun createCqlQuery(keywords: String): String {
@@ -110,4 +116,22 @@ class SruCatalogueClient (
             "maximumRecords" to max.toString())
         return "$baseUrl?${params.formUrlEncode()}"
     }
+}
+
+/**
+ * A [Book] implementation for SRU catalogues.
+ */
+class SruBook(
+    override val identifiers: Map<Identifier, String>,
+    override val title: String,
+    override val subtitle: String?,
+    override val authors: List<String>,
+    override val publisher: String?
+) : Book() {
+    override val categories = emptySet<String>()
+    override val publishedAt = null
+    override val description = null
+    override val language = null
+    override val ratings = null
+    override val images = emptyMap<String, URL>()
 }
