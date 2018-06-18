@@ -2,3 +2,5 @@ github "Swinject/Swinject"
 github "Swinject/SwinjectAutoregistration"
 github "Swinject/SwinjectStoryboard"
 github "devxoul/URLNavigator"
+github "bustoutsolutions/siesta"
+github "ReactiveX/RxSwift" ~> 4.0

@@ -15,17 +15,22 @@
 		1F21940C20CEA46D005A632D /* SwinjectStoryboard.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F21940B20CEA46D005A632D /* SwinjectStoryboard.framework */; };
 		1F21940F20CEAA9C005A632D /* Swinject.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F21940E20CEAA9C005A632D /* Swinject.framework */; };
 		1F21941120CEAAA7005A632D /* URLMatcher.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F21941020CEAAA7005A632D /* URLMatcher.framework */; };
-		1F30DFE020D6DB34000B0652 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F30DFDF20D6DB34000B0652 /* Info.plist */; };
-		1F30DFE520D6DB68000B0652 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F30DFE320D6DB68000B0652 /* LaunchScreen.storyboard */; };
-		1F30DFE620D6DB68000B0652 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F30DFE420D6DB68000B0652 /* Main.storyboard */; };
-		1F30DFE920D6DBE5000B0652 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F30DFE820D6DBE5000B0652 /* Info.plist */; };
-		1F30DFF020D6DC2B000B0652 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1F30DFEF20D6DC2B000B0652 /* Info.plist */; };
+		1F30DFF420D6DD6E000B0652 /* BackendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F30DFF320D6DD6E000B0652 /* BackendService.swift */; };
+		1F30DFFD20D6EAF1000B0652 /* AuthorizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F30DFFC20D6EAF1000B0652 /* AuthorizationService.swift */; };
+		1F30DFFF20D6ED7C000B0652 /* AuthorizationToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F30DFFE20D6ED7C000B0652 /* AuthorizationToken.swift */; };
+		1F30E00120D6EE58000B0652 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F30E00020D6EE58000B0652 /* RxSwift.framework */; };
+		1F30E00320D6EE5E000B0652 /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F30E00220D6EE5E000B0652 /* RxCocoa.framework */; };
+		1F30E00520D6F6E4000B0652 /* BackendModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F30E00420D6F6E4000B0652 /* BackendModel.swift */; };
+		1F30E00A20D7F5C6000B0652 /* Siesta.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F30E00920D7F5C6000B0652 /* Siesta.swift */; };
+		1F30E00E20D84AF3000B0652 /* AnyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F30E00D20D84AF3000B0652 /* AnyCodable.swift */; };
 		1F35E72520CA01010076ED0D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F35E72420CA01010076ED0D /* AppDelegate.swift */; };
 		1F35E72720CA01010076ED0D /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F35E72620CA01010076ED0D /* art.scnassets */; };
 		1F35E72920CA01010076ED0D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F35E72820CA01010076ED0D /* ViewController.swift */; };
 		1F35E73C20CA01020076ED0D /* Booklab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F35E73B20CA01020076ED0D /* Booklab.swift */; };
 		1F35E74720CA01020076ED0D /* BooklabUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F35E74620CA01020076ED0D /* BooklabUITests.swift */; };
 		1F35E75920CA01C20076ED0D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F35E75820CA01C20076ED0D /* Assets.xcassets */; };
+		1F9329F920D670D3007E2F75 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F9329F620D670D3007E2F75 /* Main.storyboard */; };
+		1F9329FB20D670D3007E2F75 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F9329F820D670D3007E2F75 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,20 +59,28 @@
 		1F21940B20CEA46D005A632D /* SwinjectStoryboard.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwinjectStoryboard.framework; path = Carthage/Build/iOS/SwinjectStoryboard.framework; sourceTree = "<group>"; };
 		1F21940E20CEAA9C005A632D /* Swinject.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Swinject.framework; path = Carthage/Build/iOS/Swinject.framework; sourceTree = "<group>"; };
 		1F21941020CEAAA7005A632D /* URLMatcher.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = URLMatcher.framework; path = Carthage/Build/iOS/URLMatcher.framework; sourceTree = "<group>"; };
-		1F30DFDF20D6DB34000B0652 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		1F30DFE320D6DB68000B0652 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
-		1F30DFE420D6DB68000B0652 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
-		1F30DFE820D6DBE5000B0652 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		1F30DFEF20D6DC2B000B0652 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1F30DFF320D6DD6E000B0652 /* BackendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendService.swift; sourceTree = "<group>"; };
+		1F30DFFC20D6EAF1000B0652 /* AuthorizationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationService.swift; sourceTree = "<group>"; };
+		1F30DFFE20D6ED7C000B0652 /* AuthorizationToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationToken.swift; sourceTree = "<group>"; };
+		1F30E00020D6EE58000B0652 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
+		1F30E00220D6EE5E000B0652 /* RxCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxCocoa.framework; path = Carthage/Build/iOS/RxCocoa.framework; sourceTree = "<group>"; };
+		1F30E00420D6F6E4000B0652 /* BackendModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendModel.swift; sourceTree = "<group>"; };
+		1F30E00920D7F5C6000B0652 /* Siesta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Siesta.swift; sourceTree = "<group>"; };
+		1F30E00D20D84AF3000B0652 /* AnyCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyCodable.swift; sourceTree = "<group>"; };
 		1F35E72120CA01010076ED0D /* Booklab.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Booklab.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F35E72420CA01010076ED0D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1F35E72620CA01010076ED0D /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
 		1F35E72820CA01010076ED0D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		1F35E73720CA01020076ED0D /* BooklabTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BooklabTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F35E73B20CA01020076ED0D /* Booklab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Booklab.swift; sourceTree = "<group>"; };
+		1F35E73D20CA01020076ED0D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1F35E74220CA01020076ED0D /* BooklabUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BooklabUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F35E74620CA01020076ED0D /* BooklabUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooklabUITests.swift; sourceTree = "<group>"; };
+		1F35E74820CA01020076ED0D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1F35E75820CA01C20076ED0D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1F9329F320D670BD007E2F75 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1F9329F620D670D3007E2F75 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		1F9329F820D670D3007E2F75 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,10 +88,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F30E00320D6EE5E000B0652 /* RxCocoa.framework in Frameworks */,
 				1F21940120CE9F46005A632D /* Swinject.framework in Frameworks */,
 				1F21940420CE9F54005A632D /* URLNavigator.framework in Frameworks */,
 				1F21940C20CEA46D005A632D /* SwinjectStoryboard.framework in Frameworks */,
 				1F21941120CEAAA7005A632D /* URLMatcher.framework in Frameworks */,
+				1F30E00120D6EE58000B0652 /* RxSwift.framework in Frameworks */,
 				1F21940F20CEAA9C005A632D /* Swinject.framework in Frameworks */,
 				1F21940620CEA080005A632D /* SwinjectAutoregistration.framework in Frameworks */,
 			);
@@ -104,6 +119,8 @@
 		1F21940220CE9F53005A632D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1F30E00220D6EE5E000B0652 /* RxCocoa.framework */,
+				1F30E00020D6EE58000B0652 /* RxSwift.framework */,
 				1F21941020CEAAA7005A632D /* URLMatcher.framework */,
 				1F21940E20CEAA9C005A632D /* Swinject.framework */,
 				1F21940B20CEA46D005A632D /* SwinjectStoryboard.framework */,
@@ -113,37 +130,40 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		1F30DFDE20D6DB1F000B0652 /* config */ = {
+		1F30DFF120D6DCFA000B0652 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				1F30DFDF20D6DB34000B0652 /* Info.plist */,
+				1F30DFFB20D6EA0B000B0652 /* Authorization */,
+				1F30DFF220D6DD4C000B0652 /* Backend */,
 			);
-			path = config;
+			path = Services;
 			sourceTree = "<group>";
 		};
-		1F30DFE220D6DB51000B0652 /* views */ = {
+		1F30DFF220D6DD4C000B0652 /* Backend */ = {
 			isa = PBXGroup;
 			children = (
-				1F30DFE320D6DB68000B0652 /* LaunchScreen.storyboard */,
-				1F30DFE420D6DB68000B0652 /* Main.storyboard */,
+				1F30DFF320D6DD6E000B0652 /* BackendService.swift */,
+				1F30E00420D6F6E4000B0652 /* BackendModel.swift */,
 			);
-			path = views;
+			path = Backend;
 			sourceTree = "<group>";
 		};
-		1F30DFE720D6DBC2000B0652 /* config */ = {
+		1F30DFFB20D6EA0B000B0652 /* Authorization */ = {
 			isa = PBXGroup;
 			children = (
-				1F30DFE820D6DBE5000B0652 /* Info.plist */,
+				1F30DFFC20D6EAF1000B0652 /* AuthorizationService.swift */,
+				1F30DFFE20D6ED7C000B0652 /* AuthorizationToken.swift */,
 			);
-			path = config;
+			path = Authorization;
 			sourceTree = "<group>";
 		};
-		1F30DFEA20D6DC01000B0652 /* config */ = {
+		1F30E00820D7E8BF000B0652 /* Util */ = {
 			isa = PBXGroup;
 			children = (
-				1F30DFEF20D6DC2B000B0652 /* Info.plist */,
+				1F30E00D20D84AF3000B0652 /* AnyCodable.swift */,
+				1F30E00920D7F5C6000B0652 /* Siesta.swift */,
 			);
-			path = config;
+			path = Util;
 			sourceTree = "<group>";
 		};
 		1F35E71820CA01010076ED0D = {
@@ -171,6 +191,8 @@
 		1F35E72320CA01010076ED0D /* Booklab */ = {
 			isa = PBXGroup;
 			children = (
+				1F30DFF120D6DCFA000B0652 /* Services */,
+				1F30E00820D7E8BF000B0652 /* Util */,
 				1F35E72420CA01010076ED0D /* AppDelegate.swift */,
 				1F35E72820CA01010076ED0D /* ViewController.swift */,
 				1F21940720CEA0E1005A632D /* Routes.swift */,
@@ -224,8 +246,8 @@
 		1F35E75720CA01A90076ED0D /* resources */ = {
 			isa = PBXGroup;
 			children = (
-				1F30DFE220D6DB51000B0652 /* views */,
-				1F30DFDE20D6DB1F000B0652 /* config */,
+				1F9329F520D670C0007E2F75 /* views */,
+				1F9329F020D67019007E2F75 /* config */,
 				1F35E75A20CA01E00076ED0D /* assets */,
 			);
 			path = resources;
@@ -260,7 +282,7 @@
 		1F35E75D20CA02100076ED0D /* resources */ = {
 			isa = PBXGroup;
 			children = (
-				1F30DFE720D6DBC2000B0652 /* config */,
+				1F35E73D20CA01020076ED0D /* Info.plist */,
 			);
 			path = resources;
 			sourceTree = "<group>";
@@ -285,9 +307,26 @@
 		1F35E76120CA024D0076ED0D /* resources */ = {
 			isa = PBXGroup;
 			children = (
-				1F30DFEA20D6DC01000B0652 /* config */,
+				1F35E74820CA01020076ED0D /* Info.plist */,
 			);
 			path = resources;
+			sourceTree = "<group>";
+		};
+		1F9329F020D67019007E2F75 /* config */ = {
+			isa = PBXGroup;
+			children = (
+				1F9329F320D670BD007E2F75 /* Info.plist */,
+			);
+			path = config;
+			sourceTree = "<group>";
+		};
+		1F9329F520D670C0007E2F75 /* views */ = {
+			isa = PBXGroup;
+			children = (
+				1F9329F820D670D3007E2F75 /* LaunchScreen.storyboard */,
+				1F9329F620D670D3007E2F75 /* Main.storyboard */,
+			);
+			path = views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -395,11 +434,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F9329F920D670D3007E2F75 /* Main.storyboard in Resources */,
 				1F2193FE20CE9E6C005A632D /* Cartfile in Resources */,
+				1F9329FB20D670D3007E2F75 /* LaunchScreen.storyboard in Resources */,
 				1F35E72720CA01010076ED0D /* art.scnassets in Resources */,
-				1F30DFE020D6DB34000B0652 /* Info.plist in Resources */,
-				1F30DFE620D6DB68000B0652 /* Main.storyboard in Resources */,
-				1F30DFE520D6DB68000B0652 /* LaunchScreen.storyboard in Resources */,
 				1F35E75920CA01C20076ED0D /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -408,7 +446,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F30DFE920D6DBE5000B0652 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -416,7 +453,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F30DFF020D6DC2B000B0652 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -434,6 +470,10 @@
 				"$(SRCROOT)/Carthage/Build/iOS/SwinjectStoryboard.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/URLNavigator.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/URLMatcher.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Siesta.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/SiestaUI.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/RxSwift.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/RxCocoa.framework",
 			);
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Swinject.framework",
@@ -441,6 +481,10 @@
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SwinjectStoryboard.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/URLNavigator.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/URLMatcher.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Siesta.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SiestaUI.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxSwift.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxCocoa.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -454,6 +498,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F35E72920CA01010076ED0D /* ViewController.swift in Sources */,
+				1F30DFF420D6DD6E000B0652 /* BackendService.swift in Sources */,
+				1F30E00520D6F6E4000B0652 /* BackendModel.swift in Sources */,
+				1F30DFFD20D6EAF1000B0652 /* AuthorizationService.swift in Sources */,
+				1F30DFFF20D6ED7C000B0652 /* AuthorizationToken.swift in Sources */,
+				1F30E00A20D7F5C6000B0652 /* Siesta.swift in Sources */,
+				1F30E00E20D84AF3000B0652 /* AnyCodable.swift in Sources */,
 				1F21940820CEA0E1005A632D /* Routes.swift in Sources */,
 				1F35E72520CA01010076ED0D /* AppDelegate.swift in Sources */,
 			);
@@ -615,7 +665,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/src/main/resources/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/src/main/resources/config/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -637,7 +687,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Carthage/Build/iOS",
 				);
-				INFOPLIST_FILE = "$(SRCROOT)/src/main/resources/Info.plist";
+				INFOPLIST_FILE = "$(SRCROOT)/src/main/resources/config/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

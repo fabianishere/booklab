@@ -20,4 +20,5 @@
         http://www.springframework.org/schema/beans/spring-beans.xsd">
     <!-- User -->
     <bean id="user:user-service" class="nl.tudelft.booklab.backend.services.user.UserService" />
+    <bean id="user:conversion-service" class="nl.tudelft.booklab.backend.services.user.UserConversionService" />
 </beans>

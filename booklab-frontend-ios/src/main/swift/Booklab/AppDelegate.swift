@@ -34,13 +34,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .register(NavigatorType.self) { _ in Navigator() }
             .inObjectScope(.container)
         
+
+        // REST Configuration
+        container
+            .register(AuthorizationService.self) { r in
+                let baseUrl: String = Bundle.main.object(forInfoDictionaryKey: "BOOKLAB_API_BASE_URL") as! String
+                let id: String = Bundle.main.object(forInfoDictionaryKey: "BOOKLAB_API_OAUTH_ID") as! String
+                let secret: String = Bundle.main.object(forInfoDictionaryKey: "BOOKLAB_API_OAUTH_SECRET") as! String
+                
+                
+                return AuthorizationService(
+                    baseUrl: "\(baseUrl)/auth",
+                    clientId: id,
+                    clientSecret: secret
+                )
+            }
+        
+        container
+            .register(BackendService.self) { r in
+                let baseUrl: String = Bundle.main.object(forInfoDictionaryKey: "BOOKLAB_API_BASE_URL") as! String
+                return BackendService(authorization: r~>, baseUrl: baseUrl)
+            }
+        
         // Storyboard
         container
             .register(SwinjectStoryboard.self) { r in SwinjectStoryboard.create(name: "Main", bundle: nil, container: r) }
             .inObjectScope(.container)
         
         container.storyboardInitCompleted(ViewController.self) { r, c in
+            let backend = r ~> BackendService.self
             c.navigator = r ~> NavigatorType.self
+            c.authorization = r ~> AuthorizationService.self
+            c.api = backend
         }
         return container
     }()
