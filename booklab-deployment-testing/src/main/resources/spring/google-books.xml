@@ -18,10 +18,9 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
-    <!-- Service -->
-    <bean name="catalogue:catalogue-service" class="nl.tudelft.booklab.catalogue.google.GoogleCatalogueClient" />
-
     <!-- Google Books CatalogueClient -->
+    <bean name="catalogue:client" class="nl.tudelft.booklab.catalogue.google.GoogleCatalogueClient" />
+
     <bean name="google-books:request-initializer" class="com.google.api.services.books.BooksRequestInitializer">
         <constructor-arg name="key" value="${catalogue.google-books.key}" />
     </bean>

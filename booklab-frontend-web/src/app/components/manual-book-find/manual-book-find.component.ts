@@ -33,7 +33,7 @@ export class ManualBookFindComponent implements OnInit {
         this.results = null;
         this.http.findBook(this.nameInput, this.authorInput).subscribe((result) => {
             this.searching = false;
-            this.results = result.map(r => new BookItem(Book.getBook(r),false, false));
+            this.results = result.map(r => new BookItem(r));
         }, error => this.http.handleError(error));
         this.authorInput = '';
         this.nameInput = '';

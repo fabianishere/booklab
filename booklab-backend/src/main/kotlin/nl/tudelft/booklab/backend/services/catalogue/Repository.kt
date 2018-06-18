@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.backend.api.v1
+package nl.tudelft.booklab.backend.services.catalogue
 
-import io.ktor.auth.authenticate
-import io.ktor.routing.Route
-import io.ktor.routing.route
+import org.springframework.data.repository.CrudRepository
 
 /**
- * Describe the routes for the REST API of the BookLab backend.
+ * A repository for accessing books in a database.
  */
-fun Route.api() {
-    authenticate {
-        route("detection") { detection() }
-        route("users") { users() }
-        route("collections") { collections() }
-        route("catalogue") { catalogue() }
-    }
-    meta()
+interface CatalogueRepository : CrudRepository<Book, String> {
+    /**
+     * Find a [Book] by one of its industry identifiers.
+     *
+     * @param id The identifier of the book to find.
+     * @return The book that has been found or `null`.
+     */
+    fun findByIndustryId(id: String): Book?
 }

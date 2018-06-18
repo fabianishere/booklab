@@ -76,16 +76,8 @@ export class UserService implements CanActivate{
      * @param {Book} book: book to be deleted
      */
     deleteFromBookshelf(book: Book) {
-        this.bookshelf = this.bookshelf.filter(b => b.getMainTitle() !== book.getMainTitle());
+        this.bookshelf = this.bookshelf.filter(b => b.title !== book.title);
         this.bookSub.next(this.bookshelf);
-    }
-
-    /**
-     * Sets a book that still was being searched to its found values.
-     * @param {Book} book: book that was found.
-     */
-    bookSearchComplete(book: Book) {
-        this.bookshelf[this.bookshelf.findIndex(b => b.isSearched)] = book;
     }
 
     login(username: string, password: string): Promise<Object> {

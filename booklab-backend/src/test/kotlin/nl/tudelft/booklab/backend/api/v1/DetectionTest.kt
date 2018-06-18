@@ -38,11 +38,12 @@ import nl.tudelft.booklab.backend.booklab
 import nl.tudelft.booklab.backend.configureAuthorization
 import nl.tudelft.booklab.backend.createTestContext
 import nl.tudelft.booklab.backend.ktor.Routes
+import nl.tudelft.booklab.backend.services.catalogue.Book
+import nl.tudelft.booklab.backend.services.catalogue.CatalogueService
 import nl.tudelft.booklab.backend.services.vision.BookDetection
 import nl.tudelft.booklab.backend.services.vision.VisionService
 import nl.tudelft.booklab.backend.spring.bootstrap
 import nl.tudelft.booklab.backend.withTestEngine
-import nl.tudelft.booklab.catalogue.CatalogueClient
 import nl.tudelft.booklab.catalogue.Identifier
 import nl.tudelft.booklab.vision.detection.BookDetector
 import nl.tudelft.booklab.vision.ocr.TextExtractor
@@ -54,33 +55,7 @@ import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.ArgumentMatchers.anyString
 import org.opencv.core.Rect
 import org.springframework.context.support.beans
-import java.net.URL
 import nl.tudelft.booklab.catalogue.Book as AbstractBook
-
-/**
- * A domain model class representing a book.
- *
- * @property id The internal identifier of the book in the database.
- * @property identifiers A map containing the identifiers of the book.
- * @property title The main title of the book.
- * @property subtitle The subtitle of the book.
- * @property authors A list of authors of the book.
- */
-data class Book(
-    val id: String,
-    override val identifiers: Map<Identifier, String>,
-    override val title: String,
-    override val authors: List<String>
-) : AbstractBook() {
-    override val publisher: String? = null
-    override val subtitle: String? = null
-    override val categories = emptySet<String>()
-    override val publishedAt = null
-    override val description = null
-    override val language = null
-    override val images = emptyMap<String, URL>()
-    override val ratings = null
-}
 
 /**
  * Unit test suite for the detection endpoint of the BookLab REST api.
@@ -105,9 +80,9 @@ internal class DetectionTest {
     private lateinit var extractor: TextExtractor
 
     /**
-     * The catalogue client to use.
+     * The catalogue service to use.
      */
-    private lateinit var catalogue: CatalogueClient
+    private lateinit var catalogue: CatalogueService
 
     @BeforeEach
     fun setUp() {

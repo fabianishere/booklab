@@ -19,12 +19,16 @@ package nl.tudelft.booklab.backend.api.v1
 import io.ktor.application.call
 import io.ktor.auth.oauth2.scoped
 import io.ktor.http.HttpStatusCode
+import io.ktor.locations.Location
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.application
 import io.ktor.routing.get
+import io.ktor.routing.route
+import nl.tudelft.booklab.backend.services.catalogue.Book
+import nl.tudelft.booklab.backend.services.catalogue.CatalogueService
 import nl.tudelft.booklab.backend.spring.inject
-import nl.tudelft.booklab.catalogue.CatalogueClient
+import io.ktor.locations.get as getLocation
 
 /**
  * Define catalogue endpoints at the current route for the REST api.
@@ -32,6 +36,7 @@ import nl.tudelft.booklab.catalogue.CatalogueClient
 fun Route.catalogue() {
     scoped("catalogue") {
         catalogueCollection()
+        catalogueResource()
     }
 }
 
@@ -39,7 +44,7 @@ fun Route.catalogue() {
  * Define an endpoint for querying the catalogue as collection.
  */
 internal fun Route.catalogueCollection() {
-    val catalogue: CatalogueClient = application.inject()
+    val catalogue: CatalogueService = application.inject()
 
     get {
         val query = call.parameters["query"]
@@ -54,9 +59,41 @@ internal fun Route.catalogueCollection() {
             val results = catalogue.query(title, author, max)
             call.respond(Success(results, meta = mapOf("count" to results.size)))
         } else {
-            call.respond(HttpStatusCode.BadRequest, InvalidRequest("No valid query given."))
+            call.respond(
+                HttpStatusCode.BadRequest,
+                InvalidRequest("No valid query given.")
+            )
         }
     }
 
-    handle { call.respond(HttpStatusCode.MethodNotAllowed, MethodNotAllowed()) }
+    handle {
+        call.respond(HttpStatusCode.MethodNotAllowed, MethodNotAllowed())
+    }
 }
+
+/**
+ * Define an endpoint for accessing a single resource in the catalogue.
+ */
+internal fun Route.catalogueResource() {
+    getLocation<CatalogueBookRoute> { (book) ->
+        val id = call.parameters["collection"]
+        if (book == null) {
+            call.respond(HttpStatusCode.NotFound, NotFound("The collection '$id' was not found on the server."))
+            return@getLocation
+        }
+
+        call.respond(Success(book))
+    }
+
+    route("/{collection}") {
+        handle {
+            call.respond(HttpStatusCode.MethodNotAllowed, MethodNotAllowed())
+        }
+    }
+}
+
+/**
+ * The route to a collection in the catalogue.
+ */
+@Location("/{book}")
+data class CatalogueBookRoute(val book: Book?)

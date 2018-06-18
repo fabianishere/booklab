@@ -38,11 +38,12 @@ import nl.tudelft.booklab.backend.booklab
 import nl.tudelft.booklab.backend.configureAuthorization
 import nl.tudelft.booklab.backend.createTestContext
 import nl.tudelft.booklab.backend.ktor.Routes
+import nl.tudelft.booklab.backend.services.catalogue.Book
+import nl.tudelft.booklab.backend.services.catalogue.CatalogueConversionService
+import nl.tudelft.booklab.backend.services.catalogue.CatalogueService
 import nl.tudelft.booklab.backend.spring.bootstrap
 import nl.tudelft.booklab.backend.withTestEngine
-import nl.tudelft.booklab.catalogue.CatalogueClient
 import nl.tudelft.booklab.catalogue.Identifier
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -55,9 +56,9 @@ import nl.tudelft.booklab.catalogue.Book as AbstractBook
  */
 internal class CatalogueTest {
     /**
-     * The [CatalogueClient] to use.
+     * The [CatalogueService] to use.
      */
-    lateinit var catalogue: CatalogueClient
+    lateinit var catalogue: CatalogueService
 
     /**
      * The Jackson mapper class that maps JSON to objects.
@@ -145,13 +146,37 @@ internal class CatalogueTest {
         }
         with(request) {
             assertEquals(HttpStatusCode.OK, response.status())
-            Assertions.assertTrue(response.contentType().match(ContentType.Application.Json))
+            assertTrue(response.contentType().match(ContentType.Application.Json))
 
             val response: ApiResponse.Success<List<Book>>? = response.content?.let { mapper.readValue(it) }
             assertEquals(books, response?.data)
         }
+
         verifyBlocking(catalogue) {
             query(eq("Test"), eq("Test"), eq(5))
+        }
+    }
+
+    @Test
+    fun `query catalogue with title but not author`() = withTestEngine({ module() }) {
+        val books = listOf(Book(
+            id = "test",
+            identifiers = mapOf(Identifier.INTERNAL to "test"),
+            title = "The ontdekking van de hemel",
+            authors = listOf("Harry Mulisch")
+        ))
+        catalogue.stub {
+            onBlocking { query(eq("Test"), eq("Test"), eq(5)) } doReturn books
+        }
+        val request = handleRequest(HttpMethod.Get, "/api/catalogue?title=Test") {
+            configureAuthorization("test", listOf("catalogue"))
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.BadRequest, response.status())
+            assertTrue(response.contentType().match(ContentType.Application.Json))
+
+            val response: ApiResponse.Failure? = response.content?.let { mapper.readValue(it) }
+            assertEquals("invalid_request", response?.error?.code)
         }
     }
 
@@ -171,7 +196,7 @@ internal class CatalogueTest {
         }
         with(request) {
             assertEquals(HttpStatusCode.OK, response.status())
-            Assertions.assertTrue(response.contentType().match(ContentType.Application.Json))
+            assertTrue(response.contentType().match(ContentType.Application.Json))
 
             val response: ApiResponse.Success<List<Book>>? = response.content?.let { mapper.readValue(it) }
             assertEquals(books, response?.data)
@@ -182,6 +207,104 @@ internal class CatalogueTest {
         }
     }
 
+    @Test
+    fun `query catalogue with title and author with invalid limit`() = withTestEngine({ module() }) {
+        val books = listOf(
+            Book(
+                id = "test",
+                identifiers = mapOf(Identifier.INTERNAL to "test"),
+                title = "The ontdekking van de hemel",
+                authors = listOf("Harry Mulisch")
+            )
+        )
+        catalogue.stub {
+            onBlocking { query(eq("Test"), eq("Test"), eq(5)) } doReturn books
+        }
+        val request = handleRequest(HttpMethod.Get, "/api/catalogue?title=Test&author=Test&max=twenty") {
+            configureAuthorization("test", listOf("catalogue"))
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            assertTrue(response.contentType().match(ContentType.Application.Json))
+
+            val response: ApiResponse.Success<List<Book>>? = response.content?.let { mapper.readValue(it) }
+            assertEquals(books, response?.data)
+        }
+
+        verifyBlocking(catalogue) {
+            query(eq("Test"), eq("Test"), eq(5))
+        }
+    }
+
+    @Test
+    fun `query with method other than GET`() = withTestEngine({ module() }) {
+
+        val request = handleRequest(HttpMethod.Post, "/api/catalogue?title=Test&author=Test&max=10") {
+            configureAuthorization("test", listOf("catalogue"))
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.MethodNotAllowed, response.status())
+            assertTrue(response.contentType().match(ContentType.Application.Json))
+
+            val response: ApiResponse.Failure? = response.content?.let { mapper.readValue(it) }
+            assertEquals("method_not_allowed", response?.error?.code)
+        }
+    }
+
+    @Test
+    fun `lookup unknown book`() = withTestEngine({ module() }) {
+
+        val request = handleRequest(HttpMethod.Get, "/api/catalogue/1") {
+            configureAuthorization("test", listOf("catalogue"))
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.NotFound, response.status())
+            assertTrue(response.contentType().match(ContentType.Application.Json))
+
+            val response: ApiResponse.Failure? = response.content?.let { mapper.readValue(it) }
+            assertEquals("not_found", response?.error?.code)
+        }
+    }
+
+    @Test
+    fun `lookup known book`() = withTestEngine({ module() }) {
+        val book = Book(
+            id = "test",
+            identifiers = mapOf(Identifier.INTERNAL to "test"),
+            title = "The ontdekking van de hemel",
+            authors = listOf("Harry Mulisch")
+        )
+        catalogue.stub {
+            onBlocking { findById(eq("1")) } doReturn book
+        }
+
+        val request = handleRequest(HttpMethod.Get, "/api/catalogue/1") {
+            configureAuthorization("test", listOf("catalogue"))
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            assertTrue(response.contentType().match(ContentType.Application.Json))
+
+            val response: ApiResponse.Success<Book>? = response.content?.let { mapper.readValue(it) }
+            assertEquals(book, response?.data)
+        }
+    }
+
+    @Test
+    fun `lookup book with invalid method`() = withTestEngine({ module() }) {
+
+        val request = handleRequest(HttpMethod.Post, "/api/catalogue/1") {
+            configureAuthorization("test", listOf("catalogue"))
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.MethodNotAllowed, response.status())
+            assertTrue(response.contentType().match(ContentType.Application.Json))
+
+            val response: ApiResponse.Failure? = response.content?.let { mapper.readValue(it) }
+            assertEquals("method_not_allowed", response?.error?.code)
+        }
+    }
+
     private fun Application.module() {
         val context = createTestContext {
             beans {
@@ -189,6 +312,8 @@ internal class CatalogueTest {
                 bean("routes") { Routes.from { routes() } }
 
                 bean { catalogue }
+
+                bean { CatalogueConversionService(ref()) }
             }.initialize(this)
         }
         context.bootstrap(this) { booklab() }

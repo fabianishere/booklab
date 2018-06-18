@@ -7,13 +7,6 @@ import { environment } from '../../../environments/environment';
 import 'rxjs/add/operator/map'
 
 /**
- * Interface to model health response from api.
- */
-interface Success {
-    success: boolean;
-}
-
-/**
  * Service to handle all http requests and interactions with the backend.
  */
 @Injectable()
