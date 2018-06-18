@@ -22,7 +22,6 @@ import nl.tudelft.booklab.backend.spring.configure
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.support.GenericApplicationContext
-import org.springframework.context.support.registerBean
 
 /**
  * Create a [GenericApplicationContext] for the application.
@@ -33,9 +32,6 @@ fun createApplicationContext(application: Application): GenericApplicationContex
     // Configure the container for the given application
     context.configure(application)
 
-    // Run the compile time bean configuration
-    context.configureStatic()
-
     // The cast will always succeed since our HOCON configuration only returns string lists.
     @Suppress("UNCHECKED_CAST")
     val contexts = context.environment.getProperty("spring.contexts", List::class.java) as? List<String>
@@ -44,16 +40,6 @@ fun createApplicationContext(application: Application): GenericApplicationContex
     }
 
     return context
-}
-
-/**
- * Load the static bean configuration.
- */
-internal fun AnnotationConfigApplicationContext.configureStatic() {
-    val configuration = BooklabSpringConfiguration()
-    registerBean { configuration }
-    register(BooklabSpringConfiguration::class.java)
-    configuration.beans().initialize(this)
 }
 
 /**

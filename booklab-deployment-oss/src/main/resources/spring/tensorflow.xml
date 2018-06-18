@@ -18,9 +18,9 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
-    <import resource="classpath:spring/base/base.xml" />
-    <import resource="classpath:spring/hibernate.xml" />
-    <import resource="classpath:spring/google-books.xml" />
-    <import resource="classpath:spring/google-vision.xml" />
-    <import resource="classpath:spring/tensorflow.xml" />
+    <!-- Tensorflow BookDetector -->
+    <bean name="vision:detector" class="nl.tudelft.booklab.vision.detection.tensorflow.TensorflowBookDetector">
+        <constructor-arg name="input" value="classpath:/tensorflow/inception-book-model.pb" />
+        <constructor-arg name="estimatedSize" value="50000000" />
+    </bean>
 </beans>

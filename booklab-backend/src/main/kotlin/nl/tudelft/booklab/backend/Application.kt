@@ -33,6 +33,7 @@ import io.ktor.routing.Routing
 import io.ktor.routing.route
 import io.ktor.routing.routing
 import nl.tudelft.booklab.backend.api.v1.api
+import nl.tudelft.booklab.backend.ktor.Routes
 import nl.tudelft.booklab.backend.services.auth.BooklabOAuthServer
 import nl.tudelft.booklab.backend.spring.inject
 
@@ -54,7 +55,9 @@ fun Application.booklab() {
         method(HttpMethod.Post)
     }
 
-    routing(inject())
+    inject<Routes>("routes").run {
+        routing { configure() }
+    }
 }
 
 /**

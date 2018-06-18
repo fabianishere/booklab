@@ -18,14 +18,13 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
-
-    <!-- Tensorflow BookDetector -->
-    <bean name="detector" class="nl.tudelft.booklab.vision.detection.tensorflow.TensorflowBookDetector">
-        <constructor-arg name="input" value="classpath:/tensorflow/inception-book-model.pb" />
-        <constructor-arg name="estimatedSize" value="50000000" />
+    <!-- Tesseract TextExtractor -->
+    <bean name="vision:extractor" class="nl.tudelft.booklab.vision.ocr.tesseract.TesseractTextExtractor">
+        <constructor-arg name="tesseract" ref="tesseract:configuration" />
     </bean>
 
-    <!-- Google Vision TextExtractor -->
-    <bean class="com.google.cloud.vision.v1.ImageAnnotatorClient" factory-method="create" />
-    <bean name="extractor" class="nl.tudelft.booklab.vision.ocr.gvision.GoogleVisionTextExtractor" />
+    <!-- Tesseract configuration -->
+    <bean name="tesseract:configuration" class="nl.tudelft.booklab.vision.ocr.tesseract.Tesseract">
+        <constructor-arg index="0" value="classpath:/tesseract/languages/english" type="java.io.InputStream" />
+    </bean>
 </beans>

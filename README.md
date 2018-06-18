@@ -20,6 +20,18 @@ or simply
 [grab](https://gitlab.ewi.tudelft.nl/TI2806/2017-2018/MS/ms1/ms1/-/archive/master/ms1-master.zip) 
 a copy of the source code as a Zip file.
 
+### Deployment Types
+The project provides multiple deployment types:
+- **Testing**  
+  This deployment type is suitable for testing and development environments and uses an in-memory database
+  to store the data. This deployment uses the latest, cutting-edge technology for book detection and recommendation.
+- **Production**  
+  This deployment type is suitable for a production environment and uses a Postgres as backing database.
+  This deployment uses the latest, cutting-edge technology for book detection and recommendation.
+- **OSS**  
+  This deployment type is similar to the testing deployment type, but does not rely on external (Google) services for
+  book detection and text extraction. This type should be preferred if using the (paid) services from Google forms a problem.
+
 ### Deploy (with Docker)
 Make sure you have done the following:
 - **Install and start Docker**  
@@ -28,6 +40,9 @@ Make sure you have done the following:
 - **Install docker-compose**  
   Make sure that `docker-compose` is installed on your system. See [this page](https://docs.docker.com/compose/install/)
   on how to install the program.
+- **Add Google Books API key to environment**
+  Add the API key for Google Books to your environmental variables under the name `GOOGLE_BOOKS_API_KEY`.
+  See [this page](https://developers.google.com/books/docs/v1/using#APIKey) on how to acquire an API key.
 - **Copy Google Cloud credentials to configuration folder**  
   The key file for your Google Cloud service account should be put in the `config` directory right in the root of the
   project as `keys.json`.
@@ -55,12 +70,12 @@ Make sure the following variables are defined in your environment:
   The path to your Google Cloud service account keys. See [this page](https://cloud.google.com/docs/authentication/getting-started) on
   how to acquire a service account for Google Cloud and generate a key file. Make sure you have enabled the Google Vision API.
 
-After that, run the following command to start the backend:
+After that, run the following command to start the backend (testing deployment):
 ```sh
-./gradlew run
+./gradlew :booklab-deployment-testing:run
 ```
 
-To run the frontend run the following code in your command prompt within the `booklab-frontend` 
+To run the frontend run the following code in your command prompt within the `booklab-frontend-web` 
 folder. Make sure you have installed the dependencies of the project using `npm install`.
 ```sh
 npm run ng serve -- --open

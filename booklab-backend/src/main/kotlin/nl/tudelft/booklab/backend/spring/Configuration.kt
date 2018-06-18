@@ -16,8 +16,10 @@
 
 package nl.tudelft.booklab.backend.spring
 
+import io.ktor.application.Application
 import io.ktor.config.ApplicationConfig
 import io.ktor.config.ApplicationConfigValue
+import org.springframework.beans.factory.FactoryBean
 import org.springframework.core.convert.converter.Converter
 import org.springframework.core.env.PropertySource
 
@@ -28,7 +30,18 @@ import org.springframework.core.env.PropertySource
  * @param source The [ApplicationConfig] to use for the configuration.
  */
 class KtorPropertySource(name: String, source: ApplicationConfig) : PropertySource<ApplicationConfig>(name, source) {
-    override fun getProperty(path: String): Any? = source.propertyOrNull(path)
+    override fun getProperty(path: String): Any? {
+        try {
+            return source.config(path)
+        } catch (e: Exception) {}
+        try {
+            return source.configList(path)
+        } catch (e: Exception) {}
+        try {
+            return source.property(path)
+        } catch (e: Exception) {}
+        return null
+    }
 }
 
 /**
@@ -43,4 +56,25 @@ object KtorApplicationConfigValueStringConverter : Converter<ApplicationConfigVa
  */
 object KtorApplicationConfigValueListConverter : Converter<ApplicationConfigValue, List<String>> {
     override fun convert(source: ApplicationConfigValue): List<String> = source.getList()
+}
+
+/**
+ * A [FactoryBean] for accessing an [ApplicationConfig] object of the running [Application].
+ *
+ * @property application The Ktor [Application] to read the configuration from.
+ * @property path The path to the object.
+ */
+class KtorApplicationConfigFactoryBean(
+    private val application: Application,
+    private val path: String? = null
+) : FactoryBean<ApplicationConfig> {
+
+    override fun getObject(): ApplicationConfig = application.environment.config.let {
+        if (path != null)
+            it.config(path)
+        else
+            it
+    }
+
+    override fun getObjectType(): Class<*> = ApplicationConfig::class.java
 }
