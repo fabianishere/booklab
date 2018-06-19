@@ -1,8 +1,0 @@
-<div class="login-box">
-    <label>Username</label><br>
-    <input #username (keyup.enter)="loginbutton.click()" type="text"><br>
-    <label>Password</label><br>
-    <input #password (keyup.enter)="loginbutton.click()" type="password"><br>
-    <button #loginbutton class="button ml-0" (click)="login(username.value, password.value)">Login</button>
-    <p *ngIf="this.invalid">Fill in a valid username and password</p>
-</div>

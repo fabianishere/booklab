@@ -17,9 +17,15 @@ gradle-app.setting
 # Ignore deployment configuration
 config/
 
+# Ignore generated properties file for Android SDK
+local.properties
+
 # IntelliJ files
 .idea/
 
 booklab-backend/out
 *.iml
 */out
+
+## iOS
+Carthage/

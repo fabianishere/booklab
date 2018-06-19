@@ -18,32 +18,38 @@ package nl.tudelft.booklab.backend.api.v1
 
 import io.ktor.application.call
 import io.ktor.auth.oauth2.oauthTokenEndpoint
+import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.application
 import io.ktor.routing.get
 import io.ktor.routing.route
-import nl.tudelft.booklab.backend.auth.OAuthConfiguration
+import nl.tudelft.booklab.backend.services.auth.BooklabOAuthServer
+import nl.tudelft.booklab.backend.spring.inject
 
 /**
  * Define meta endpoints at the current route for the REST api.
  */
 fun Route.meta() {
-    route("/auth") { auth(application.attributes[OAuthConfiguration.KEY]) }
-    get("/health") { call.respond(HealthCheck(true)) }
+    route("/auth") { auth() }
+    route("/health") {
+        get { call.respond(Success(HealthCheck(true))) }
+        handle { call.respond(HttpStatusCode.MethodNotAllowed, MethodNotAllowed()) }
+    }
 }
 
 /**
  * Define the authentication endpoints at the current route of the REST api.
  *
- * @param oauth The oauth configuration to use.
  */
-internal fun Route.auth(oauth: OAuthConfiguration) {
+internal fun Route.auth() {
+    val server: BooklabOAuthServer = application.inject()
+
     // Define OAuth token endpoint
-    route("/token") { oauthTokenEndpoint(oauth.server) }
+    route("/token") { oauthTokenEndpoint(server) }
 
     // TODO define proper OAuth authorization endpoint
-    // This is already supported by the ktor-auth-oauth package, but needs some implementation on our side.
+    // This is already supported by the ktor-auth-oauth2 package, but needs some implementation on our side.
 }
 
 /**

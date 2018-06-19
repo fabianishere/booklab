@@ -17,33 +17,26 @@
 package nl.tudelft.booklab.backend.api.v1
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.typesafe.config.ConfigFactory
 import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.auth.Authentication
-import io.ktor.config.HoconApplicationConfig
-import io.ktor.features.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.jackson.jackson
+import io.ktor.routing.Routing
 import io.ktor.routing.route
-import io.ktor.routing.routing
 import io.ktor.server.testing.contentType
-import io.ktor.server.testing.createTestEnvironment
 import io.ktor.server.testing.handleRequest
-import io.ktor.server.testing.withApplication
-import nl.tudelft.booklab.backend.auth.OAuthConfiguration
-import nl.tudelft.booklab.backend.auth.asOAuthConfiguration
-import nl.tudelft.booklab.backend.configureOAuth
+import nl.tudelft.booklab.backend.booklab
+import nl.tudelft.booklab.backend.createTestContext
+import nl.tudelft.booklab.backend.ktor.Routes
+import nl.tudelft.booklab.backend.spring.bootstrap
+import nl.tudelft.booklab.backend.withTestEngine
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.context.support.beans
 
 /**
  * Unit test suite for the meta endpoint of the BookLab REST api.
@@ -62,40 +55,41 @@ internal class MetaTest {
     }
 
     @Test
-    fun `health check should return true`() = withApplication(metaEnvironment()) {
+    fun `health check should return true`() = withTestEngine({ module() }) {
         with(handleRequest(HttpMethod.Get, "/api/health")) {
             assertEquals(HttpStatusCode.OK, response.status())
             assertTrue(response.contentType().match(ContentType.Application.Json))
 
-            val response: HealthCheck? = response.content?.let { mapper.readValue(it) }
-            assertEquals(HealthCheck(true), response)
+            val response: ApiResponse.Success<HealthCheck>? = response.content?.let { mapper.readValue(it) }
+            assertEquals(HealthCheck(true), response?.data)
         }
     }
 
-    private fun metaEnvironment() = createTestEnvironment {
-        config = HoconApplicationConfig(ConfigFactory.load("application-test.conf"))
-        module { metaModule() }
+    @Test
+    fun `health check requires GET`() = withTestEngine({ module() }) {
+        with(handleRequest(HttpMethod.Post, "/api/health")) {
+            assertEquals(HttpStatusCode.MethodNotAllowed, response.status())
+            assertTrue(response.contentType().match(ContentType.Application.Json))
+
+            val response: ApiResponse.Failure? = response.content?.let { mapper.readValue(it) }
+            assertEquals("method_not_allowed", response?.error?.code)
+        }
     }
 
-    private fun Application.metaModule() {
-        install(ContentNegotiation) {
-            jackson {
-                configure(SerializationFeature.INDENT_OUTPUT, true)
-                registerModule(JavaTimeModule())
-            }
+    private fun Application.module() {
+        val context = createTestContext {
+            beans {
+                // Application routes
+                bean("routes") { Routes.from { routes() } }
+            }.initialize(this)
         }
+        context.bootstrap(this) { booklab() }
+    }
 
-        install(Authentication) {
-            val oauth = environment.config.config("auth").asOAuthConfiguration().also {
-                attributes.put(OAuthConfiguration.KEY, it)
-            }
-            configureOAuth(oauth)
-        }
-
-        routing {
-            route("/api") {
-                meta()
-            }
-        }
+    /**
+     * The routes of the application.
+     */
+    private fun Routing.routes() {
+        route("/api") { meta() }
     }
 }

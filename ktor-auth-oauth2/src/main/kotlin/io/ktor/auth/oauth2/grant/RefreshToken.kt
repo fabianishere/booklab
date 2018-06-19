@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Fabian Mastenbroek.
+ * Copyright 2018 The BookLab Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import io.ktor.application.ApplicationCall
 import io.ktor.auth.Principal
 import io.ktor.auth.oauth2.InvalidClient
 import io.ktor.auth.oauth2.InvalidRequest
-import io.ktor.auth.oauth2.getNonBlank
+import io.ktor.auth.oauth2.util.getNonBlank
 
 /**
  * The Refresh Token grant type is used by clients to exchange a refresh token for an access token when the access token
@@ -34,6 +34,8 @@ open class RefreshTokenGrantHandler<C : Principal, U : Principal> : GrantHandler
     override val clientCredentialsRequired: Boolean = true
 
     override val supportsAuthorization: Boolean = false
+
+    override val supportsGranting: Boolean = true
 
     override suspend fun ApplicationCall.grant(request: GrantRequest<C, U>): Grant<C, U> {
         val server = request.server

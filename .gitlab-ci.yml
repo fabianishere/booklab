@@ -26,11 +26,14 @@ before_script:
       - "build"
       - "*/build"
       - ".gradle/caches"
+  variables:
+    ORG_GRADLE_PROJECT_exclude: "booklab-frontend-android,booklab-frontend-ios"
 
 build:backend:
   <<: *build-backend
   except:
     - master
+    - develop
 
 build:backend(master):
   <<: *build-backend
@@ -42,6 +45,7 @@ build:backend(master):
       - "*/build/dokka"
   only:
     - master
+    - develop
 
 .test:backend(template): &test-backend
   image: gradle:4.7
@@ -58,11 +62,14 @@ build:backend(master):
       - "build"
       - "*/build"
       - ".gradle/caches"
+  variables:
+    ORG_GRADLE_PROJECT_exclude: "booklab-frontend-android,booklab-frontend-ios"
 
 test:backend:
   <<: *test-backend
   except:
     - master
+    - develop
 
 test:backend(master):
   <<: *test-backend
@@ -72,83 +79,134 @@ test:backend(master):
       - "*/build/reports"
   only:
     - master
+    - develop
 
-# Frontend jobs
-.build:frontend(template): &build-frontend
+# Web frontend jobs
+.build:frontend:web(template): &build-frontend-web
   image: node:8
   stage: build
   script:
-    - cd booklab-frontend
+    - cd booklab-frontend-web
     - npm install
     - npm run build
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
     paths:
-      - "booklab-frontend/node_modules"
-      - "booklab-frontend/build/angular"
+      - "booklab-frontend-web/node_modules"
+      - "booklab-frontend-web/build/angular"
   tags:
     - longJob
 
-build:frontend:
-  <<: *build-frontend
+build:frontend:web:
+  <<: *build-frontend-web
   except:
     - master
+    - develop
 
-build:frontend(master):
-  <<: *build-frontend
+build:frontend:web(master):
+  <<: *build-frontend-web
   script:
-    - cd booklab-frontend
+    - cd booklab-frontend-web
+    - npm install
     - npm run build
     - npm run compodoc
   artifacts:
     expire_in: 1 week
     paths:
-      - "booklab-frontend/build/angular"
-      - "booklab-frontend/build/docs"
+      - "booklab-frontend-web/build/angular"
+      - "booklab-frontend-web/build/docs"
   only:
     - master
+    - develop
 
-.test:frontend(template): &test-frontend
+.test:frontend:web(template): &test-frontend-web
   image: fabianishere/puppeteer-root:1.4.0
   stage: test
   script:
-    - cd booklab-frontend
+    - cd booklab-frontend-web
     - npm install
     - npm run ng test -- --browsers ChromeCI --code-coverage --watch false
   coverage: '/Branches\s*:\s*(\d+(?:\.\d+)?%)/'
   dependencies:
-    - build:frontend
-    - build:frontend(master)
+    - build:frontend:web
+    - build:frontend:web(master)
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
     paths:
-      - "booklab-frontend/node_modules"
-      - "booklab-frontend/build/angular"
+      - "booklab-frontend-web/node_modules"
+      - "booklab-frontend-web/build/angular"
   tags:
     - longJob
 
-test:frontend:
-  <<: *test-frontend
+test:frontend:web:
+  <<: *test-frontend-web
   except:
     - master
+    - develop
 
-test:frontend(master):
-  <<: *test-frontend
+test:frontend:web(master):
+  <<: *test-frontend-web
   artifacts:
     expire_in: 1 week
     paths:
       - "*/build/reports"
   only:
     - master
+    - develop
 
-test:frontend:e2e:
-  <<: *test-frontend
+test:frontend:web:e2e:
+  <<: *test-frontend-web
   variables:
     HEADLESS: "TRUE"
   script:
-    - cd booklab-frontend
+    - cd booklab-frontend-web
     - npm install
     - npm run ng e2e
   allow_failure: true
+
+# Android frontend jobs
+.build:frontend:android(template): &build-frontend-android
+  image: thyrlian/android-sdk
+  stage: build
+  script: gradle --build-cache :booklab-frontend-android:assemble
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: push
+    paths:
+      - "booklab-frontend-android/build"
+      - ".gradle/caches"
+  tags:
+    - longJob
+
+build:frontend:android:
+  <<: *build-frontend-android
+  except:
+    - master
+
+build:frontend:android(master):
+  <<: *build-frontend-android
+  script: gradle --build-cache :booklab-frontend-android:assemble :booklab-frontend-android:dokka
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - "booklab-frontend-android/build/dokka"
+  only:
+    - master
+
+test:frontend:android:
+  image: thyrlian/android-sdk
+  stage: test
+  script: gradle --build-cache :booklab-frontend-android:check
+  dependencies:
+    - build:frontend:android
+    - build:frontend:android(master)
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - "booklab-frontend-android/build"
+      - ".gradle/caches"
+  tags:
+    - longJob

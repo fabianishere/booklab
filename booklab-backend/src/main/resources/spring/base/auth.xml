@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2018 The BookLab Authors.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!-- Password -->
+    <bean id="password:password-service" class="nl.tudelft.booklab.backend.services.password.BCryptPasswordService" />
+
+    <!-- The OAuthServer OAuth provider to use -->
+    <bean id="oauth:server" class="io.ktor.auth.oauth2.OAuthServer">
+        <constructor-arg name="handlers">
+            <map>
+                <!-- Password grant type -->
+                <entry>
+                    <key>
+                        <value>password</value>
+                    </key>
+                    <ref bean="oauth:handler:password" />
+                </entry>
+
+                <!-- Client credentials grant type -->
+                <entry>
+                    <key>
+                        <value>client_credentials</value>
+                    </key>
+                    <ref bean="oauth:handler:client-credentials" />
+                </entry>
+            </map>
+        </constructor-arg>
+
+        <constructor-arg name="clientRepository" ref="oauth:repository:client" />
+        <constructor-arg name="tokenRepository" ref="oauth:repository:token" />
+    </bean>
+
+    <bean id="oauth:handler:password" class="io.ktor.auth.oauth2.grant.PasswordGrantHandler">
+        <constructor-arg name="repository" ref="oauth:repository:user" />
+    </bean>
+    <bean id="oauth:handler:client-credentials" class="io.ktor.auth.oauth2.grant.ClientCredentialsGrantHandler" />
+
+    <!-- Persistent user repository -->
+    <bean id="oauth:repository:user" class="nl.tudelft.booklab.backend.services.auth.PersistentUserRepository">
+        <constructor-arg name="userService" ref="user:user-service" />
+        <constructor-arg name="passwordService" ref="password:password-service" />
+    </bean>
+
+    <!-- Client Repository -->
+    <bean id="oauth:repository:client" class="nl.tudelft.booklab.backend.services.auth.ClientHashedTableRepositoryFactoryBean">
+        <constructor-arg name="config" ref="oauth:repository:client:configuration" />
+        <constructor-arg name="name" value="entries" />
+        <constructor-arg name="digester" ref="oauth:repository:client:digester" />
+    </bean>
+    <bean id="oauth:repository:client:configuration" class="nl.tudelft.booklab.backend.spring.KtorApplicationConfigFactoryBean">
+        <constructor-arg name="path" value="auth.clients" />
+    </bean>
+    <bean id="oauth:repository:client:digester" class="nl.tudelft.booklab.backend.services.auth.DigesterFunctionFactoryBean">
+        <constructor-arg name="algorithm" value="${auth.clients.digester.algorithm}" />
+        <constructor-arg name="salt" value="${auth.clients.digester.salt}" />
+    </bean>
+
+    <!-- JWT token repository -->
+    <bean id="oauth:repository:token" class="io.ktor.auth.oauth2.repository.JwtAccessTokenRepository">
+        <constructor-arg name="configuration" ref="oauth:jwt:configuration" />
+        <constructor-arg name="userRepository" ref="oauth:repository:user" />
+        <constructor-arg name="clientRepository" ref="oauth:repository:client" />
+    </bean>
+
+    <bean id="oauth:jwt:configuration" class="io.ktor.auth.oauth2.repository.JwtConfiguration">
+        <constructor-arg name="issuer" value="${auth.jwt.domain}" />
+        <constructor-arg name="audience" value="${auth.jwt.audience}" />
+        <constructor-arg name="algorithm" ref="oauth:jwt:algorithm" />
+    </bean>
+
+    <bean id="oauth:jwt:algorithm" class="com.auth0.jwt.algorithms.Algorithm" factory-method="HMAC512">
+        <constructor-arg name="secret" value="${auth.jwt.passphrase}" />
+    </bean>
+</beans>

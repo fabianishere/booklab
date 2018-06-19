@@ -16,43 +16,126 @@
 
 package nl.tudelft.booklab.catalogue
 
-/**
- * A data class representing a book
- *
- * @property titles is a list of all [Title]s and subtitles
- * @property authors is a list of author names
- * @property ids is a list of isbn identifiers
- * @property rating is the average rating for the book. the value
- * is nullable since not all databases has this data.
- *
- * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
- */
-data class Book(
-    val titles: List<Title>,
-    val authors: List<String>,
-    val ids: List<String>,
-    val rating: Double? = null
-)
+import java.net.URL
+import java.time.temporal.TemporalAccessor
 
 /**
- * Enumeration representing difference between main title and
- * a subtitle
- *
- * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
+ * An abstract class representing a book implemented by catalogue providers.
  */
-enum class TitleType {
-    MAIN, SUB
+abstract class Book {
+    /**
+     * A map containing the identifiers of the book.
+     */
+    abstract val identifiers: Map<Identifier, String>
+
+    /**
+     * The title of the book.
+     */
+    abstract val title: String
+
+    /**
+     * The (optional) subtitle of the book.
+     */
+    abstract val subtitle: String?
+
+    /**
+     * A list of authors of the book.
+     */
+    abstract val authors: List<String>
+
+    /**
+     * The (optional) publisher of the book.
+     */
+    abstract val publisher: String?
+
+    /**
+     * An (optional) list of categories of the book.
+     */
+    abstract val categories: Set<String>
+
+    /**
+     * The (optional) date at which the book was published.
+     */
+    abstract val publishedAt: TemporalAccessor?
+
+    /**
+     * An (optional) description of the book.
+     */
+    abstract val description: String?
+
+    /**
+     * The (optional) language of the book.
+     */
+    abstract val language: String?
+
+    /**
+     * An (optional) rating of the book.
+     */
+    abstract val ratings: Ratings?
+
+    /**
+     * A map of images of the book.
+     */
+    abstract val images: Map<String, URL>
+
+    /**
+     * Determine whether the given object is equal to this [Book].
+     *
+     * @param other The object to check for equality.
+     * @return `true` if both objects are equal, `false` otherwise.
+     */
+    override fun equals(other: Any?): Boolean {
+        if (other is Book) {
+            return identifiers.any { other.identifiers[it.key] == it.value }
+        }
+
+        return false
+    }
+
+    /**
+     * Compute a hash code for this [Book] object.
+     *
+     * @return A hash code for the object.
+     */
+    override fun hashCode(): Int = identifiers.hashCode()
+
+    /**
+     * Return a string representation of this class.
+     *
+     * @return A string representation of this class.
+     */
+    override fun toString(): String = "Book(identifiers=$identifiers, title=$title, authors=$authors, ratings=$ratings)"
 }
 
 /**
- * A data class that represents a book title
- *
- * @property value the actual title
- * @property type the [TitleType]
- *
- * @author Christian Slothouber (f.c.slothouber@student.tudelft.nl)
+ * Enumeration of identifier types for a book.
  */
-data class Title(
-    val value: String,
-    val type: TitleType = TitleType.MAIN
-)
+enum class Identifier {
+    /**
+     * 10-digit version of International Standard Book Number as published as international standard ISO 2108.
+     */
+    ISBN_10,
+
+    /**
+     * 13-digit version of International Standard Book Number as published as international standard ISO 2108.
+     */
+    ISBN_13,
+
+    /**
+     * An internal identifier specific to the implementation used.
+     */
+    INTERNAL
+}
+
+/**
+ * This contain represents the ratings of a [Book].
+ *
+ * @property average The average rating given by the user.
+ * @property count The total amount of ratings given.
+ */
+data class Ratings(val average: Double, val count: Int) {
+    /**
+     * A private constructor so framework can construct this class dynamically.
+     */
+    private constructor() : this(0.0, 0)
+}

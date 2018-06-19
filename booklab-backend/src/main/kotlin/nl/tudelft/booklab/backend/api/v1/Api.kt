@@ -18,22 +18,17 @@ package nl.tudelft.booklab.backend.api.v1
 
 import io.ktor.auth.authenticate
 import io.ktor.routing.Route
-import io.ktor.routing.application
 import io.ktor.routing.route
-import nl.tudelft.booklab.backend.CatalogueConfiguration
-import nl.tudelft.booklab.backend.VisionConfiguration
 
 /**
  * Describe the routes for the REST API of the BookLab backend.
  */
 fun Route.api() {
-    authenticate("rest:detection") {
-        route("detection") {
-            detection(application.attributes[VisionConfiguration.KEY])
-        }
-    }
-    route("search") {
-        search(application.attributes[CatalogueConfiguration.KEY])
+    authenticate {
+        route("detection") { detection() }
+        route("users") { users() }
+        route("collections") { collections() }
+        route("catalogue") { catalogue() }
     }
     meta()
 }

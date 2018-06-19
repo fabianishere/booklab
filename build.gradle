@@ -24,18 +24,27 @@ allprojects {
     version = '1.0'
 
     ext {
-        kotlin_version = '1.2.41'
+        kotlin_version = '1.2.50'
         ktor_version = '0.9.2'
         junit_jupiter_version = '5.2.0'
         junit_platform_version = '1.2.0'
+        jacoco_version = '0.8.2-SNAPSHOT'
     }
 }
 
 repositories {
     jcenter()
+
+    // This repository is needed to get the latest snapshot of Jacoco
+    maven { url = "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 
 evaluationDependsOnChildren()
+
+jacoco {
+    // We use the latest snapshot of Jacoco in order to get it to ignore Kotlin-generated code
+    toolVersion = jacoco_version
+}
 
 task jacocoTestReport(type: JacocoReport) {
     executionData fileTree(project.rootDir.absolutePath).include("**/build/jacoco/*.exec")
@@ -65,13 +74,19 @@ jacocoTestReport.doLast {
     slurper.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false)
     slurper.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false)
 
-    def spacing = allprojects*.name.max().length() + 2
+    def spacing = allprojects*.name.collect { it.length() }.max() + 1
     allprojects.each {
         if (!it.plugins.hasPlugin("jacoco"))  {
             return
         }
 
-        def res = slurper.parse it.jacocoTestReport.reports.xml.destination
+        def report = it.jacocoTestReport.reports.xml.destination
+
+        if (!report.exists()) {
+            return
+        }
+
+        def res = slurper.parse report
         def counter = res.counter.find { it.@type == 'BRANCH' }
         def covered = counter.@covered.toInteger()
         def missed = counter.@missed.toInteger()

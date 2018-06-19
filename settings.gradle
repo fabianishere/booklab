@@ -14,12 +14,47 @@
  * limitations under the License.
  */
 
+/* Workaround for Android plugin to support plugin syntax */
+pluginManagement {
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id == 'com.android.application') {
+                useModule("com.android.tools.build:gradle:${requested.version}")
+            }
+        }
+    }
+
+    repositories {
+        gradlePluginPortal()
+        google()
+    }
+}
+
 rootProject.name = "booklab"
 
-include 'booklab-backend'
-include 'booklab-catalogue'
-include 'booklab-frontend'
-include 'booklab-proxy'
-include 'booklab-recommender'
-include 'booklab-vision'
-include 'ktor-auth-oauth2'
+/* Allow for modules to be excluded from a full build */
+gradle.ext.exclude = hasProperty('exclude') ? getProperty('exclude').split(',')*.trim() : []
+void tryInclude(String name) {
+    if (!gradle.ext.exclude.contains(name)) {
+        include name
+    }
+}
+
+tryInclude 'booklab-backend'
+tryInclude 'booklab-catalogue'
+tryInclude 'booklab-catalogue-gbooks'
+tryInclude 'booklab-catalogue-sru'
+tryInclude 'booklab-deployment-testing'
+tryInclude 'booklab-deployment-production'
+tryInclude 'booklab-deployment-oss'
+tryInclude 'booklab-frontend-android'
+tryInclude 'booklab-frontend-ios'
+tryInclude 'booklab-frontend-web'
+tryInclude 'booklab-proxy'
+tryInclude 'booklab-recommender'
+tryInclude 'booklab-vision'
+tryInclude 'booklab-vision-gvision'
+tryInclude 'booklab-vision-tensorflow'
+tryInclude 'booklab-vision-tesseract'
+tryInclude 'ktor-auth-oauth2'
+

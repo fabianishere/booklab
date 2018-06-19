@@ -18,6 +18,7 @@ package nl.tudelft.booklab.vision.detection.opencv;
 
 import org.jetbrains.annotations.NotNull;
 import org.opencv.core.Mat;
+import org.opencv.core.Rect;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class CannyBookDetector extends AbstractBookDetector {
 
     @NotNull
     @Override
-    public List<Mat> detect(@NotNull Mat mat) {
+    public List<Rect> detect(@NotNull Mat mat) {
         return detectBooks(mat);
     }
 
@@ -42,7 +43,7 @@ public class CannyBookDetector extends AbstractBookDetector {
      * @param image openCV matrix containing an image
      * @return list of images (openCV matrices)
      */
-    private static List<Mat> detectBooks(Mat image) {
+    private static List<Rect> detectBooks(Mat image) {
         image = ImageProcessingHelper.colorhistEqualize(image);
         List<Integer> cropLocations = detectBookLocations(image);
         return cropBooks(image, cropLocations, false);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Fabian Mastenbroek.
+ * Copyright 2018 The BookLab Authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,19 +28,11 @@ import io.ktor.auth.oauth2.ServerError
  * See http://tools.ietf.org/html/rfc6749#section-4.4
  */
 open class ClientCredentialsGrantHandler<C : Principal, U : Principal> : GrantHandler<C, U> {
-    /**
-     * Map the credentials of a client to a user principal. This method can be optionally overridden to map a client to
-     * a user.
-     *
-     * @param client The client to map to a user.
-     * @return The user associated with this client.
-     */
-    @Suppress("unused")
-    suspend fun ApplicationCall.authenticate(client: C): U? = null
-
     override val clientCredentialsRequired: Boolean = true
 
     override val supportsAuthorization: Boolean = false
+
+    override val supportsGranting: Boolean = true
 
     override suspend fun ApplicationCall.grant(request: GrantRequest<C, U>): Grant<C, U> {
         val server = request.server
@@ -49,7 +41,7 @@ open class ClientCredentialsGrantHandler<C : Principal, U : Principal> : GrantHa
         val scopes = server.clientRepository.validateScopes(client, request.scopes) ?: throw InvalidScope("The requested scopes are not accepted.")
 
         // Generate token based on client principal
-        val (token, refresh) = server.tokenRepository.generate(client, authenticate(client), scopes = scopes)
+        val (token, refresh) = server.tokenRepository.generate(client, null, scopes = scopes)
         return Grant(accessToken = token, refreshToken = refresh, state = request.state)
     }
 }

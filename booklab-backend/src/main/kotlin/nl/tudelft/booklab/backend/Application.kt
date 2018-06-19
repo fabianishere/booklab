@@ -16,50 +16,65 @@
 
 package nl.tudelft.booklab.backend
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport
-import com.google.api.client.json.jackson2.JacksonFactory
-import com.google.api.services.books.Books
-import com.google.api.services.books.BooksRequestInitializer
-import com.google.cloud.vision.v1.ImageAnnotatorClient
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.module.SimpleModule
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.auth.Authentication
-import io.ktor.auth.UserIdPrincipal
 import io.ktor.auth.oauth2.oauth
-import io.ktor.auth.oauth2.repository.ClientIdPrincipal
 import io.ktor.features.CORS
 import io.ktor.features.Compression
 import io.ktor.features.ContentNegotiation
+import io.ktor.features.DataConversion
 import io.ktor.features.DefaultHeaders
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.jackson.jackson
+import io.ktor.locations.Locations
+import io.ktor.routing.Routing
 import io.ktor.routing.route
 import io.ktor.routing.routing
 import nl.tudelft.booklab.backend.api.v1.api
-import nl.tudelft.booklab.backend.auth.OAuthConfiguration
-import nl.tudelft.booklab.backend.auth.asOAuthConfiguration
-import nl.tudelft.booklab.catalogue.google.GoogleCatalogueClient
-import nl.tudelft.booklab.vision.detection.opencv.CannyBookDetector
-import nl.tudelft.booklab.vision.ocr.gvision.GoogleVisionTextExtractor
+import nl.tudelft.booklab.backend.ktor.Routes
+import nl.tudelft.booklab.backend.ktor.TypedConversionService
+import nl.tudelft.booklab.backend.services.auth.BooklabOAuthServer
+import nl.tudelft.booklab.backend.spring.inject
+import nl.tudelft.booklab.backend.spring.injectAll
 
 /**
- * The main entry point of the BookLab web application.
+ * Configure the given Ktor [Application] as Booklab backend application.
  */
 fun Application.booklab() {
     install(DefaultHeaders)
     install(Compression)
     install(ContentNegotiation) {
-        configureJackson()
-    }
-
-    install(Authentication) {
-        val oauth = environment.config.config("auth").asOAuthConfiguration().also {
-            attributes.put(OAuthConfiguration.KEY, it)
+        jackson {
+            configure(SerializationFeature.INDENT_OUTPUT, true)
+            setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            registerModule(SimpleModule().apply {
+                val deserializers: List<StdDeserializer<*>> = injectAll()
+                for (deserializer in deserializers) {
+                    // We can suppress the cast as we know it must be correct for StdDeserializer instances since they
+                    // specify their types during construction.
+                    @Suppress("UNCHECKED_CAST")
+                    addDeserializer(deserializer.handledType() as Class<Any>, deserializer)
+                }
+            })
         }
-        configureOAuth(oauth)
+    }
+    install(Authentication) {
+        oauth(inject<BooklabOAuthServer>())
+    }
+    install(Locations)
+    install(DataConversion) {
+        val services: List<TypedConversionService> = injectAll()
+        for (service in services) {
+            for (type in service.types) {
+                convert(type, service)
+            }
+        }
     }
 
     // Allow the different hosts to connect to the REST API
@@ -71,62 +86,19 @@ fun Application.booklab() {
         method(HttpMethod.Post)
     }
 
-    // Define the catalogue configuration
-    val catalogue = CatalogueConfiguration(
-        client = GoogleCatalogueClient(
-            Books.Builder(
-                GoogleNetHttpTransport.newTrustedTransport(),
-                JacksonFactory.getDefaultInstance(),
-                null
-            )
-                .setApplicationName("booklab")
-                .setGoogleClientRequestInitializer(BooksRequestInitializer(environment.config.property("catalogue.key").getString()))
-                .build()
-        )
-    ).also {
-        attributes.put(CatalogueConfiguration.KEY, it)
-    }
-
-    // Define the vision configuration
-    // TODO Implement a way to make this configuration configurable via the application.conf file
-    VisionConfiguration(
-            detector = CannyBookDetector(),
-            extractor = GoogleVisionTextExtractor(ImageAnnotatorClient.create()),
-            catalogue = catalogue
-    ).also {
-        attributes.put(VisionConfiguration.KEY, it)
-    }
-
-    // Load the JPA EntityManagerFactory from the configuration
-    attributes.put(JPA_KEY, environment.config.config("jpa").asEntityManagerFactory())
-
-    routing {
-        route("/api") {
-            api()
-        }
+    inject<Routes>("routes").run {
+        routing { configure() }
     }
 }
 
 /**
- * Configure the Jackson support for the [ContentNegotiation] feature.
+ * Retrieve the base url of the server.
  */
-fun ContentNegotiation.Configuration.configureJackson() {
-    jackson {
-        configure(SerializationFeature.INDENT_OUTPUT, true)
-        registerModule(JavaTimeModule())
-    }
-}
+val Application.baseUrl: String get() = environment.config.propertyOrNull("ktor.deployment.base-url")?.getString() ?: ""
 
 /**
- * Configure the OAuth authentication providers for an application.
- *
- * @param oauth The [OAuthConfiguration] to use for the authentication provider.
+ * The routes of the application.
  */
-fun Authentication.Configuration.configureOAuth(oauth: OAuthConfiguration) {
-    // Create an unnamed authentication provider for protecting resources using
-    // the OAuth authorization server.
-    oauth<ClientIdPrincipal, UserIdPrincipal>("rest:detection") {
-        server = oauth.server
-        scopes = setOf("detection")
-    }
+internal fun Routing.routes() {
+    route("/api") { api() }
 }

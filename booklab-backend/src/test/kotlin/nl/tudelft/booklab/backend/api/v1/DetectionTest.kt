@@ -17,39 +17,45 @@
 package nl.tudelft.booklab.backend.api.v1
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.typesafe.config.ConfigFactory
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.doThrow
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.stub
 import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.config.HoconApplicationConfig
-import io.ktor.features.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.jackson.jackson
+import io.ktor.routing.Routing
 import io.ktor.routing.route
-import io.ktor.routing.routing
-import io.ktor.server.testing.createTestEnvironment
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
-import io.ktor.server.testing.withApplication
-import nl.tudelft.booklab.backend.CatalogueConfiguration
-import nl.tudelft.booklab.backend.VisionConfiguration
-import nl.tudelft.booklab.catalogue.Book
-import nl.tudelft.booklab.catalogue.CatalogueClient
-import nl.tudelft.booklab.catalogue.Title
-import nl.tudelft.booklab.catalogue.TitleType
+import nl.tudelft.booklab.backend.booklab
+import nl.tudelft.booklab.backend.configureAuthorization
+import nl.tudelft.booklab.backend.createTestContext
+import nl.tudelft.booklab.backend.ktor.Routes
+import nl.tudelft.booklab.backend.services.catalogue.Book
+import nl.tudelft.booklab.backend.services.catalogue.CatalogueService
+import nl.tudelft.booklab.backend.services.vision.BookDetection
+import nl.tudelft.booklab.backend.services.vision.VisionService
+import nl.tudelft.booklab.backend.spring.bootstrap
+import nl.tudelft.booklab.backend.withTestEngine
+import nl.tudelft.booklab.catalogue.Identifier
 import nl.tudelft.booklab.vision.detection.BookDetector
 import nl.tudelft.booklab.vision.ocr.TextExtractor
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.opencv.core.Mat
+import org.mockito.ArgumentMatchers.anyInt
+import org.mockito.ArgumentMatchers.anyString
+import org.opencv.core.Rect
+import org.springframework.context.support.beans
+import nl.tudelft.booklab.catalogue.Book as AbstractBook
 
 /**
  * Unit test suite for the detection endpoint of the BookLab REST api.
@@ -63,77 +69,195 @@ internal class DetectionTest {
      */
     private lateinit var mapper: ObjectMapper
 
+    /**
+     * The collection detector to use.
+     */
+    private lateinit var detector: BookDetector
+
+    /**
+     * The text extractor to use.
+     */
+    private lateinit var extractor: TextExtractor
+
+    /**
+     * The catalogue service to use.
+     */
+    private lateinit var catalogue: CatalogueService
+
     @BeforeEach
     fun setUp() {
         mapper = jacksonObjectMapper()
+        mapper.registerModule(SimpleModule().apply {
+            addAbstractTypeMapping(AbstractBook::class.java, Book::class.java)
+        })
+        detector = mock()
+        extractor = mock()
+        catalogue = mock()
     }
 
     @Test
-    fun `post returns proper interface`() = withApplication(detectionEnvironment()) {
+    fun `post returns proper interface`() = withTestEngine({ module() }) {
+        detector.stub {
+            on { detect(any()) } doReturn(listOf(Rect(2, 3, 4, 5)))
+        }
+        extractor.stub {
+            on { batch(any()) } doReturn (listOf("De ontdekking van Harry Mulisch"))
+        }
+        val book = Book(
+            id = "test",
+            identifiers = mapOf(Identifier.INTERNAL to "test"),
+            title = "The ontdekking van de hemel",
+            authors = listOf("Harry Mulisch")
+        )
+        catalogue.stub {
+            onBlocking { query(anyString(), anyInt()) } doReturn listOf(book)
+        }
+
         val image = DetectionTest::class.java.getResourceAsStream("/test-image.jpg").readBytes()
         val request = handleRequest(HttpMethod.Post, "/api/detection") {
             setBody(image)
+            configureAuthorization("test", listOf("detection"))
             addHeader(HttpHeaders.ContentType, ContentType.Application.OctetStream.toString())
         }
         with(request) {
             assertEquals(HttpStatusCode.OK, response.status())
-            val response: DetectionResult? = response.content?.let { mapper.readValue(it) }
+            val response: ApiResponse.Success<List<BookDetection>>? = response.content?.let { mapper.readValue(it) }
             assertNotNull(response)
+            assertEquals(1, response?.data?.size)
         }
     }
 
     @Test
-    fun `non-post method not allowed`() = withApplication(detectionEnvironment()) {
-        val request = handleRequest(HttpMethod.Get, "/api/detection")
+    fun `post handles invalid estimation`() = withTestEngine({ module() }) {
+        detector.stub {
+            on { detect(any()) } doReturn(listOf(Rect(2, 3, 4, 5)))
+        }
+
+        extractor.stub {
+            on { batch(any()) } doReturn (listOf("De ontdekking van Harry Mulisch"))
+        }
+
+        val book = Book(
+            id = "test",
+            identifiers = mapOf(Identifier.INTERNAL to "test"),
+            title = "The ontdekking van de hemel",
+            authors = listOf("Harry Mulisch")
+        )
+        catalogue.stub {
+            onBlocking { query(anyString(), anyInt()) } doReturn listOf(book)
+        }
+
+        val image = DetectionTest::class.java.getResourceAsStream("/test-image.jpg").readBytes()
+        val request = handleRequest(HttpMethod.Post, "/api/detection") {
+            setBody(image)
+            configureAuthorization("test", listOf("detection"))
+            addHeader(HttpHeaders.ContentLength, "bla")
+            addHeader(HttpHeaders.ContentType, ContentType.Application.OctetStream.toString())
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            val response: ApiResponse.Success<List<BookDetection>>? = response.content?.let { mapper.readValue(it) }
+            assertNotNull(response)
+            assertEquals(1, response?.data?.size)
+        }
+    }
+
+    @Test
+    fun `post handles incorrect estimation`() = withTestEngine({ module() }) {
+        detector.stub {
+            on { detect(any()) } doReturn(listOf(Rect(2, 3, 4, 5)))
+        }
+
+        extractor.stub {
+            on { batch(any()) } doReturn (listOf("De ontdekking van Harry Mulisch"))
+        }
+        val book = Book(
+            id = "test",
+            identifiers = mapOf(Identifier.INTERNAL to "test"),
+            title = "The ontdekking van de hemel",
+            authors = listOf("Harry Mulisch")
+        )
+        catalogue.stub {
+            onBlocking { query(anyString(), anyInt()) } doReturn listOf(book)
+        }
+
+        val image = DetectionTest::class.java.getResourceAsStream("/test-image.jpg").readBytes()
+        val request = handleRequest(HttpMethod.Post, "/api/detection") {
+            setBody(image)
+            configureAuthorization("test", listOf("detection"))
+            addHeader(HttpHeaders.ContentLength, "-1")
+            addHeader(HttpHeaders.ContentType, ContentType.Application.OctetStream.toString())
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            val response: ApiResponse.Success<List<BookDetection>>? = response.content?.let { mapper.readValue(it) }
+            assertNotNull(response)
+            assertEquals(1, response?.data?.size)
+        }
+    }
+
+    @Test
+    fun `post handles internal server error`() = withTestEngine({ module() }) {
+        extractor.stub {
+            on { batch(any()) } doThrow RuntimeException("This is staged.")
+        }
+        val book = Book(
+            id = "test",
+            identifiers = mapOf(Identifier.INTERNAL to "test"),
+            title = "The ontdekking van de hemel",
+            authors = listOf("Harry Mulisch")
+        )
+        catalogue.stub {
+            onBlocking { query(anyString(), anyInt()) } doReturn listOf(book)
+        }
+
+        val image = DetectionTest::class.java.getResourceAsStream("/test-image.jpg").readBytes()
+        val request = handleRequest(HttpMethod.Post, "/api/detection") {
+            setBody(image)
+            configureAuthorization("test", listOf("detection"))
+            addHeader(HttpHeaders.ContentType, ContentType.Application.OctetStream.toString())
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.InternalServerError, response.status())
+            val response: ApiResponse.Failure? = response.content?.let { mapper.readValue(it) }
+            assertNotNull(response)
+            assertEquals("server_error", response?.error?.code)
+        }
+    }
+
+    @Test
+    fun `non-post method not allowed`() = withTestEngine({ module() }) {
+        val request = handleRequest(HttpMethod.Get, "/api/detection") {
+            configureAuthorization("test", listOf("detection"))
+        }
         with(request) {
             assertEquals(HttpStatusCode.MethodNotAllowed, response.status())
         }
     }
 
-    private fun detectionEnvironment() = createTestEnvironment {
-        config = HoconApplicationConfig(ConfigFactory.load("application-test.conf"))
-        module { detectionModule() }
-    }
+    private fun Application.module() {
+        val context = createTestContext {
+            beans {
+                // Application routes
+                bean("routes") { Routes.from { routes() } }
 
-    private fun Application.detectionModule() {
-        install(ContentNegotiation) {
-            jackson {
-                configure(SerializationFeature.INDENT_OUTPUT, true)
-                registerModule(JavaTimeModule())
-            }
+                bean { detector }
+                bean { extractor }
+                bean { catalogue }
+
+                // VisionService
+                bean { VisionService(ref(), ref(), ref()) }
+            }.initialize(this)
         }
 
-        routing {
-            route("/api/detection") {
-                detection(
-                    VisionConfiguration(
-                        detector = DummyBookDetector(),
-                        extractor = DummyTextExtractor(listOf("De ontdekking van", "Harry Mulisch")),
-                        catalogue = CatalogueConfiguration(DummyCatalogueClient(listOf(
-                            Book(
-                                titles = listOf(Title("The ontdekking van de hemel", TitleType.MAIN)),
-                                authors = listOf("Harry Mulisch"),
-                                ids = emptyList()
-                            )
-                        )))
-                    )
-                )
-            }
-        }
+        context.bootstrap(this) { booklab() }
     }
 
-    internal class DummyBookDetector : BookDetector {
-        override fun detect(mat: Mat): List<Mat> = listOf(mat)
-    }
-
-    internal class DummyTextExtractor(val values: List<String>) : TextExtractor {
-        override fun extract(mat: Mat): List<String> = values
-    }
-
-    internal class DummyCatalogueClient(val values: List<Book>) : CatalogueClient {
-        override suspend fun query(keywords: String, max: Int): List<Book> = values
-
-        override suspend fun query(title: String, author: String, max: Int): List<Book> = values
+    /**
+     * The routes of the application.
+     */
+    private fun Routing.routes() {
+        route("/api/detection") { detection() }
     }
 
     companion object {

@@ -1,0 +1,45 @@
+/*
+ * Copyright 2018 The BookLab Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+plugins {
+    id "java"
+    id "jacoco"
+    id "org.jetbrains.kotlin.jvm" version "1.2.50"
+    id "org.jetbrains.dokka" version "0.9.17"
+    id "org.jmailen.kotlinter" version "1.12.0"
+}
+
+/* Apply default Kotlin configuration */
+apply from: '../gradle/kotlin.gradle'
+
+/* Project configuration */
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile project(":booklab-catalogue")
+    compile("com.google.apis:google-api-services-books:v1-rev99-1.23.0") {
+        exclude group: "com.google.guava", module: "guava-jdk5"
+    }
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:$junit_platform_version"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:0.22.5"
+}

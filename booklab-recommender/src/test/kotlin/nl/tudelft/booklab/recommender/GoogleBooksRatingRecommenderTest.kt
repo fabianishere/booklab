@@ -17,8 +17,8 @@
 package nl.tudelft.booklab.recommender
 
 import kotlinx.coroutines.experimental.runBlocking
-import nl.tudelft.booklab.catalogue.Book
-import nl.tudelft.booklab.catalogue.Title
+import nl.tudelft.booklab.catalogue.Identifier
+import nl.tudelft.booklab.catalogue.Ratings
 import nl.tudelft.booklab.recommender.rating.google.GoogleBooksRatingRecommender
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -29,10 +29,10 @@ class GoogleBooksRatingRecommenderTest {
     @Test
     fun `default test`() {
         val candidates = listOf(
-            Book(listOf(Title("harry potter")), emptyList(), listOf("9788700631625"), 4.5),
-            Book(listOf(Title("kaas")), emptyList(), listOf("9789025363758"), 4.3),
-            Book(listOf(Title("dit zijn de namen")), emptyList(), listOf("9789023473282"), 4.8),
-            Book(listOf(Title("de ontdekking van de hemel")), emptyList(), listOf("9789023443988"), 3.3)
+            TestBook(mapOf(Identifier.ISBN_13 to "9788700631625"), "harry potter", emptyList(), ratings = Ratings(4.5, 1)),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789025363758"), "kaas", emptyList(), ratings = Ratings(4.3, 1)),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789023473282"), "dit zijn de namen", emptyList(), ratings = Ratings(4.8, 1)),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789023443988"), "de ontdekking van de hemel", emptyList(), ratings = Ratings(3.3, 1))
         )
 
         runBlocking {
@@ -49,18 +49,18 @@ class GoogleBooksRatingRecommenderTest {
     @Test
     fun `collection is discarded from results`() {
         val collection = listOf(
-            Book(listOf(Title("title 1")), listOf("author 1"), listOf("isbn 1"), 1.0),
-            Book(listOf(Title("title 2")), listOf("author 2"), listOf("isbn 2"), 1.0),
-            Book(listOf(Title("title 3")), listOf("author 2"), listOf("isbn 3"), 1.0),
-            Book(listOf(Title("title 4")), listOf("author 2"), listOf("isbn 4"), 1.0),
-            Book(listOf(Title("title 5")), listOf("author 3"), listOf("isbn 5"), 1.0),
-            Book(listOf(Title("harry potter")), emptyList(), listOf("0545010225"), 1.0)
+            TestBook(mapOf(Identifier.ISBN_10 to "isbn 1"), "title 1", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_10 to "isbn 2"), "title 2", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_10 to "isbn 3"), "title 3", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_10 to "isbn 4"), "title 4", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_10 to "isbn 5"), "title 5", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_13 to "9788700631625"), "harry potter", emptyList(), ratings = Ratings(1.0, 1))
         )
         val candidates = listOf(
-            Book(listOf(Title("harry potter")), emptyList(), listOf("0545010225"), 1.0),
-            Book(listOf(Title("kaas")), emptyList(), listOf("9789025363758"), 1.0),
-            Book(listOf(Title("dit zijn de namen")), emptyList(), listOf("9789023473282"), 1.0),
-            Book(listOf(Title("de ontdekking van de hemel")), emptyList(), listOf("9789023443988"), 1.0)
+            TestBook(mapOf(Identifier.ISBN_13 to "9788700631625"), "harry potter", emptyList(), ratings = Ratings(1.0, 1)),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789025363758"), "kaas", emptyList(), ratings = Ratings(1.0, 1)),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789023473282"), "dit zijn de namen", emptyList(), ratings = Ratings(1.0, 1)),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789023443988"), "de ontdekking van de hemel", emptyList(), ratings = Ratings(1.0, 1))
         )
 
         runBlocking {
@@ -73,11 +73,11 @@ class GoogleBooksRatingRecommenderTest {
     @Test
     fun `remove duplicates from candidates`() {
         val candidates = listOf(
-            Book(listOf(Title("harry potter")), emptyList(), listOf("0545010225"), 1.0),
-            Book(listOf(Title("harry potter")), emptyList(), listOf("0545010225"), 1.0),
-            Book(listOf(Title("kaas")), emptyList(), listOf("9789025363758"), 1.0),
-            Book(listOf(Title("dit zijn de namen")), emptyList(), listOf("9789023473282"), 1.0),
-            Book(listOf(Title("de ontdekking van de hemel")), emptyList(), listOf("9789023443988"), 1.0)
+            TestBook(mapOf(Identifier.ISBN_13 to "9788700631625"), "harry potter", emptyList(), ratings = Ratings(1.0, 1)),
+            TestBook(mapOf(Identifier.ISBN_13 to "9788700631625"), "harry potter", emptyList(), ratings = Ratings(1.0, 1)),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789025363758"), "kaas", emptyList(), ratings = Ratings(1.0, 1)),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789023473282"), "dit zijn de namen", emptyList(), ratings = Ratings(1.0, 1)),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789023443988"), "de ontdekking van de hemel", emptyList(), ratings = Ratings(1.0, 1))
         )
 
         runBlocking {
@@ -90,18 +90,16 @@ class GoogleBooksRatingRecommenderTest {
     @Test
     fun `books with no rating are discarded`() {
         val candidates = listOf(
-            Book(listOf(Title("harry potter")), emptyList(), listOf("0545010225"), 1.0),
-            Book(listOf(Title("UNKNOWN 1")), emptyList(), listOf("234")),
-            Book(listOf(Title("UNKNOWN 2")), emptyList(), listOf("234")),
-            Book(listOf(Title("kaas")), emptyList(), listOf("9789025363758"), 1.0),
-            Book(listOf(Title("dit zijn de namen")), emptyList(), listOf("9789023473282"), 1.0),
-            Book(listOf(Title("de ontdekking van de hemel")), emptyList(), listOf("9789023443988"), 1.0)
+            TestBook(mapOf(Identifier.ISBN_13 to "9788700631625"), "harry potter", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789025363758"), "kaas", emptyList(), ratings = Ratings(1.0, 1)),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789023473282"), "dit zijn de namen", emptyList(), ratings = Ratings(1.0, 1)),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789023443988"), "de ontdekking van de hemel", emptyList(), ratings = Ratings(1.0, 1))
         )
 
         runBlocking {
             val results = recommender.recommend(emptySet(), candidates.toSet())
 
-            assertEquals(4, results.size)
+            assertEquals(3, results.size)
         }
     }
 }

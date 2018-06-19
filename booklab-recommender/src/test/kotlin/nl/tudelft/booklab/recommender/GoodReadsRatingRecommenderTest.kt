@@ -17,8 +17,7 @@
 package nl.tudelft.booklab.recommender
 
 import kotlinx.coroutines.experimental.runBlocking
-import nl.tudelft.booklab.catalogue.Book
-import nl.tudelft.booklab.catalogue.Title
+import nl.tudelft.booklab.catalogue.Identifier
 import nl.tudelft.booklab.recommender.rating.goodreads.GoodreadsRatingRecommender
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assumptions.assumeTrue
@@ -38,10 +37,10 @@ class GoodReadsRatingRecommenderTest {
     @Test
     fun `default test`() {
         val candidates = listOf(
-            Book(listOf(Title("harry potter")), emptyList(), listOf("9788700631625")),
-            Book(listOf(Title("kaas")), emptyList(), listOf("9789025363758")),
-            Book(listOf(Title("dit zijn de namen")), emptyList(), listOf("9789023473282")),
-            Book(listOf(Title("de ontdekking van de hemel")), emptyList(), listOf("9789023443988"))
+            TestBook(mapOf(Identifier.ISBN_13 to "9788700631625"), "harry potter", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789025363758"), "kaas", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789023473282"), "dit zijn de namen", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789023443988"), "de ontdekking van de hemel", emptyList())
         )
 
         runBlocking {
@@ -58,10 +57,10 @@ class GoodReadsRatingRecommenderTest {
     @Test
     fun `isbn 10 and isbn 13 can be mixed`() {
         val candidates = listOf(
-            Book(listOf(Title("harry potter")), emptyList(), listOf("0545010225")),
-            Book(listOf(Title("kaas")), emptyList(), listOf("9789025363758")),
-            Book(listOf(Title("dit zijn de namen")), emptyList(), listOf("9789023473282")),
-            Book(listOf(Title("de ontdekking van de hemel")), emptyList(), listOf("9789023443988"))
+            TestBook(mapOf(Identifier.ISBN_13 to "9788700631625"), "harry potter", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789025363758"), "kaas", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789023473282"), "dit zijn de namen", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789023443988"), "de ontdekking van de hemel", emptyList())
         )
 
         runBlocking {
@@ -78,18 +77,18 @@ class GoodReadsRatingRecommenderTest {
     @Test
     fun `collection is discarded from results`() {
         val collection = listOf(
-            Book(listOf(Title("title 1")), listOf("author 1"), listOf("isbn 1")),
-            Book(listOf(Title("title 2")), listOf("author 2"), listOf("isbn 2")),
-            Book(listOf(Title("title 3")), listOf("author 2"), listOf("isbn 3")),
-            Book(listOf(Title("title 4")), listOf("author 2"), listOf("isbn 4")),
-            Book(listOf(Title("title 5")), listOf("author 3"), listOf("isbn 5")),
-            Book(listOf(Title("harry potter")), emptyList(), listOf("0545010225"))
+            TestBook(mapOf(Identifier.ISBN_10 to "isbn 1"), "title 1", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_10 to "isbn 2"), "title 2", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_10 to "isbn 3"), "title 3", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_10 to "isbn 4"), "title 4", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_10 to "isbn 5"), "title 5", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_10 to "0545010225"), "harry potter", emptyList())
         )
         val candidates = listOf(
-            Book(listOf(Title("harry potter")), emptyList(), listOf("0545010225")),
-            Book(listOf(Title("kaas")), emptyList(), listOf("9789025363758")),
-            Book(listOf(Title("dit zijn de namen")), emptyList(), listOf("9789023473282")),
-            Book(listOf(Title("de ontdekking van de hemel")), emptyList(), listOf("9789023443988"))
+            TestBook(mapOf(Identifier.ISBN_13 to "9788700631625"), "harry potter", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789025363758"), "kaas", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789023473282"), "dit zijn de namen", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789023443988"), "de ontdekking van de hemel", emptyList())
         )
 
         runBlocking {
@@ -102,11 +101,11 @@ class GoodReadsRatingRecommenderTest {
     @Test
     fun `remove duplicates from candidates`() {
         val candidates = listOf(
-            Book(listOf(Title("harry potter")), emptyList(), listOf("0545010225")),
-            Book(listOf(Title("harry potter")), emptyList(), listOf("0545010225")),
-            Book(listOf(Title("kaas")), emptyList(), listOf("9789025363758")),
-            Book(listOf(Title("dit zijn de namen")), emptyList(), listOf("9789023473282")),
-            Book(listOf(Title("de ontdekking van de hemel")), emptyList(), listOf("9789023443988"))
+            TestBook(mapOf(Identifier.ISBN_10 to "0545010225"), "harry potter", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_10 to "0545010225"), "harry potter", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789025363758"), "kaas", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789023473282"), "dit zijn de namen", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789023443988"), "de ontdekking van de hemel", emptyList())
         )
 
         runBlocking {
@@ -119,12 +118,12 @@ class GoodReadsRatingRecommenderTest {
     @Test
     fun `books with no rating are discarded`() {
         val candidates = listOf(
-            Book(listOf(Title("harry potter")), emptyList(), listOf("0545010225")),
-            Book(listOf(Title("UNKNOWN 1")), emptyList(), listOf("234")),
-            Book(listOf(Title("UNKNOWN 2")), emptyList(), listOf("234")),
-            Book(listOf(Title("kaas")), emptyList(), listOf("9789025363758")),
-            Book(listOf(Title("dit zijn de namen")), emptyList(), listOf("9789023473282")),
-            Book(listOf(Title("de ontdekking van de hemel")), emptyList(), listOf("9789023443988"))
+            TestBook(mapOf(Identifier.ISBN_10 to "0545010225"), "harry potter", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_10 to "234"), "UNKNOWN 1", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_10 to "234"), "UNKNOWN 2", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789025363758"), "kaas", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789023473282"), "dit zijn de namen", emptyList()),
+            TestBook(mapOf(Identifier.ISBN_13 to "9789023443988"), "de ontdekking van de hemel", emptyList())
         )
 
         runBlocking {

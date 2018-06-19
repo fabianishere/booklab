@@ -1,0 +1,14 @@
+<div class="container infotext">
+    <p>BookLab brings you personalised book recommendations, based on your personal collection. All you have to do is
+        upload some pictures of your bookcase!
+        <br><br>
+    </p>
+
+    <div *ngIf="!oauth.hasValidAccessToken()">
+        <p>You are not logged in yet!</p>
+        <button class="button" routerLink="register">Register</button>
+        or
+        <button class="button" (click)="login.login()">Login</button>
+    </div>
+    <button *ngIf="oauth.hasValidAccessToken()" class="button mb-3" routerLink="">Get Started!</button>
+</div>

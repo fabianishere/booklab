@@ -1,0 +1,62 @@
+/*
+ * Copyright 2018 The BookLab Authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import org.bytedeco.javacpp.Loader
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'org.bytedeco:javacpp:1.1'
+    }
+}
+
+plugins {
+    id "java"
+    id "jacoco"
+    id "org.jetbrains.kotlin.jvm" version "1.2.50"
+    id "org.jetbrains.dokka" version "0.9.17"
+    id "org.jmailen.kotlinter" version "1.12.0"
+}
+
+/* Apply default Kotlin configuration */
+apply from: '../gradle/kotlin.gradle'
+
+ext {
+    javacpp_platform = Loader.getPlatform()
+}
+
+/* Project configuration */
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile project(":booklab-vision")
+    implementation "org.bytedeco:javacpp:1.1"
+    implementation "org.bytedeco.javacpp-presets:leptonica:1.72-1.1"
+    implementation "org.bytedeco.javacpp-presets:tesseract:3.04-1.1"
+
+    runtimeOnly "org.bytedeco.javacpp-presets:leptonica:1.72-1.1:$javacpp_platform"
+    runtimeOnly "org.bytedeco.javacpp-presets:tesseract:3.04-1.1:$javacpp_platform"
+
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:$junit_platform_version"
+}

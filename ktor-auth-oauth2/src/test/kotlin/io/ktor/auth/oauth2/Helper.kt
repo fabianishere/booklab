@@ -30,6 +30,8 @@ import io.ktor.auth.oauth2.repository.ClientIdPrincipal
 import io.ktor.auth.oauth2.repository.JwtAccessTokenRepository
 import io.ktor.auth.oauth2.repository.JwtConfiguration
 import io.ktor.auth.oauth2.repository.UserHashedTableRepository
+import io.ktor.auth.oauth2.util.redirectUri
+import io.ktor.auth.oauth2.util.state
 import io.ktor.auth.oauth2.util.toJson
 import io.ktor.auth.oauth2.util.toRedirectUri
 import io.ktor.http.ContentType
@@ -51,15 +53,7 @@ fun buildApplication(
     server: OAuthServer<ClientIdPrincipal, UserIdPrincipal>
 ): Application.() -> Unit = {
     install(Authentication) {
-        oauth<ClientIdPrincipal, UserIdPrincipal> {
-            this.server = server
-            scopes = setOf("test-a")
-        }
-
-        oauth<ClientIdPrincipal, UserIdPrincipal>("scopes:test") {
-            this.server = server
-            scopes = setOf("test-b")
-        }
+        oauth(server)
     }
 
     routing {
@@ -98,14 +92,16 @@ fun buildApplication(
         }
 
         authenticate {
-            get("/protected/a") {
-                call.respond(HttpStatusCode.OK)
+            scoped("test-a") {
+                get("/protected/a") {
+                    call.respond(HttpStatusCode.OK)
+                }
             }
-        }
 
-        authenticate("scopes:test") {
-            get("/protected/b") {
-                call.respond(HttpStatusCode.OK)
+            scoped("test-b") {
+                get("/protected/b") {
+                    call.respond(HttpStatusCode.OK)
+                }
             }
         }
     }

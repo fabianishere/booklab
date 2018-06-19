@@ -18,5 +18,110 @@
     version="2.2"
     xmlns="http://xmlns.jcp.org/xml/ns/persistence/orm"
 >
+    <entity class="nl.tudelft.booklab.backend.services.user.User" access="FIELD" name="users">
+        <named-query name="User.findByEmail">
+            <query>SELECT u FROM nl.tudelft.booklab.backend.services.user.User u WHERE u.email = :email</query>
+        </named-query>
 
+        <named-query name="User.existsByEmail">
+            <query>SELECT count(u) > 0 FROM nl.tudelft.booklab.backend.services.user.User u WHERE u.email = :email</query>
+        </named-query>
+
+        <attributes>
+            <id name="id">
+                <generated-value strategy="IDENTITY" />
+            </id>
+            <basic name="email">
+                <column unique="true" nullable="false" />
+            </basic>
+            <basic name="password">
+                <column nullable="false" />
+            </basic>
+
+            <one-to-many name="collections" fetch="EAGER">
+                <join-column name="user" />
+            </one-to-many>
+        </attributes>
+    </entity>
+
+    <entity class="nl.tudelft.booklab.backend.services.collection.BookCollection" access="FIELD" name="collections">
+        <table>
+            <unique-constraint>
+                <column-name>user</column-name>
+                <column-name>name</column-name>
+            </unique-constraint>
+        </table>
+        <attributes>
+            <id name="id">
+                <generated-value strategy="IDENTITY" />
+            </id>
+
+            <basic name="name">
+                <column unique="true" nullable="false" />
+            </basic>
+
+            <many-to-one name="user">
+                <join-column name="user" />
+            </many-to-one>
+
+            <many-to-many name="books" fetch="EAGER">
+                <join-table name="collections_books">
+                    <join-column name="collection_id"/>
+                    <inverse-join-column name="book_id"/>
+                </join-table>
+            </many-to-many>
+        </attributes>
+    </entity>
+
+    <entity class="nl.tudelft.booklab.backend.services.catalogue.Book" access="FIELD" name="books">
+
+        <named-query name="Book.findByIndustryId">
+            <query>SELECT b FROM nl.tudelft.booklab.backend.services.catalogue.Book b JOIN b.identifiers i WHERE b.id = :id OR i.id = :id</query>
+        </named-query>
+
+        <attributes>
+            <id name="id" />
+
+            <basic name="title" />
+            <basic name="subtitle" optional="true">
+                <column length="200" />
+            </basic>
+            <basic name="publisher" />
+            <basic name="publishedAt" optional="true">
+                <convert converter="nl.tudelft.booklab.backend.services.catalogue.JpaPublishDateConverter" />
+            </basic>
+            <basic name="description" optional="true">
+                <column length="10000" />
+            </basic>
+
+            <element-collection name="identifiers" fetch="EAGER">
+                <map-key-column name="type" />
+                <column name="id" />
+            </element-collection>
+            <element-collection name="authors" fetch="EAGER">
+                <order-column name="index" />
+                <column name="author" />
+            </element-collection>
+            <element-collection name="categories" fetch="EAGER">
+                <column name="category" />
+            </element-collection>
+            <element-collection name="images" fetch="EAGER">
+                <map-key-column name="type" />
+                <column name="url" />
+            </element-collection>
+
+            <embedded name="ratings" access="FIELD" />
+        </attributes>
+    </entity>
+
+    <embeddable class="nl.tudelft.booklab.catalogue.Ratings" access="FIELD">
+        <attributes>
+            <basic name="average" optional="true">
+                <column nullable="true" />
+            </basic>
+            <basic name="count" optional="true">
+                <column nullable="true" />
+            </basic>
+        </attributes>
+    </embeddable>
 </entity-mappings>

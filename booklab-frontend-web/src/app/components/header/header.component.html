@@ -1,0 +1,22 @@
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.11/css/all.css"
+      integrity="sha384-p2jx59pefphTFIpeqCcISO9MdVfIm4pNnsL08A6v5vaQc4owkQqxMV8kg4Yvhaw/" crossorigin="anonymous">
+<div class="header container-fluid" [ngClass]="app.login? 'blur': ''">
+    <div class="row">
+        <div class="col d-inline-flex d-md-none align-items-center">
+            <i class="fas fa-bars menu-button" (click)="app.menuCollapse = !app.menuCollapse"></i>
+        </div>
+        <div class="col">
+            <p class="logo d-none d-md-inline-block" routerLink="upload">
+                BookLab
+            </p>
+            <br>
+            <span class="d-none d-md-inline-block mb-2">Finding the right book on another shelf.</span>
+        </div>
+        <div>
+            <p class="login-link" (click)="login.login()" *ngIf="!user.loggedIn">
+                Log in
+            </p>
+            <p class="login-link" (click)="user.logout()" *ngIf="user.loggedIn">Log out</p>
+        </div>
+    </div>
+</div>
