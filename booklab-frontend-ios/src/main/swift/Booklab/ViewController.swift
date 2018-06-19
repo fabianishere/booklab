@@ -18,12 +18,18 @@ import UIKit
 import SceneKit
 import ARKit
 import URLNavigator
+import RxSwift
+import Siesta
 
 class ViewController: UIViewController, ARSCNViewDelegate {
 
     @IBOutlet var sceneView: ARSCNView!
     
     var navigator: NavigatorType!
+    var authorization: AuthorizationService!
+    var api: BackendService!
+    
+    let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,6 +45,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         // Set the scene to the view
         sceneView.scene = scene
+    
+     
+        let request = authorization
+            .authorize(username: "test@example.com", password: "test", scope: "detection")
+        authorization.token.load(using: request)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -64,7 +75,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
 
     // MARK: - ARSCNViewDelegate
-    
 /*
     // Override to create and configure nodes for anchors added to the view's session.
     func renderer(_ renderer: SCNSceneRenderer, nodeFor anchor: ARAnchor) -> SCNNode? {

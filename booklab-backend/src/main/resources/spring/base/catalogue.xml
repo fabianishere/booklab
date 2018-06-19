@@ -20,4 +20,5 @@
         http://www.springframework.org/schema/beans/spring-beans.xsd">
     <!-- Service -->
     <bean name="catalogue:catalogue-service" class="nl.tudelft.booklab.backend.services.catalogue.CatalogueService" />
+    <bean name="catalogue:conversion-service" class="nl.tudelft.booklab.backend.services.catalogue.CatalogueConversionService" />
 </beans>
