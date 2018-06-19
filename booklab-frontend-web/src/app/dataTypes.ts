@@ -55,7 +55,37 @@ export interface HealthCheck {
 }
 
 /**
- * Class to model a book.
+ * A user on the website.
+ */
+export interface User {
+    /**
+     * The identifier of the user.
+     */
+    id: number;
+
+    /**
+     * The email address of the user.
+     */
+    email: string;
+}
+
+/**
+ * A request to register a user.
+ */
+export interface UserRegistration {
+    /**
+     * The email of the user.
+     */
+    email: string;
+
+    /**
+     * The chosen password of the user.
+     */
+    password: string;
+}
+
+/**
+ * Class to model a book title.
  */
 export interface Book {
     /**

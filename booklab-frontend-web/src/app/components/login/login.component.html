@@ -4,5 +4,5 @@
     <label>Password</label><br>
     <input #password (keyup.enter)="loginbutton.click()" type="password"><br>
     <button #loginbutton class="button ml-0" (click)="login(username.value, password.value)">Login</button>
-    <p *ngIf="this.invalid">Failed to login: {{error.error_description}}</p>
+    <p *ngIf="this.invalid">Failed to login: {{error.error_descriptio}}</p>
 </div>

@@ -1,5 +1,5 @@
 @booklab-pink: #ec018b;
-@booklab-blue: #0253e8;
+@booklab-blue: #4883EE;
 @booklab-disabled-blue: #91afe7;
 @booklab-yellow: #ecb301;
 
@@ -62,7 +62,7 @@ p {
     }
 }
 
-input[type="text"], input[type="password"] {
+input[type="text"], input[type="password"], input[type="email"] {
     width: 350px;
     border: 1px solid @booklab-yellow;
     max-width: 90%;
@@ -77,8 +77,8 @@ input[type="text"], input[type="password"] {
     font-weight: 500;
 }
 
-.disabled {
-    opacity: 0.6;
+.disabled, button[disabled] {
+    opacity: 0.4;
     cursor: default;
 }
 
