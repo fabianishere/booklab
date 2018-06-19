@@ -29,6 +29,7 @@ fun Route.api() {
         route("users") { users() }
         route("collections") { collections() }
         route("catalogue") { catalogue() }
+        route("recommendations") { recommendation() }
     }
     meta()
 }
