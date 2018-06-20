@@ -1,8 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Book, BookDetection, BookItem} from "../../dataTypes";
 import {Subject} from "rxjs/Rx";
 import {HttpService} from "../../services/http/http.service";
 import {Observable} from "rxjs/Observable";
+import {BookDetection, BookItem} from "../../interfaces/user";
 
 @Component({
     selector: 'app-image-search',

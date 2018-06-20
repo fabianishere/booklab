@@ -4,7 +4,7 @@ import {ManualBookFindComponent} from './manual-book-find.component';
 import {HttpService} from "../../services/http/http.service";
 import {UserService} from "../../services/user/user.service";
 import {Observable} from "rxjs/Rx";
-import {Book, BookItem} from "../../dataTypes";
+import {Book, BookItem} from "../../interfaces/user";
 
 describe('ManualBookFindComponent should..', () => {
     let component: ManualBookFindComponent;

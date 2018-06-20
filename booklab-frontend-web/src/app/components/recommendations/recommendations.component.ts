@@ -1,8 +1,8 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {Book, BookItem} from "../../dataTypes";
+import {Book, BookItem} from "../../interfaces/user";
 import {ImageSearchComponent} from "../image-search/image-search.component";
 import {BooklistComponent} from "../booklist/booklist.component";
-import {AddTo} from "../../interfaces";
+import {AddTo} from "../../interfaces/addTo";
 import {UserService} from "../../services/user/user.service";
 import {HttpService} from "../../services/http/http.service";
 import {RecommendationsListComponent} from "../recommendations-list/recommendations-list.component";

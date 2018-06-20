@@ -1,15 +1,15 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
-import {BookDetection, Response, HealthCheck, isFailure, Secure, Book, User} from '../../dataTypes';
 import 'rxjs/add/operator/map'
 import {Router} from '@angular/router';
 import {environment} from '../../../environments/environment';
 import {OAuthService} from "angular-oauth2-oidc";
 import 'rxjs/add/observable/throw';
-import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/mergeMap';
+import {Book, BookDetection, Secure, User} from '../../interfaces/user';
+import {HealthCheck, isFailure, Response} from "../../interfaces/communication";
 
 /**
  * Service to handle all http requests and interactions with the backend.
@@ -22,7 +22,17 @@ export class HttpService {
      * @param {HttpClient} http The HTTP client to use.
      * @param {Router} router The Angular router to use.
      */
-    constructor(private http: HttpClient, private router: Router, private oauth: OAuthService) {}
+    constructor(private http: HttpClient, private router: Router, private oauth: OAuthService) {
+    }
+
+    getUser(id: string): Observable<User> {
+        return this.http.get<Response<User>>(`${environment.apiUrl}/users/${id}`)
+            .map(res => {
+                if (isFailure(res))
+                    throw res;
+                return res.data;
+            });
+    }
 
     /**
      * Checks if the backend is running.
@@ -75,16 +85,16 @@ export class HttpService {
             .set('scope', 'user:registration');
 
         const headers = new HttpHeaders({
-            'Content-Type':  'application/x-www-form-urlencoded'
+            'Content-Type': 'application/x-www-form-urlencoded'
         });
 
-        return this.http.post<any>(`${environment.apiUrl}/auth/token`, params, { headers: headers })
+        return this.http.post<any>(`${environment.apiUrl}/auth/token`, params, {headers: headers})
             .map(res => res.access_token)
             .mergeMap(token => {
-                const headers = new HttpHeaders({ 'Authorization' : `Bearer ${token}`});
-                const body = { email : email, password : password};
+                const headers = new HttpHeaders({'Authorization': `Bearer ${token}`});
+                const body = {email: email, password: password};
 
-                return this.http.post<Response<User>>(`${environment.apiUrl}/users`, body, { headers: headers });
+                return this.http.post<Response<User>>(`${environment.apiUrl}/users`, body, {headers: headers});
             })
             .pipe(extract);
     }

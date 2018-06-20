@@ -1,5 +1,5 @@
 import {RouterModule, Routes} from "@angular/router";
-import {BookSearchComponent} from "./components/image-upload/book-search.component";
+import {BookSearchComponent} from "./components/book-search/book-search.component";
 import {BookshelfComponent} from "./components/bookshelf/bookshelf.component";
 import {AboutComponent} from "./components/about/about.component";
 import {HomeComponent} from "./components/home/home.component";

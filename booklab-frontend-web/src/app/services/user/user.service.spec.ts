@@ -1,6 +1,6 @@
 import {UserService} from './user.service';
 import {OAuthService} from "angular-oauth2-oidc";
-import {Book} from "../../dataTypes";
+import {Book} from "../../interfaces/user";
 
 
 describe('UserService should..', () => {

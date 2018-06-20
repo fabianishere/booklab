@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpService} from "../../services/http/http.service";
 import {UserService} from "../../services/user/user.service";
-import {Book, BookItem} from "../../dataTypes";
+import {Book, BookItem} from "../../interfaces/user";
 import {isDefined} from "@angular/compiler/src/util";
 
 @Component({

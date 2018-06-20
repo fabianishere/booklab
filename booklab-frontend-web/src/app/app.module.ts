@@ -10,7 +10,7 @@ import {HttpService} from './services/http/http.service';
 import {UserService} from './services/user/user.service';
 
 import {AppComponent} from './app.component';
-import {BookSearchComponent} from './components/image-upload/book-search.component';
+import {BookSearchComponent} from './components/book-search/book-search.component';
 import {HeaderComponent} from './components/header/header.component';
 import {BookshelfComponent} from './components/bookshelf/bookshelf.component';
 import {SidebarComponent} from './components/sidebar/sidebar.component';
