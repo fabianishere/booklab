@@ -38,6 +38,7 @@ dependencies {
 
     compile project(":booklab-catalogue")
     compile project(":booklab-vision")
+    compile project(":booklab-recommender")
     compile project(":ktor-auth-oauth2")
 
     compile "io.ktor:ktor-server-core:$ktor_version"

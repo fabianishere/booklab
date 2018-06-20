@@ -31,7 +31,7 @@ export const authConfig: AuthConfig = {
     dummyClientSecret: 'test',
 
     // Set the scopes for the permissions the client should request
-    scope: 'detection catalogue collection user:profile',
+    scope: 'detection catalogue collection recommendation user:profile',
 
     // Flag to enable debugging information
     showDebugInformation: false,

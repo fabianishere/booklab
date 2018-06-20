@@ -14,22 +14,8 @@
  * limitations under the License.
  */
 
-package nl.tudelft.booklab.backend.api.v1
+import {Book} from "./dataTypes";
 
-import io.ktor.auth.authenticate
-import io.ktor.routing.Route
-import io.ktor.routing.route
-
-/**
- * Describe the routes for the REST API of the BookLab backend.
- */
-fun Route.api() {
-    authenticate {
-        route("detection") { detection() }
-        route("users") { users() }
-        route("collections") { collections() }
-        route("catalogue") { catalogue() }
-        route("recommendations") { recommendation() }
-    }
-    meta()
+export interface AddTo {
+    addTo(books: Book[]): void
 }

@@ -1,9 +1,30 @@
 <div class="container infotext">
-    <p>
-        This is a work in progress!
-        <br><br>
-        <button class="button m-0 mb-3">Some time soon you can click this</button>
+    Here you can upload a picture of your friends bookshelf or a library bookcase or any other bookshelf. We will
+    find the best match for you, based on your collection. Let's get started:
+    <br><br>
+    1) Upload
+    <br><br>
+    <label class="m-0 button upload">
+        Upload a picture of a bookshelf!
+        <input type="file" (change)="onSubmit($event)" accept="image/*"/>
+    </label>
+    <app-image-search class="d-block"></app-image-search>
+    <br><br>
+    2) Confirm
+    <br><br>
+    <span *ngIf="!image.searching && booklist.books.length==0">No books here yet!</span>
+    <app-booklist
+        [addTo]="this"
+        [buttonText]="'These are the books that I want to choose from'"></app-booklist>
+    <br><br>
+    3) Profit
+    <br><br>
+    <button class="button m-0 mb-3"
+            id="recommendations-button"
+            [ngClass]="{'disabled':booklist.books.length==0}"
+            disabled="{{booklist.books.length==0? 'disabled':''}}"
+            (click)="recommend()">Get recommendations!
+    </button>
 
-    </p>
-
+    <app-recommendations-list></app-recommendations-list>
 </div>
