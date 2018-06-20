@@ -1,7 +1,12 @@
-<img *ngIf="img!=null" class="image" src="{{img}}">
-<svg *ngIf="img==null" class="image">
-    <rect class="rect"></rect>
-</svg>
+<img *ngIf="img != null" src="{{img}}" id="image" class="image" style="display: none">
+
+<div id="container" style="position: relative">
+    <canvas #imageCanvas id="canvas" class="image"
+            style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
+    <canvas #drawingCanvas id="canvas2" class="image"
+            style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+</div>
+
 <p *ngIf="searching">
     <img class="loading" src="assets/loading.gif">
     Searching books in your picture..
