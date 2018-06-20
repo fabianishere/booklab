@@ -11,8 +11,9 @@ import {isUndefined} from "util";
  * Class to hold the information of the user and to provide an interface for editing this information.
  */
 @Injectable()
-export class UserService implements CanActivate{
+export class UserService implements CanActivate {
 
+    private collections: BookCollection[];
     private bookshelf: Book[];
     private bookSub: BehaviorSubject<Book[]>;
     private id: number;
@@ -32,7 +33,7 @@ export class UserService implements CanActivate{
     }
 
     canActivate() {
-        if(this.oauthService.hasValidAccessToken()) {
+        if (this.oauthService.hasValidAccessToken()) {
             return true;
         }
         else {
@@ -54,7 +55,7 @@ export class UserService implements CanActivate{
      */
     setBookshelf(books: Book[]) {
         this.bookshelf = books;
-        this.bookSub.next(this.bookshelf);
+        this.update();
     }
 
     /**
@@ -63,13 +64,15 @@ export class UserService implements CanActivate{
      */
     addToBookshelf(book: Book) {
         this.bookshelf.push(book);
-        this.bookSub.next(this.bookshelf);
+        this.update();
     }
 
     loadUser() {
         this.http.getUser('1').subscribe(res => {
-            if(!isUndefined(res.collections)){
-                this.setBookshelf(res.collections.reduce((total: Book[], curr: BookCollection) => total.concat(curr.books), []));
+            if (!isUndefined(res.collections)) {
+                this.collections = res.collections;
+                this.bookshelf = res.collections.reduce((total: Book[], curr: BookCollection) => total.concat(curr.books), []);
+                this.bookSub.next(this.bookshelf);
             }
             this.id = res.id;
         }, err => this.http.handleError(err));
@@ -81,7 +84,7 @@ export class UserService implements CanActivate{
      */
     addMultToBookshelf(books: Book[]) {
         this.bookshelf = this.bookshelf.concat(books);
-        this.bookSub.next(this.bookshelf);
+        this.update();
     }
 
 
@@ -91,7 +94,12 @@ export class UserService implements CanActivate{
      */
     deleteFromBookshelf(book: Book) {
         this.bookshelf = this.bookshelf.filter(b => b.title !== book.title);
+        this.update();
+    }
+
+    update() {
         this.bookSub.next(this.bookshelf);
+        this.http.updateBookshelf(this.collections[0].id, this.bookshelf);
     }
 
     login(username: string, password: string): Promise<Object> {

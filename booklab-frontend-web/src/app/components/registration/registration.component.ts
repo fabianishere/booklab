@@ -33,7 +33,6 @@ export class RegistrationComponent implements OnInit {
         this.http.register(value.email, value.password).subscribe(
             res => {
                 this.succeeded = true;
-                this.login.login();
             },
             error =>  {
                 this.invalid = true;

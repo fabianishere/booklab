@@ -35,6 +35,22 @@ export class HttpService {
     }
 
     /**
+     * Posts the updated bookshelf of the user to the backend database.
+     * @param {string} id of the collection, NOT the user
+     * @param {Book[]} books that need to be stored
+     * @returns {Observable<any>}
+     */
+    updateBookshelf(id: number, books: Book[]) {
+        this.http.post<Response<User>>(`${environment.apiUrl}/collections/${id}/books`,
+            {books: books.map(b => b.id)})
+            .map(res => {
+                if (isFailure(res))
+                    throw res;
+                return res.data;
+            });
+    }
+
+    /**
      * Checks if the backend is running.
      */
     checkHealth() {
@@ -77,7 +93,7 @@ export class HttpService {
      * @param {string} password The password of the user.
      * @returns {Observable<User>}: result of the registration request.
      */
-    register(email: string, password: string): Observable<User> {
+    register(email: string, password: string): Observable<any> {
         const params = new HttpParams()
             .set('grant_type', 'client_credentials')
             .set('client_id', this.oauth.clientId)
