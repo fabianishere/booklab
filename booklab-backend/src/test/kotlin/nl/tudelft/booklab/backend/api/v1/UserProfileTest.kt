@@ -148,6 +148,35 @@ internal class UserProfileTest {
         }
     }
 
+    @Test
+    fun `get unknwon profile associated with access token`() = withTestEngine({ module() }) {
+        val request = handleRequest(HttpMethod.Get, "/api/users/me") {
+            configureAuthorization("test", listOf("user:profile"))
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.NotFound, response.status())
+            val body: ApiResponse.Failure? = response.content?.let { mapper.readValue(it) }
+            assertEquals("not_found", body?.error?.code)
+        }
+    }
+
+    @Test
+    fun `get profile associated with access token`() = withTestEngine({ module() }) {
+        val user = User(1, "text@example.com", "")
+        userService.stub {
+            on { findById(eq(1)) } doReturn user
+            on { findByEmail("test@example.com") } doReturn user
+        }
+        val request = handleRequest(HttpMethod.Get, "/api/users/me") {
+            configureAuthorization("test", listOf("user:profile"))
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            val body: ApiResponse.Success<User>? = response.content?.let { mapper.readValue(it) }
+            assertEquals(user, body?.data)
+        }
+    }
+
     private fun Application.module() {
         val context = createTestContext {
             beans {
