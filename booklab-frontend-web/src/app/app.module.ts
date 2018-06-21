@@ -10,7 +10,7 @@ import {HttpService} from './services/http/http.service';
 import {UserService} from './services/user/user.service';
 
 import {AppComponent} from './app.component';
-import {BookSearchComponent} from './components/image-upload/book-search.component';
+import {BookSearchComponent} from './components/book-search/book-search.component';
 import {HeaderComponent} from './components/header/header.component';
 import {BookshelfComponent} from './components/bookshelf/bookshelf.component';
 import {SidebarComponent} from './components/sidebar/sidebar.component';
@@ -24,10 +24,13 @@ import {HomeComponent} from './components/home/home.component';
 import {ManualBookFindComponent} from './components/manual-book-find/manual-book-find.component';
 import {RecommendationsComponent} from "./components/recommendations/recommendations.component";
 import {RegistrationComponent} from './components/registration/registration.component';
-import {LoginService} from "./services/login/login.service";
+import {PopupService} from "./services/popup/popup.service";
 import {BooklistComponent} from './components/booklist/booklist.component';
 import {ImageSearchComponent} from './components/image-search/image-search.component';
 import {RecommendationsListComponent} from "./components/recommendations-list/recommendations-list.component";
+import {BookloadComponent} from './components/bookload-popup/bookload-popup.component';
+import { AddedPopupComponent } from './components/added-popup/added-popup.component';
+import { DeletePopupComponent } from './components/delete-popup/delete-popup.component';
 
 @NgModule({
     declarations: [
@@ -45,7 +48,10 @@ import {RecommendationsListComponent} from "./components/recommendations-list/re
         RegistrationComponent,
         BooklistComponent,
         ImageSearchComponent,
-        RecommendationsListComponent
+        RecommendationsListComponent,
+        BookloadComponent,
+        AddedPopupComponent,
+        DeletePopupComponent
     ],
     imports: [
         BrowserModule,
@@ -63,11 +69,11 @@ import {RecommendationsListComponent} from "./components/recommendations-list/re
     providers: [
         HttpService,
         UserService,
-        LoginService,
+        PopupService,
         {provide: APP_BASE_HREF, useValue: '/'}
     ],
     bootstrap: [AppComponent],
-    entryComponents: [LoginComponent]
+    entryComponents: [LoginComponent, BookloadComponent, AddedPopupComponent, DeletePopupComponent]
 })
 export class AppModule {
 }

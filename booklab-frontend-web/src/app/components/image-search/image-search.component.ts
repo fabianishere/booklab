@@ -3,6 +3,7 @@ import {Book, BookDetection, BookItem} from "../../dataTypes";
 import {Subject} from "rxjs/Rx";
 import {HttpService} from "../../services/http/http.service";
 import {Observable} from "rxjs/Observable";
+import {PopupService} from "../../services/popup/popup.service";
 
 @Component({
     selector: 'app-image-search',
@@ -16,7 +17,7 @@ export class ImageSearchComponent implements OnInit {
 
 
 
-    constructor(private http: HttpService) {
+    constructor(private http: HttpService, private popup: PopupService) {
     }
 
     ngOnInit() {
@@ -35,14 +36,18 @@ export class ImageSearchComponent implements OnInit {
         };
         this.http.checkHealth();
         this.searching = true;
+        this.popup.bookLoader();
         this.http.putImg(img).subscribe((res) => {
             this.searching = false;
+            this.popup.dismissBookloader();
+
             const books = res
                 .filter(b => b.matches.length > 0)
                 .map((b: BookDetection) => new BookItem(b.matches[0]));
             subject.next(books);
         }, error => {
             this.searching = false;
+            this.popup.dismissBookloader();
             this.http.handleError(error)
         });
         return subject;

@@ -28,6 +28,8 @@ export class BooklistComponent implements OnInit {
           b.added = true;
           return b.book
       }));
+      this.books = [];
+
   }
 
   isAdded(): boolean {
