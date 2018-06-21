@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1F2193FE20CE9E6C005A632D /* Cartfile in Resources */ = {isa = PBXBuildFile; fileRef = 1F2193FD20CE9E6C005A632D /* Cartfile */; };
-		1F21940120CE9F46005A632D /* Swinject.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F21940020CE9F46005A632D /* Swinject.framework */; };
 		1F21940420CE9F54005A632D /* URLNavigator.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F21940320CE9F53005A632D /* URLNavigator.framework */; };
 		1F21940620CEA080005A632D /* SwinjectAutoregistration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F21940520CEA080005A632D /* SwinjectAutoregistration.framework */; };
 		1F21940820CEA0E1005A632D /* Routes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F21940720CEA0E1005A632D /* Routes.swift */; };
@@ -18,19 +17,25 @@
 		1F30DFF420D6DD6E000B0652 /* BackendService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F30DFF320D6DD6E000B0652 /* BackendService.swift */; };
 		1F30DFFD20D6EAF1000B0652 /* AuthorizationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F30DFFC20D6EAF1000B0652 /* AuthorizationService.swift */; };
 		1F30DFFF20D6ED7C000B0652 /* AuthorizationToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F30DFFE20D6ED7C000B0652 /* AuthorizationToken.swift */; };
-		1F30E00120D6EE58000B0652 /* RxSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F30E00020D6EE58000B0652 /* RxSwift.framework */; };
-		1F30E00320D6EE5E000B0652 /* RxCocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F30E00220D6EE5E000B0652 /* RxCocoa.framework */; };
 		1F30E00520D6F6E4000B0652 /* BackendModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F30E00420D6F6E4000B0652 /* BackendModel.swift */; };
 		1F30E00A20D7F5C6000B0652 /* Siesta.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F30E00920D7F5C6000B0652 /* Siesta.swift */; };
 		1F30E00E20D84AF3000B0652 /* AnyCodable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F30E00D20D84AF3000B0652 /* AnyCodable.swift */; };
+		1F30E01020D9AD69000B0652 /* Welcome.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F30E00F20D9AD69000B0652 /* Welcome.storyboard */; };
+		1F30E01420D9B285000B0652 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F30E01320D9B285000B0652 /* LoginViewController.swift */; };
+		1F30E01720DA9D13000B0652 /* Material.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F30E01620DA9D13000B0652 /* Material.framework */; };
+		1F30E01920DA9D1A000B0652 /* Motion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F30E01820DA9D1A000B0652 /* Motion.framework */; };
 		1F35E72520CA01010076ED0D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F35E72420CA01010076ED0D /* AppDelegate.swift */; };
-		1F35E72720CA01010076ED0D /* art.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F35E72620CA01010076ED0D /* art.scnassets */; };
-		1F35E72920CA01010076ED0D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F35E72820CA01010076ED0D /* ViewController.swift */; };
 		1F35E73C20CA01020076ED0D /* Booklab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F35E73B20CA01020076ED0D /* Booklab.swift */; };
 		1F35E74720CA01020076ED0D /* BooklabUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F35E74620CA01020076ED0D /* BooklabUITests.swift */; };
 		1F35E75920CA01C20076ED0D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F35E75820CA01C20076ED0D /* Assets.xcassets */; };
+		1F4B44C420DAF8730058D936 /* ApplicationSnackbarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4B44C320DAF8730058D936 /* ApplicationSnackbarController.swift */; };
+		1F4B44C620DAFF1A0058D936 /* WelcomeNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4B44C520DAFF1A0058D936 /* WelcomeNavigationController.swift */; };
+		1F4B44C820DB0D2B0058D936 /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4B44C720DB0D2B0058D936 /* RegisterViewController.swift */; };
+		1F4B44CA20DB0F800058D936 /* AbstractWelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4B44C920DB0F800058D936 /* AbstractWelcomeViewController.swift */; };
 		1F9329F920D670D3007E2F75 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F9329F620D670D3007E2F75 /* Main.storyboard */; };
 		1F9329FB20D670D3007E2F75 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F9329F820D670D3007E2F75 /* LaunchScreen.storyboard */; };
+		1FB4611A20E17D65005B02C3 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1FB4611920E17D65005B02C3 /* Info.plist */; };
+		1FB4611D20E17D7F005B02C3 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1FB4611C20E17D7F005B02C3 /* Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,25 +67,29 @@
 		1F30DFF320D6DD6E000B0652 /* BackendService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendService.swift; sourceTree = "<group>"; };
 		1F30DFFC20D6EAF1000B0652 /* AuthorizationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationService.swift; sourceTree = "<group>"; };
 		1F30DFFE20D6ED7C000B0652 /* AuthorizationToken.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthorizationToken.swift; sourceTree = "<group>"; };
-		1F30E00020D6EE58000B0652 /* RxSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxSwift.framework; path = Carthage/Build/iOS/RxSwift.framework; sourceTree = "<group>"; };
-		1F30E00220D6EE5E000B0652 /* RxCocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RxCocoa.framework; path = Carthage/Build/iOS/RxCocoa.framework; sourceTree = "<group>"; };
 		1F30E00420D6F6E4000B0652 /* BackendModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackendModel.swift; sourceTree = "<group>"; };
 		1F30E00920D7F5C6000B0652 /* Siesta.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Siesta.swift; sourceTree = "<group>"; };
 		1F30E00D20D84AF3000B0652 /* AnyCodable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AnyCodable.swift; sourceTree = "<group>"; };
+		1F30E00F20D9AD69000B0652 /* Welcome.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Welcome.storyboard; sourceTree = "<group>"; };
+		1F30E01320D9B285000B0652 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		1F30E01620DA9D13000B0652 /* Material.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Material.framework; path = Carthage/Build/iOS/Material.framework; sourceTree = "<group>"; };
+		1F30E01820DA9D1A000B0652 /* Motion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Motion.framework; path = Carthage/Build/iOS/Motion.framework; sourceTree = "<group>"; };
 		1F35E72120CA01010076ED0D /* Booklab.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Booklab.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F35E72420CA01010076ED0D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		1F35E72620CA01010076ED0D /* art.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = art.scnassets; sourceTree = "<group>"; };
-		1F35E72820CA01010076ED0D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		1F35E73720CA01020076ED0D /* BooklabTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BooklabTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F35E73B20CA01020076ED0D /* Booklab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Booklab.swift; sourceTree = "<group>"; };
-		1F35E73D20CA01020076ED0D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1F35E74220CA01020076ED0D /* BooklabUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BooklabUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F35E74620CA01020076ED0D /* BooklabUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooklabUITests.swift; sourceTree = "<group>"; };
-		1F35E74820CA01020076ED0D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1F35E75820CA01C20076ED0D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		1F4B44C320DAF8730058D936 /* ApplicationSnackbarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationSnackbarController.swift; sourceTree = "<group>"; };
+		1F4B44C520DAFF1A0058D936 /* WelcomeNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeNavigationController.swift; sourceTree = "<group>"; };
+		1F4B44C720DB0D2B0058D936 /* RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
+		1F4B44C920DB0F800058D936 /* AbstractWelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbstractWelcomeViewController.swift; sourceTree = "<group>"; };
 		1F9329F320D670BD007E2F75 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1F9329F620D670D3007E2F75 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		1F9329F820D670D3007E2F75 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		1FB4611920E17D65005B02C3 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1FB4611C20E17D7F005B02C3 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,14 +97,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F30E00320D6EE5E000B0652 /* RxCocoa.framework in Frameworks */,
-				1F21940120CE9F46005A632D /* Swinject.framework in Frameworks */,
-				1F21940420CE9F54005A632D /* URLNavigator.framework in Frameworks */,
-				1F21940C20CEA46D005A632D /* SwinjectStoryboard.framework in Frameworks */,
-				1F21941120CEAAA7005A632D /* URLMatcher.framework in Frameworks */,
-				1F30E00120D6EE58000B0652 /* RxSwift.framework in Frameworks */,
 				1F21940F20CEAA9C005A632D /* Swinject.framework in Frameworks */,
+				1F21940C20CEA46D005A632D /* SwinjectStoryboard.framework in Frameworks */,
 				1F21940620CEA080005A632D /* SwinjectAutoregistration.framework in Frameworks */,
+				1F21941120CEAAA7005A632D /* URLMatcher.framework in Frameworks */,
+				1F21940420CE9F54005A632D /* URLNavigator.framework in Frameworks */,
+				1F30E01720DA9D13000B0652 /* Material.framework in Frameworks */,
+				1F30E01920DA9D1A000B0652 /* Motion.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,8 +127,8 @@
 		1F21940220CE9F53005A632D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				1F30E00220D6EE5E000B0652 /* RxCocoa.framework */,
-				1F30E00020D6EE58000B0652 /* RxSwift.framework */,
+				1F30E01820DA9D1A000B0652 /* Motion.framework */,
+				1F30E01620DA9D13000B0652 /* Material.framework */,
 				1F21941020CEAAA7005A632D /* URLMatcher.framework */,
 				1F21940E20CEAA9C005A632D /* Swinject.framework */,
 				1F21940B20CEA46D005A632D /* SwinjectStoryboard.framework */,
@@ -166,6 +174,26 @@
 			path = Util;
 			sourceTree = "<group>";
 		};
+		1F30E01120D9B273000B0652 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				1F30E01220D9B278000B0652 /* Welcome */,
+				1F4B44C220DAF8660058D936 /* Util */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		1F30E01220D9B278000B0652 /* Welcome */ = {
+			isa = PBXGroup;
+			children = (
+				1F30E01320D9B285000B0652 /* LoginViewController.swift */,
+				1F4B44C520DAFF1A0058D936 /* WelcomeNavigationController.swift */,
+				1F4B44C720DB0D2B0058D936 /* RegisterViewController.swift */,
+				1F4B44C920DB0F800058D936 /* AbstractWelcomeViewController.swift */,
+			);
+			path = Welcome;
+			sourceTree = "<group>";
+		};
 		1F35E71820CA01010076ED0D = {
 			isa = PBXGroup;
 			children = (
@@ -191,10 +219,10 @@
 		1F35E72320CA01010076ED0D /* Booklab */ = {
 			isa = PBXGroup;
 			children = (
+				1F30E01120D9B273000B0652 /* Views */,
 				1F30DFF120D6DCFA000B0652 /* Services */,
 				1F30E00820D7E8BF000B0652 /* Util */,
 				1F35E72420CA01010076ED0D /* AppDelegate.swift */,
-				1F35E72820CA01010076ED0D /* ViewController.swift */,
 				1F21940720CEA0E1005A632D /* Routes.swift */,
 			);
 			path = Booklab;
@@ -257,7 +285,6 @@
 			isa = PBXGroup;
 			children = (
 				1F35E75820CA01C20076ED0D /* Assets.xcassets */,
-				1F35E72620CA01010076ED0D /* art.scnassets */,
 			);
 			path = assets;
 			sourceTree = "<group>";
@@ -282,7 +309,7 @@
 		1F35E75D20CA02100076ED0D /* resources */ = {
 			isa = PBXGroup;
 			children = (
-				1F35E73D20CA01020076ED0D /* Info.plist */,
+				1FB4611620E17D3A005B02C3 /* config */,
 			);
 			path = resources;
 			sourceTree = "<group>";
@@ -307,9 +334,17 @@
 		1F35E76120CA024D0076ED0D /* resources */ = {
 			isa = PBXGroup;
 			children = (
-				1F35E74820CA01020076ED0D /* Info.plist */,
+				1FB4611B20E17D6D005B02C3 /* config */,
 			);
 			path = resources;
+			sourceTree = "<group>";
+		};
+		1F4B44C220DAF8660058D936 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				1F4B44C320DAF8730058D936 /* ApplicationSnackbarController.swift */,
+			);
+			path = Util;
 			sourceTree = "<group>";
 		};
 		1F9329F020D67019007E2F75 /* config */ = {
@@ -325,8 +360,25 @@
 			children = (
 				1F9329F820D670D3007E2F75 /* LaunchScreen.storyboard */,
 				1F9329F620D670D3007E2F75 /* Main.storyboard */,
+				1F30E00F20D9AD69000B0652 /* Welcome.storyboard */,
 			);
 			path = views;
+			sourceTree = "<group>";
+		};
+		1FB4611620E17D3A005B02C3 /* config */ = {
+			isa = PBXGroup;
+			children = (
+				1FB4611920E17D65005B02C3 /* Info.plist */,
+			);
+			path = config;
+			sourceTree = "<group>";
+		};
+		1FB4611B20E17D6D005B02C3 /* config */ = {
+			isa = PBXGroup;
+			children = (
+				1FB4611C20E17D7F005B02C3 /* Info.plist */,
+			);
+			path = config;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -437,8 +489,8 @@
 				1F9329F920D670D3007E2F75 /* Main.storyboard in Resources */,
 				1F2193FE20CE9E6C005A632D /* Cartfile in Resources */,
 				1F9329FB20D670D3007E2F75 /* LaunchScreen.storyboard in Resources */,
-				1F35E72720CA01010076ED0D /* art.scnassets in Resources */,
 				1F35E75920CA01C20076ED0D /* Assets.xcassets in Resources */,
+				1F30E01020D9AD69000B0652 /* Welcome.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -446,6 +498,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1FB4611A20E17D65005B02C3 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -453,6 +506,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1FB4611D20E17D7F005B02C3 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -472,8 +526,8 @@
 				"$(SRCROOT)/Carthage/Build/iOS/URLMatcher.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Siesta.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/SiestaUI.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/RxSwift.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/RxCocoa.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Motion.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Material.framework",
 			);
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Swinject.framework",
@@ -483,8 +537,8 @@
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/URLMatcher.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Siesta.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SiestaUI.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxSwift.framework",
-				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/RxCocoa.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Motion.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Material.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -497,13 +551,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F35E72920CA01010076ED0D /* ViewController.swift in Sources */,
+				1F30E01420D9B285000B0652 /* LoginViewController.swift in Sources */,
 				1F30DFF420D6DD6E000B0652 /* BackendService.swift in Sources */,
+				1F4B44CA20DB0F800058D936 /* AbstractWelcomeViewController.swift in Sources */,
+				1F4B44C620DAFF1A0058D936 /* WelcomeNavigationController.swift in Sources */,
 				1F30E00520D6F6E4000B0652 /* BackendModel.swift in Sources */,
 				1F30DFFD20D6EAF1000B0652 /* AuthorizationService.swift in Sources */,
+				1F4B44C420DAF8730058D936 /* ApplicationSnackbarController.swift in Sources */,
 				1F30DFFF20D6ED7C000B0652 /* AuthorizationToken.swift in Sources */,
 				1F30E00A20D7F5C6000B0652 /* Siesta.swift in Sources */,
 				1F30E00E20D84AF3000B0652 /* AnyCodable.swift in Sources */,
+				1F4B44C820DB0D2B0058D936 /* RegisterViewController.swift in Sources */,
 				1F21940820CEA0E1005A632D /* Routes.swift in Sources */,
 				1F35E72520CA01010076ED0D /* AppDelegate.swift in Sources */,
 			);

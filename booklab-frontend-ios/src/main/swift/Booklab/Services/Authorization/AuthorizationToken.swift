@@ -26,9 +26,14 @@ public struct AuthorizationToken : Codable, Equatable {
     public let value: String
     
     /**
-     * The amount of seconds after which the
+     * The date at which this token was issued.
      */
-    public let expiresAt: Date
+    public let issuedAt: Date
+    
+    /**
+     * The amount of seconds after which the token expires.
+     */
+    public let expiresIn: TimeInterval
     
     /**
      * The scope the token applies to.
@@ -43,8 +48,8 @@ public struct AuthorizationToken : Codable, Equatable {
     /**
      * A flag to indicate whether the token has expired.
      */
-    var expired: Bool {
-        get { return Date() > expiresAt }
+    var isExpired: Bool {
+        get { return Date() > issuedAt.addingTimeInterval(expiresIn) }
     }
     
     /**
@@ -58,9 +63,8 @@ public struct AuthorizationToken : Codable, Equatable {
         self.value = try values.decode(String.self, forKey: CodingKeys.value)
         self.scope = try values.decodeIfPresent(String.self, forKey: CodingKeys.scope)
         self.state = try values.decodeIfPresent(String.self, forKey: CodingKeys.state)
-        
-        let expiresIn = try values.decode(TimeInterval.self, forKey: CodingKeys.expiresIn)
-        self.expiresAt = Date().addingTimeInterval(expiresIn)
+        self.issuedAt = (try? values.decode(Date.self, forKey: CodingKeys.issuedAt)) ?? Date()
+        self.expiresIn = try values.decode(TimeInterval.self, forKey: CodingKeys.expiresIn)
     }
     
     /**
@@ -73,7 +77,8 @@ public struct AuthorizationToken : Codable, Equatable {
         try container.encode(self.value, forKey: CodingKeys.value)
         try container.encodeIfPresent(self.scope, forKey: CodingKeys.scope)
         try container.encodeIfPresent(self.state, forKey: CodingKeys.state)
-        try container.encodeIfPresent(self.expiresAt.timeIntervalSinceNow, forKey: CodingKeys.expiresIn)
+        try container.encodeIfPresent(self.issuedAt, forKey: CodingKeys.issuedAt)
+        try container.encodeIfPresent(self.expiresIn, forKey: CodingKeys.expiresIn)
     }
     
     /**
@@ -81,6 +86,7 @@ public struct AuthorizationToken : Codable, Equatable {
      */
     private enum CodingKeys: String, CodingKey {
         case value = "access_token"
+        case issuedAt = "issued_at"
         case expiresIn = "expires_in"
         case scope = "scope"
         case state = "state"
@@ -90,9 +96,9 @@ public struct AuthorizationToken : Codable, Equatable {
 /**
  * This structure represents an OAuth2 authorization failure.
  */
-public struct AuthorizationError : Error, Codable {
+public struct AuthorizationError : LocalizedError, Codable {
     /**
-     * The error type.
+     * The type of error that occured.
      */
     public let type: String;
     
@@ -106,10 +112,7 @@ public struct AuthorizationError : Error, Codable {
      */
     public let state: String?
     
-    /**
-     * The localized description of the error.
-     */
-    var localizedDescription: String {
+    public var errorDescription: String? {
         get { return description ?? type }
     }
     

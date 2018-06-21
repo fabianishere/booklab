@@ -1,4 +1,5 @@
-github "ReactiveX/RxSwift" "4.2.0"
+github "CosmicMind/Material" "2.15.0"
+github "CosmicMind/Motion" "1.4.0"
 github "Swinject/Swinject" "2.4.1"
 github "Swinject/SwinjectAutoregistration" "2.1.1"
 github "Swinject/SwinjectStoryboard" "2.0.1"
