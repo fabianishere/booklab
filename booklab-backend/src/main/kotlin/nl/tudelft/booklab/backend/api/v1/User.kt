@@ -18,7 +18,10 @@ package nl.tudelft.booklab.backend.api.v1
 
 import io.ktor.application.ApplicationCallPipeline
 import io.ktor.application.call
+import io.ktor.auth.oauth2.AccessToken
+import io.ktor.auth.oauth2.repository.ClientIdPrincipal
 import io.ktor.auth.oauth2.scoped
+import io.ktor.auth.principal
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLBuilder
@@ -32,6 +35,7 @@ import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.accept
 import io.ktor.routing.application
+import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
 import nl.tudelft.booklab.backend.baseUrl
@@ -99,6 +103,18 @@ data class UserRegistrationRequest(val email: String, val password: String)
  */
 internal fun Route.userResource() {
     val userService: UserService = application.inject()
+
+    get("/me") {
+        val token = call.principal<AccessToken<ClientIdPrincipal, User>>()
+        val user = token?.user
+
+        if (user == null) {
+            call.respond(HttpStatusCode.NotFound, NotFound("No user found associated with the access token."))
+            return@get
+        }
+
+        call.respond(Success(user))
+    }
 
     route("/{user}") {
         intercept(ApplicationCallPipeline.Call) {

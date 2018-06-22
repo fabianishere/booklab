@@ -1,5 +1,8 @@
 <div *ngIf="books.length > 0" class="books">
     <div *ngFor="let book of books" class="row book"
+         id="{{books.indexOf(book)}}"
+         (mouseenter)="enterMouseEvent.emit(book.box); changeColor(books.indexOf(book).toString(), true)"
+         (mouseleave)="leaveMouseEvent.emit(book.box); changeColor(books.indexOf(book).toString(), false)"
          [ngClass]="{'addedToShelf':book.added, 'toAdd':book.checked}">
         <div class="col-1" *ngIf="book.added">
             <i class="fas fa-check-circle okay"></i>

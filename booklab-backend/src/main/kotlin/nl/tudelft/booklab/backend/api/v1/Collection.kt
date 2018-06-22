@@ -41,6 +41,7 @@ import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.accept
 import io.ktor.routing.application
+import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
 import nl.tudelft.booklab.backend.baseUrl
@@ -50,6 +51,7 @@ import nl.tudelft.booklab.backend.services.collection.BookCollection
 import nl.tudelft.booklab.backend.services.collection.BookCollectionService
 import nl.tudelft.booklab.backend.services.collection.BookCollectionServiceException
 import nl.tudelft.booklab.backend.services.user.User
+import nl.tudelft.booklab.backend.services.user.UserService
 import nl.tudelft.booklab.backend.spring.inject
 import io.ktor.locations.delete as deleteLocation
 import io.ktor.locations.get as getLocation
@@ -61,9 +63,30 @@ import io.ktor.locations.put as putLocation
  */
 fun Route.collections() {
     scoped("collection") {
+        collectionSearch()
         collectionCreate()
         collectionResource()
         handle { call.respond(HttpStatusCode.MethodNotAllowed, MethodNotAllowed()) }
+    }
+}
+
+/**
+ * Define the endpoint for searching for collections.
+ */
+internal fun Route.collectionSearch() {
+    val userService: UserService = application.inject()
+
+    // Search by user
+    get {
+        val id = call.parameters["user"]
+        val user = id?.toIntOrNull()?.let { userService.findById(it) }
+
+        if (user == null) {
+            call.respond(HttpStatusCode.NotFound, NotFound("The collections where not found for user $id"))
+            return@get
+        }
+
+        call.respond(Success(user.collections, meta = mapOf("count" to user.collections.size)))
     }
 }
 
@@ -74,6 +97,7 @@ internal fun Route.collectionCreate() {
     val catalogueService: CatalogueService = application.inject()
     val collectionService: BookCollectionService = application.inject()
 
+    // SECTION: Creating a collection
     val handler = {
         post {
             // Validate whether the current user can modify the collection

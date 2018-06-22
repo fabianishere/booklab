@@ -32,7 +32,9 @@
             <app-image-search class="d-block"></app-image-search>
             <p *ngIf="!image.searching && booklist.books.length == 0 && image.img!= null">No books were found</p>
             <app-booklist [addTo]="this"
-                          [buttonText]="'Add these books to my collection'"></app-booklist>
+                          [buttonText]="'Add these books to my collection'"
+                          (enterMouseEvent)="image.drawBox($event)"
+                          (leaveMouseEvent)="image.clearBox($event)"></app-booklist>
             <p class="m-0" >Or do you want to </p>
             <button class="button ml-0 mr-0" (click)="enterBook = !enterBook">
                 {{enterBook?'Go back':'Enter a book manually'}}
