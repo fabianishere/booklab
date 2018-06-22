@@ -29,7 +29,7 @@ export class PopupService {
       this.loaderRef.dismiss();
   }
 
-  opendIsAdded() {
+  openIsAdded() {
       this.modal.open(AddedPopupComponent,
       {centered: true});
   }

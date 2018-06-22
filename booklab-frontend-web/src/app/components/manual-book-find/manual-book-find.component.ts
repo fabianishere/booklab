@@ -59,7 +59,7 @@ export class ManualBookFindComponent implements OnInit, AfterViewChecked {
             r.added = true;
             this.user.addToBookshelf(r.book);
         });
-        this.popup.opendIsAdded();
+        this.popup.openIsAdded();
         this.results = [];
     }
 

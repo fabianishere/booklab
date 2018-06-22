@@ -14,7 +14,7 @@ describe('ManualBookFindComponent should..', () => {
     beforeEach(() => {
         http = jasmine.createSpyObj('HttpService', ['findBook']);
         user = jasmine.createSpyObj('UserService', ['getBookshelf', 'addToBookshelf']);
-        component = new ManualBookFindComponent(user, http);
+        component = new ManualBookFindComponent(user, http, jasmine.createSpyObj('PopupService', ['openIsAdded']));
     });
 
     it('create', () => {

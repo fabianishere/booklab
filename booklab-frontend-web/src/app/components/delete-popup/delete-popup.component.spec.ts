@@ -4,19 +4,9 @@ import { DeletePopupComponent } from './delete-popup.component';
 
 describe('DeletePopupComponent', () => {
   let component: DeletePopupComponent;
-  let fixture: ComponentFixture<DeletePopupComponent>;
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ DeletePopupComponent ]
-    })
-    .compileComponents();
-  }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DeletePopupComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    component = new DeletePopupComponent(null, null);
   });
 
   it('should create', () => {

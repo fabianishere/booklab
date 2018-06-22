@@ -54,7 +54,7 @@ export class BookSearchComponent implements OnInit, AddTo {
         this.user.addMultToBookshelf(books);
         this.booklist.books = [];
         this.image.img = null;
-        this.popup.opendIsAdded();
+        this.popup.openIsAdded();
     }
 
     onSubmit(event) {
