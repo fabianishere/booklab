@@ -36,6 +36,11 @@ export class BooklistComponent implements OnInit {
       return isDefined(this.books.find(b => b.added));
   }
 
+    /**
+     * Changes the background color of the book list entry according to mouseenter and mouseleave events.
+     * @param {string} id the id of the book entry to change the background of
+     * @param {boolean} enter indicates whether the event is a mouseenter event
+     */
   changeColor(id: string, enter: boolean) {
       const element = document.getElementById(id);
       enter ? element.style.backgroundColor = "rgba(0, 255, 0, 1)" : element.style.backgroundColor = "rgba(255, 255, 255, 1)";

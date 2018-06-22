@@ -73,6 +73,9 @@ export class ImageSearchComponent implements OnInit, AfterViewInit, AfterViewChe
         return subject;
     }
 
+    /**
+     * Draws the uploaded image on the image canvas and sets the size of the drawing canvas to the image size.
+     */
     drawImage() {
         let image = document.getElementById("image") as HTMLImageElement;
         let container = document.getElementById("container");
@@ -86,6 +89,10 @@ export class ImageSearchComponent implements OnInit, AfterViewInit, AfterViewChe
         }
     }
 
+    /**
+     * Draws the box on the drawing canvas
+     * @param {Box} box the box to be drawn
+     */
     drawBox(box: Box) {
         this.drawingContext.fillStyle = 'rgba(0, 255, 0, 0.5)';
         this.drawingContext.fillRect(box.x, box.y, box.width, box.height);
@@ -95,6 +102,10 @@ export class ImageSearchComponent implements OnInit, AfterViewInit, AfterViewChe
 
     }
 
+    /**
+     * Clears the box from the drawing canvas
+     * @param {Box} box the box to be cleared
+     */
     clearBox(box: Box) {
         const offset = this.drawingContext.lineWidth;
         this.drawingContext.clearRect(box.x-offset, box.y-offset, box.width+2*offset, box.height+2*offset);
