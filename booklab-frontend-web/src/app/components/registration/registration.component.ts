@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpService} from "../../services/http/http.service";
+import {UserRegistration} from "../../interfaces/user";
 import {PopupService} from "../../services/popup/popup.service";
-import {UserRegistration} from "../../dataTypes";
 
 @Component({
     selector: 'app-registration',

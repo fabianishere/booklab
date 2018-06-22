@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {Book} from "../../dataTypes";
 import {UserService} from "../../services/user/user.service";
+import {Book} from "../../interfaces/user";
 
 @Component({
   selector: 'app-delete-popup',

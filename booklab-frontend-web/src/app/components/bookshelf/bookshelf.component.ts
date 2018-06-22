@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {UserService} from '../../services/user/user.service';
-import {Book} from '../../dataTypes';
+import {Book} from '../../interfaces/user';
 import {HttpService} from '../../services/http/http.service';
 import {PopupService} from "../../services/popup/popup.service";
 

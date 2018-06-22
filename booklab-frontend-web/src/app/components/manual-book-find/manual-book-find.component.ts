@@ -1,7 +1,7 @@
 import {AfterViewChecked, Component, OnInit, ViewChild} from '@angular/core';
 import {HttpService} from "../../services/http/http.service";
 import {UserService} from "../../services/user/user.service";
-import {Book, BookItem} from "../../dataTypes";
+import {Book, BookItem} from "../../interfaces/user";
 import {isDefined} from "@angular/compiler/src/util";
 import {PopupService} from "../../services/popup/popup.service";
 
@@ -55,10 +55,10 @@ export class ManualBookFindComponent implements OnInit, AfterViewChecked {
     }
 
     addManualToBookshelf() {
-        this.results.filter(r => r.checked).forEach(r => {
+        this.user.addMultToBookshelf(this.results.filter(r => {
             r.added = true;
-            this.user.addToBookshelf(r.book);
-        });
+            return r.checked
+        }).map(i => i.book));
         this.popup.openIsAdded();
         this.results = [];
     }

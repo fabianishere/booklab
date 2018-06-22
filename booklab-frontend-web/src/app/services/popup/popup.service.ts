@@ -4,7 +4,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {BookloadComponent} from "../../components/bookload-popup/bookload-popup.component";
 import {AddedPopupComponent} from "../../components/added-popup/added-popup.component";
 import {DeletePopupComponent} from "../../components/delete-popup/delete-popup.component";
-import {Book} from "../../dataTypes";
+import {Book} from "../../interfaces/user";
 
 @Injectable({
   providedIn: 'root'

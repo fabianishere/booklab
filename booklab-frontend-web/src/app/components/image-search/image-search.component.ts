@@ -1,15 +1,8 @@
-import {
-    AfterViewChecked,
-    AfterViewInit,
-    Component,
-    ElementRef,
-    OnInit,
-    ViewChild
-} from '@angular/core';
-import {BookDetection, BookItem, Box} from "../../dataTypes";
+import {AfterViewChecked, AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Subject} from "rxjs/Rx";
 import {HttpService} from "../../services/http/http.service";
 import {Observable} from "rxjs/Observable";
+import {BookDetection, BookItem, Box} from "../../interfaces/user";
 import {PopupService} from "../../services/popup/popup.service";
 
 @Component({
@@ -113,6 +106,6 @@ export class ImageSearchComponent implements OnInit, AfterViewInit, AfterViewChe
      */
     clearBox(box: Box) {
         const offset = this.drawingContext.lineWidth;
-        this.drawingContext.clearRect(box.x-offset, box.y-offset, box.width+2*offset, box.height+2*offset);
+        this.drawingContext.clearRect(box.x - offset, box.y - offset, box.width + 2 * offset, box.height + 2 * offset);
     }
 }

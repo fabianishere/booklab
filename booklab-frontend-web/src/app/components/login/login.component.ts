@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {UserService} from '../../services/user/user.service';
-import {Secure} from '../../dataTypes';
+import {Secure} from '../../interfaces/user';
 import {Router} from '@angular/router';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
@@ -35,6 +35,7 @@ export class LoginComponent implements OnInit {
         this.user.login(username, password).then((res) => {
             if (res) {
                 this.user.loggedIn = true;
+                this.user.loadUser();
                 this.router.navigate(['upload']);
                 this.goBack();
             }
