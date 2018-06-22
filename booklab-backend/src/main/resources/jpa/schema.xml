@@ -57,7 +57,7 @@
             </id>
 
             <basic name="name">
-                <column unique="true" nullable="false" />
+                <column nullable="false" />
             </basic>
 
             <many-to-one name="user">
