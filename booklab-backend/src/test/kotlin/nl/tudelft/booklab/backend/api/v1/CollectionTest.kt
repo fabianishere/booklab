@@ -157,7 +157,7 @@ internal class CollectionTest {
 
     @Test
     fun `method not allowed on collection`() = withTestEngine({ module() }) {
-        val request = handleRequest(HttpMethod.Get, "/api/collections") {
+        val request = handleRequest(HttpMethod.Put, "/api/collections") {
             configureAuthorization("test", listOf("collection"))
         }
         with(request) {
@@ -652,6 +652,67 @@ internal class CollectionTest {
             assertEquals(HttpStatusCode.Created, response.status())
             val body: ApiResponse.Success<BookCollection>? = response.content?.let { mapper.readValue(it) }
             assertEquals("test", body?.data?.name)
+        }
+    }
+
+    @Test
+    fun `find collection by non-present user id`() = withTestEngine({ module() }) {
+        val request = handleRequest(HttpMethod.Get, "/api/collections") {
+            configureAuthorization("test", listOf("collection"))
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.NotFound, response.status())
+            val body: ApiResponse.Failure? = response.content?.let { mapper.readValue(it) }
+            assertEquals("not_found", body?.error?.code)
+        }
+    }
+
+    @Test
+    fun `find collection by invalid user id`() = withTestEngine({ module() }) {
+        val request = handleRequest(HttpMethod.Get, "/api/collections?user=test") {
+            configureAuthorization("test", listOf("collection"))
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.NotFound, response.status())
+            val body: ApiResponse.Failure? = response.content?.let { mapper.readValue(it) }
+            assertEquals("not_found", body?.error?.code)
+        }
+    }
+
+    @Test
+    fun `find collection by unknown user id`() = withTestEngine({ module() }) {
+        val request = handleRequest(HttpMethod.Get, "/api/collections?user=1") {
+            configureAuthorization("test", listOf("collection"))
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.NotFound, response.status())
+            val body: ApiResponse.Failure? = response.content?.let { mapper.readValue(it) }
+            assertEquals("not_found", body?.error?.code)
+        }
+    }
+
+    @Test
+    fun `find collection by user id`() = withTestEngine({ module() }) {
+        val collections = mutableListOf<BookCollection>()
+        val user = User(1, "test@example.com", "", collections)
+        collections += BookCollection(
+            id = 1,
+            user = user,
+            name = "test",
+            books = setOf(book1)
+        )
+
+        userService.stub {
+            on { findById(eq(1)) } doReturn user
+        }
+
+        val request = handleRequest(HttpMethod.Get, "/api/collections?user=1") {
+            configureAuthorization("test", listOf("collection"))
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            val body: ApiResponse.Success<List<BookCollection>>? = response.content?.let { mapper.readValue(it) }
+            assertEquals(collections, body?.data)
         }
     }
 

@@ -1,0 +1,14 @@
+<p *ngIf="recommendations.length > 0">Your top 5 recommendations:</p>
+<div *ngIf="recommendations.length > 0" class="books" id="recommendations-list">
+    <div *ngFor="let book of recommendations; index as i" class="row book"
+         [ngClass]="{'d-none':i>4}">
+        <div class="col-1">{{i + 1}}</div>
+        <div class="col-10 col-sm-7 book-title">{{book.book.title}}</div>
+        <div class="w-100 d-sm-none"></div>
+        <div class="col-1 d-sm-none"></div>
+        <div class="col-10 col-sm-4">{{book.book.authors[0]}}</div>
+        <div class="col-12 d-sm-none">
+            <hr>
+        </div>
+    </div>
+</div>

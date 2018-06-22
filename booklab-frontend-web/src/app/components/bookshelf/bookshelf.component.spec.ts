@@ -16,7 +16,7 @@ describe('BookshelfComponent should..', () => {
     });
 
     it('delete a book', () => {
-        const book = { title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} };
+        const book = { id: '123', title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} };
         component.deleteBook(book);
         expect(user.deleteFromBookshelf.calls.count()).toBe(1);
         expect(user.deleteFromBookshelf.calls.mostRecent().args[0]).toBe(book);

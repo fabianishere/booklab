@@ -88,10 +88,15 @@ jacocoTestReport.doLast {
 
         def res = slurper.parse report
         def counter = res.counter.find { it.@type == 'BRANCH' }
-        def covered = counter.@covered.toInteger()
-        def missed = counter.@missed.toInteger()
-        def total = covered + missed
+        try {
+            def covered = counter.@covered.toInteger()
+            def missed = counter.@missed.toInteger()
+            def total = covered + missed
 
-        logger.lifecycle(String.format("%-${spacing}s %,.1f%%", it.name + ':', (covered / total) * 100))
+            logger.lifecycle(String.format("%-${spacing}s %,.1f%%", it.name + ':', (covered / total) * 100))
+        } catch (NumberFormatException e) {
+            return
+        }
+
     }
 }

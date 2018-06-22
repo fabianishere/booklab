@@ -4,12 +4,12 @@
         <img class="loading" src="assets/loading.gif">
         Searching your book in Google Books..
     </div>
-    <div *ngIf="results && !searching" class="col-12 pink pl-0">Found:</div>
-    <div *ngFor="let result of results" class="row book" [ngClass]="{'addedToShelf' : result.addedToShelf}">
-        <div class="col-1" *ngIf="result.addedToShelf">
+    <div *ngIf="results.length > 0 && !searching" class="col-12 pink pl-0">Found:</div>
+    <div *ngFor="let result of results" class="row book" [ngClass]="{'addedToShelf' : result.added}">
+        <div class="col-1" *ngIf="result.added">
             <i class="fas fa-check-circle okay"></i>
         </div>
-        <div class="col-1" *ngIf="!result.addedToShelf">
+        <div class="col-1" *ngIf="!result.added">
             <label class="b-custom">
                 <input type="checkbox" [(ngModel)]="result.checked">
                 <span class="checkmark"></span>
@@ -30,11 +30,11 @@
             <input type="text" [(ngModel)]="authorInput">
         </div>
     </div>
-    <div class="col-12 flex align-items-baseline" *ngIf="!results || booksAddedToShelf()">
+    <div class="col-12 flex align-items-baseline" *ngIf="!(results.length > 0 || booksAddedToShelf())">
         <button class="button" (click)="findBook()">Search</button>
         <img src="https://books.google.com/googlebooks/images/poweredby.png">
     </div>
-    <div class="col-12 flex align-items-baseline" *ngIf="results && !booksAddedToShelf()">
+    <div class="col-12 flex align-items-baseline" *ngIf="results.length > 0 && !booksAddedToShelf()">
         <button class="button" (click)="addManualToBookshelf()">Add to bookshelf</button>
     </div>
 </div>

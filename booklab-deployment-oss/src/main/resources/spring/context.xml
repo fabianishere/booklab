@@ -19,6 +19,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
     <import resource="classpath:spring/base/base.xml" />
+    <import resource="classpath:spring/recommender.xml" />
     <import resource="classpath:spring/hibernate.xml" />
     <import resource="classpath:spring/sru.xml" />
     <import resource="classpath:spring/tesseract.xml" />

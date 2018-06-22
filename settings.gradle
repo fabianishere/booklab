@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import org.gradle.internal.os.OperatingSystem
+
 /* Workaround for Android plugin to support plugin syntax */
 pluginManagement {
     resolutionStrategy {
@@ -47,13 +49,23 @@ tryInclude 'booklab-catalogue-sru'
 tryInclude 'booklab-deployment-testing'
 tryInclude 'booklab-deployment-production'
 tryInclude 'booklab-deployment-oss'
-tryInclude 'booklab-frontend-android'
-tryInclude 'booklab-frontend-ios'
+
+// Only include Android application if Android SDK is available (#111)
+if (file('local.properties').exists() || System.env['ANDROID_HOME'] != null) {
+	tryInclude 'booklab-frontend-android'
+}
+
+// Only include iOS application on macOS systems (#111)
+if (OperatingSystem.current().isMacOsX()) {
+	tryInclude 'booklab-frontend-ios'
+}
+
 tryInclude 'booklab-frontend-web'
 tryInclude 'booklab-proxy'
 tryInclude 'booklab-recommender'
 tryInclude 'booklab-vision'
 tryInclude 'booklab-vision-gvision'
+tryInclude 'booklab-vision-opencv'
 tryInclude 'booklab-vision-tensorflow'
 tryInclude 'booklab-vision-tesseract'
 tryInclude 'ktor-auth-oauth2'

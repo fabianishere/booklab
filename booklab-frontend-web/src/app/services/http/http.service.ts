@@ -89,6 +89,24 @@ export class HttpService {
             .pipe(extract);
     }
 
+    /**
+     * Get the recommendations for the given books.
+     * @param collection The collection of books.
+     * @param candidates The list of candidate books.
+     * @returns {Observable<book[]>}
+     */
+    getRecommendations(collection: Book[], candidates: Book[]): Observable<Book[]> {
+        return this.http.post<Response<Book[]>>(`${environment.apiUrl}/recommendations`, {
+            collection: collection.map(book => book.id),
+            candidates: candidates.map(book => book.id)
+        })
+            .map(res => {
+                if (isFailure(res))
+                    throw res;
+                return res.data
+            });
+    }
+
     handleError(error) {
         this.router.navigate(['/sorry']);
     }

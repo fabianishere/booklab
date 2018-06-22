@@ -1,5 +1,5 @@
 import {RouterModule, Routes} from "@angular/router";
-import {ImageUploadComponent} from "./components/image-upload/image-upload.component";
+import {BookSearchComponent} from "./components/image-upload/book-search.component";
 import {BookshelfComponent} from "./components/bookshelf/bookshelf.component";
 import {AboutComponent} from "./components/about/about.component";
 import {HomeComponent} from "./components/home/home.component";
@@ -31,7 +31,7 @@ const routes: Routes = [
         children: [
             {
                 path: 'upload',
-                component: ImageUploadComponent
+                component: BookSearchComponent
             },
             {
                 path: 'bookshelf',

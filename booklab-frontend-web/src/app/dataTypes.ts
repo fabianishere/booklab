@@ -89,7 +89,12 @@ export interface UserRegistration {
  */
 export interface Book {
     /**
-     * The identifiers of the book.
+     * The internal identifier of the book.
+     */
+    id: string;
+
+    /**
+     * The external identifiers of the book.
      */
     identifiers: any;
 
@@ -160,10 +165,19 @@ export interface BookDetection {
     }
 }
 
+export class Box {
+    constructor(public x: number,
+                public y: number,
+                public width: number,
+                public height: number) {
+    }
+}
+
 export class BookItem {
     constructor(public book: Book,
                 public checked: boolean = true,
-                public addedToShelf = false) {
+                public added = false,
+                public box: Box = null) {
     }
 }
 

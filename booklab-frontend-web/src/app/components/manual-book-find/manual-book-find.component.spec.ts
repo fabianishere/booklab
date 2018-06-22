@@ -32,8 +32,8 @@ describe('ManualBookFindComponent should..', () => {
 
     it('add a book to the bookshelf', () => {
         const books = [
-            { title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} },
-            { title: 'test2', authors: ['auth'], identifiers: { internal: '1233' }, categories: [], images: {} },
+            { id: '123', title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} },
+            { id: '1233', title: 'test2', authors: ['auth'], identifiers: { internal: '1233' }, categories: [], images: {} },
         ];
         component.results = [new BookItem(books[0])];
         component.addManualToBookshelf();

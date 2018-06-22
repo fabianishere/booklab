@@ -20,6 +20,7 @@ export class ManualBookFindComponent implements OnInit {
     }
 
     ngOnInit() {
+        this.results = [];
     }
 
     /**
@@ -30,7 +31,7 @@ export class ManualBookFindComponent implements OnInit {
             return;
         }
         this.searching = true;
-        this.results = null;
+        this.results = [];
         this.http.findBook(this.nameInput, this.authorInput).subscribe((result) => {
             this.searching = false;
             this.results = result.map(r => new BookItem(r));
@@ -42,7 +43,7 @@ export class ManualBookFindComponent implements OnInit {
 
     addManualToBookshelf() {
         this.results.filter(r => r.checked).forEach(r => {
-            r.addedToShelf = true;
+            r.added = true;
             this.user.addToBookshelf(r.book);
         });
     }
@@ -52,7 +53,6 @@ export class ManualBookFindComponent implements OnInit {
     }
 
     booksAddedToShelf(): boolean {
-        return isDefined(this.results.find(b => b.addedToShelf));
+        return isDefined(this.results.find(b => b.added));
     }
-
 }
