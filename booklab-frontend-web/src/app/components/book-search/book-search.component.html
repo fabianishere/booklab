@@ -29,7 +29,7 @@
     </div>
     <div class="row flex-grow-1">
         <div class="col-12 results d-block ">
-            <app-image-search class="d-block"></app-image-search>
+            <app-image-search [ngClass]="{'d-none':image.img==null}"></app-image-search>
             <p *ngIf="!image.searching && booklist.books.length == 0 && image.img!= null">No books were found</p>
             <app-booklist [addTo]="this"
                           [buttonText]="'Add these books to my collection'"

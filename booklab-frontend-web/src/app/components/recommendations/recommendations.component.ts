@@ -46,7 +46,6 @@ export class RecommendationsComponent implements OnInit, AddTo {
     }
 
     recommend() {
-        this.candidates = this.booklist.books.map(b => b.book);
         this.recommendationslist.recommendations = [];
         this.http.getRecommendations(this.books, this.candidates).subscribe((res) => {
             this.recommendationslist.recommendations = res.map(book => new BookItem(book))

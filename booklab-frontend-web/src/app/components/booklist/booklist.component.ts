@@ -13,6 +13,7 @@ export class BooklistComponent implements OnInit {
     @Input() buttonText: string;
     @Input() addTo: AddTo;
     @Input() books: BookItem[];
+    @Input() keepThebooks = false;
 
     @Output() enterMouseEvent = new EventEmitter<Box>();
     @Output() leaveMouseEvent = new EventEmitter<Box>();
@@ -30,8 +31,9 @@ export class BooklistComponent implements OnInit {
           b.added = true;
           return b.book
       }));
-      this.books = [];
-
+      if(!this.keepThebooks) {
+          this.books = [];
+      }
   }
 
   isAdded(): boolean {
