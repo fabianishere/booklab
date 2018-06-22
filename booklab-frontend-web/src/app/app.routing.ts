@@ -7,6 +7,7 @@ import {RecommendationsComponent} from "./components/recommendations/recommendat
 import {SorryComponent} from "./components/sorry/sorry.component";
 import {RegistrationComponent} from "./components/registration/registration.component";
 import {UserService} from "./services/user/user.service";
+import {BookloadComponent} from "./components/bookload-popup/bookload-popup.component";
 
 const routes: Routes = [
     {

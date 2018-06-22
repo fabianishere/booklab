@@ -22,6 +22,7 @@ import {BooklistComponent} from "../booklist/booklist.component";
 import {AddTo} from "../../interfaces/addTo";
 import {Subject} from "rxjs/Rx";
 import {ImageSearchComponent} from "../image-search/image-search.component";
+import {PopupService} from "../../services/popup/popup.service";
 
 
 @Component({
@@ -43,7 +44,7 @@ export class BookSearchComponent implements OnInit, AddTo {
      * @param {HttpService} http
      * @param {UserService} user
      */
-    constructor(private user: UserService) {
+    constructor(private user: UserService, private popup: PopupService) {
     }
 
     ngOnInit() {
@@ -51,6 +52,9 @@ export class BookSearchComponent implements OnInit, AddTo {
 
     addTo(books: Book[]) {
         this.user.addMultToBookshelf(books);
+        this.booklist.books = [];
+        this.image.img = null;
+        this.popup.openIsAdded();
     }
 
     onSubmit(event) {

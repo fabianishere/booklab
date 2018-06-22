@@ -17,7 +17,7 @@ describe('ImageSearchComponent', () => {
 
     beforeEach(() => {
         http = jasmine.createSpyObj('HttpService', ['putImg', 'checkHealth']);
-        component = new ImageSearchComponent(http);
+        component = new ImageSearchComponent(http, null);
     });
 
     it('should create', () => {

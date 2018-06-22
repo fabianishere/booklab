@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {HttpService} from "../../services/http/http.service";
 import {LoginService} from "../../services/login/login.service";
 import {UserRegistration} from "../../interfaces/user";
+import {PopupService} from "../../services/popup/popup.service";
 
 @Component({
     selector: 'app-registration',
@@ -15,7 +16,7 @@ export class RegistrationComponent implements OnInit {
     invalid = false;
     error = {};
 
-    constructor(private http: HttpService, public login: LoginService) {
+    constructor(private http: HttpService, public login: PopupService) {
     }
 
     ngOnInit() {
