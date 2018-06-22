@@ -8,7 +8,7 @@ import {OAuthService} from "angular-oauth2-oidc";
 import 'rxjs/add/observable/throw';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/mergeMap';
-import {Book, BookDetection, Secure, User} from '../../interfaces/user';
+import {Book, BookCollection, BookDetection, Secure, User} from '../../interfaces/user';
 import {HealthCheck, isFailure, Response} from "../../interfaces/communication";
 
 /**
@@ -25,8 +25,17 @@ export class HttpService {
     constructor(private http: HttpClient, private router: Router, private oauth: OAuthService) {
     }
 
-    getUser(id: string): Observable<User> {
-        return this.http.get<Response<User>>(`${environment.apiUrl}/users/${id}`)
+    getUser(): Observable<User> {
+        return this.http.get<Response<User>>(`${environment.apiUrl}/users/me`)
+            .map(res => {
+                if (isFailure(res))
+                    throw res;
+                return res.data;
+            });
+    }
+
+    getCollection(id: number): Observable<BookCollection[]> {
+        return this.http.get<Response<BookCollection[]>>(`${environment.apiUrl}/collections?user=${id}`)
             .map(res => {
                 if (isFailure(res))
                     throw res;
@@ -40,9 +49,29 @@ export class HttpService {
      * @param {Book[]} books that need to be stored
      * @returns {Observable<any>}
      */
-    updateBookshelf(id: number, books: Book[]) {
-        this.http.post<Response<User>>(`${environment.apiUrl}/collections/${id}/books`,
+    addToCollection(id: number, books: Book[]): Observable<User> {
+        return this.http.post<Response<User>>(`${environment.apiUrl}/collections/${id}/books`,
             {books: books.map(b => b.id)})
+            .map(res => {
+                if (isFailure(res))
+                    throw res;
+                return res.data;
+            });
+    }
+
+    setCollection(id: number, books: Book[]) {
+        return this.http.put<Response<User>>(`${environment.apiUrl}/collections/${id}/books`,
+            {books: books.map(b => b.id)})
+            .map(res => {
+                if (isFailure(res))
+                    throw res;
+                return res.data;
+            });
+    }
+
+    createCollection(): Observable<BookCollection> {
+        return this.http.post<Response<BookCollection>>(`${environment.apiUrl}/collections`,
+            {name: 'my-collection', books: []})
             .map(res => {
                 if (isFailure(res))
                     throw res;

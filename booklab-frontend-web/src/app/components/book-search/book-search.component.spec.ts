@@ -2,7 +2,6 @@ import {BookSearchComponent} from './book-search.component';
 import {HttpService} from "../../services/http/http.service";
 import {UserService} from '../../services/user/user.service';
 import {Observable} from "rxjs/Rx";
-import {Book, BookItem} from "../../dataTypes";
 import {ImageSearchComponent} from "../image-search/image-search.component";
 import {async, TestBed} from "@angular/core/testing";
 import {BooklistComponent} from "../booklist/booklist.component";

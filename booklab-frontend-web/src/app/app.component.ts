@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NullValidationHandler, OAuthService } from 'angular-oauth2-oidc';
 
 import { authConfig } from './auth.config';
+import {UserService} from "./services/user/user.service";
 
 @Component({
     selector: 'app-root',
@@ -19,8 +20,9 @@ export class AppComponent {
    *
    * @param oauthService {OAuthService} The services used as OAuth client.
    */
-  constructor(private oauthService: OAuthService) {
+  constructor(private oauthService: OAuthService, private user: UserService) {
       this.configureAuthorization();
+      this.user.loadUser();
   }
 
   /**

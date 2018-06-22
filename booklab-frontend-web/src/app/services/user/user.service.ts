@@ -13,11 +13,12 @@ import {isUndefined} from "util";
 @Injectable()
 export class UserService implements CanActivate {
 
-    private collections: BookCollection[];
     private bookshelf: Book[];
     private bookSub: BehaviorSubject<Book[]>;
     private id: number;
     loggedIn: boolean;
+    collections: BookCollection[] = [];
+
 
     /**
      * Constructor for UserService.
@@ -55,6 +56,7 @@ export class UserService implements CanActivate {
      */
     setBookshelf(books: Book[]) {
         this.bookshelf = books;
+        this.http.setCollection(this.collections[0].id, books);
         this.update();
     }
 
@@ -64,18 +66,30 @@ export class UserService implements CanActivate {
      */
     addToBookshelf(book: Book) {
         this.bookshelf.push(book);
+        this.http.addToCollection(this.collections[0].id, [book]).subscribe();
         this.update();
     }
 
     loadUser() {
-        this.http.getUser('1').subscribe(res => {
-            if (!isUndefined(res.collections)) {
-                this.collections = res.collections;
-                this.bookshelf = res.collections.reduce((total: Book[], curr: BookCollection) => total.concat(curr.books), []);
-                this.bookSub.next(this.bookshelf);
-            }
+        if(!this.oauthService.hasValidAccessToken()) {
+            return;
+        }
+        this.http.getUser().subscribe(res => {
             this.id = res.id;
-        }, err => this.http.handleError(err));
+            this.http.getCollection(this.id).subscribe(res => {
+                console.log(res);
+                if (res.length > 0) {
+                    this.collections = res;
+                    this.bookshelf = res[0].books;
+                    this.bookSub.next(this.bookshelf);
+                    this.router.navigate(['bookshelf'])
+                }
+                else {
+                    this.http.createCollection().subscribe(res =>
+                        this.collections.push(res));
+                }
+            });
+        });
     }
 
     /**
@@ -84,6 +98,7 @@ export class UserService implements CanActivate {
      */
     addMultToBookshelf(books: Book[]) {
         this.bookshelf = this.bookshelf.concat(books);
+        this.http.addToCollection(this.collections[0].id, books).subscribe();
         this.update();
     }
 
@@ -94,12 +109,12 @@ export class UserService implements CanActivate {
      */
     deleteFromBookshelf(book: Book) {
         this.bookshelf = this.bookshelf.filter(b => b.title !== book.title);
+        this.http.setCollection(this.collections[0].id, this.bookshelf).subscribe();
         this.update();
     }
 
     update() {
         this.bookSub.next(this.bookshelf);
-        this.http.updateBookshelf(this.collections[0].id, this.bookshelf);
     }
 
     login(username: string, password: string): Promise<Object> {
