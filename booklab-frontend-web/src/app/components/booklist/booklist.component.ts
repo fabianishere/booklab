@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {BookItem, Box} from "../../dataTypes";
 import {isDefined} from "@angular/compiler/src/util";
 import {AddTo} from "../../interfaces/addTo";
+import {BookItem, Box} from "../../interfaces/user";
 
 @Component({
   selector: 'app-booklist',
