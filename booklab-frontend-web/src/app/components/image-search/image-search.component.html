@@ -1,10 +1,8 @@
 <img *ngIf="img != null" src="{{img}}" id="image" class="image" style="display: none">
 
-<div id="container" style="position: relative">
-    <canvas #imageCanvas id="canvas" class="image"
-            style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
-    <canvas #drawingCanvas id="canvas2" class="image"
-            style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>
+<div id="container">
+    <canvas #imageCanvas id="imageCanvas" class="image"></canvas>
+    <canvas #drawingCanvas id="drawingCanvas" class="image"></canvas>
 </div>
 
 <p *ngIf="searching">

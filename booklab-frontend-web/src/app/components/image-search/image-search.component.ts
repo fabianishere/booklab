@@ -81,7 +81,7 @@ export class ImageSearchComponent implements OnInit, AfterViewInit, AfterViewChe
             this.imageContext.canvas.height = image.height;
             this.drawingContext.canvas.width = image.width;
             this.drawingContext.canvas.height = image.height;
-            container.style.height = document.getElementById("canvas").clientHeight.toString() + 'px';
+            container.style.height = document.getElementById("imageCanvas").clientHeight.toString() + 'px';
             this.imageContext.drawImage(image, 0, 0);
         }
     }
