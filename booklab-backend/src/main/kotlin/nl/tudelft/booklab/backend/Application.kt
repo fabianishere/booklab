@@ -24,11 +24,7 @@ import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.auth.Authentication
 import io.ktor.auth.oauth2.oauth
-import io.ktor.features.CORS
-import io.ktor.features.Compression
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.DataConversion
-import io.ktor.features.DefaultHeaders
+import io.ktor.features.*
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.jackson.jackson
@@ -84,6 +80,7 @@ fun Application.booklab() {
         // Allow the Authorization header to be sent to REST endpoints
         header(HttpHeaders.Authorization)
         method(HttpMethod.Post)
+        method(HttpMethod.Put)
     }
 
     inject<Routes>("routes").run {

@@ -42,10 +42,10 @@ export class ManualBookFindComponent implements OnInit {
     }
 
     addManualToBookshelf() {
-        this.results.filter(r => r.checked).forEach(r => {
+        this.user.addMultToBookshelf(this.results.filter(r => {
             r.added = true;
-            this.user.addToBookshelf(r.book);
-        });
+            return r.checked
+        }).map(i => i.book));
     }
 
     deleteResult() {

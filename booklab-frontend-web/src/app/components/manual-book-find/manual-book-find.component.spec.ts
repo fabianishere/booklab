@@ -13,7 +13,7 @@ describe('ManualBookFindComponent should..', () => {
 
     beforeEach(() => {
         http = jasmine.createSpyObj('HttpService', ['findBook']);
-        user = jasmine.createSpyObj('UserService', ['getBookshelf', 'addToBookshelf']);
+        user = jasmine.createSpyObj('UserService', ['getBookshelf', 'addToBookshelf', 'addMultToBookshelf']);
         component = new ManualBookFindComponent(user, http);
     });
 
@@ -35,10 +35,10 @@ describe('ManualBookFindComponent should..', () => {
             { id: '123', title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} },
             { id: '1233', title: 'test2', authors: ['auth'], identifiers: { internal: '1233' }, categories: [], images: {} },
         ];
-        component.results = [new BookItem(books[0])];
+        component.results = [new BookItem(books[0]), new BookItem(books[1])];
         component.addManualToBookshelf();
-        expect(user.addToBookshelf.calls.count()).toBe(1);
-        expect(user.addToBookshelf.calls.mostRecent().args[0]).toEqual(books[0]);
+        expect(user.addMultToBookshelf.calls.count()).toBe(1);
+        expect(user.addMultToBookshelf.calls.mostRecent().args[0]).toEqual(books);
 
     })
 });

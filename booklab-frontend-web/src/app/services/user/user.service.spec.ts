@@ -23,7 +23,7 @@ describe('UserService should..', () => {
         httpSpy.setCollection.and.returnValue(new Observable());
         authSpy.hasValidAccessToken.and.returnValue(true);
         user = new UserService(authSpy, jasmine.createSpyObj('Router', ['navigate']), httpSpy);
-        user.collections = [{id: 1}];
+        user.collections = [{id: 1, user: null, name: '', books:[]}];
     });
 
     it('be created', () => {
