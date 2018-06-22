@@ -1,8 +1,8 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {Book, BookItem} from "../../dataTypes";
+import {Book, BookItem} from "../../interfaces/user";
 import {ImageSearchComponent} from "../image-search/image-search.component";
 import {BooklistComponent} from "../booklist/booklist.component";
-import {AddTo} from "../../interfaces";
+import {AddTo} from "../../interfaces/addTo";
 import {UserService} from "../../services/user/user.service";
 import {HttpService} from "../../services/http/http.service";
 import {RecommendationsListComponent} from "../recommendations-list/recommendations-list.component";
@@ -46,7 +46,6 @@ export class RecommendationsComponent implements OnInit, AddTo {
     }
 
     recommend() {
-        this.candidates = this.booklist.books.map(b => b.book);
         this.recommendationslist.recommendations = [];
         this.http.getRecommendations(this.books, this.candidates).subscribe((res) => {
             this.recommendationslist.recommendations = res.map(book => new BookItem(book))

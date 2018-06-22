@@ -2,11 +2,11 @@ import {BookSearchComponent} from './book-search.component';
 import {HttpService} from "../../services/http/http.service";
 import {UserService} from '../../services/user/user.service';
 import {Observable} from "rxjs/Rx";
-import {Book, BookItem} from "../../dataTypes";
 import {ImageSearchComponent} from "../image-search/image-search.component";
 import {async, TestBed} from "@angular/core/testing";
 import {BooklistComponent} from "../booklist/booklist.component";
 import {FormsModule} from "@angular/forms";
+import {PopupService} from "../../services/popup/popup.service";
 
 class MockEvent {
     public srcElement = new MockSourceElement();
@@ -20,6 +20,7 @@ describe('BookSearchComponent should..', () => {
     let component: BookSearchComponent;
     let http: jasmine.SpyObj<HttpService>;
     let user: jasmine.SpyObj<UserService>;
+    let popup: jasmine.SpyObj<PopupService>;
 
 
     beforeEach(async(() => {
@@ -35,9 +36,10 @@ describe('BookSearchComponent should..', () => {
     beforeEach(() => {
         http = jasmine.createSpyObj('HttpService', ['putImg', 'checkHealth']);
         user = jasmine.createSpyObj('UserService', ['getBookshelf', 'addMultToBookshelf']);
-        component = new BookSearchComponent(user);
+        popup = jasmine.createSpyObj('PopupService', ['openisAdded', 'bookLoader']);
+        component = new BookSearchComponent(user, popup);
         component.booklist = new BooklistComponent();
-        component.image = new ImageSearchComponent(http);
+        component.image = new ImageSearchComponent(http, popup);
     });
 
     it('create', () => {

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {LoginService} from "../../services/login/login.service";
+import {PopupService} from "../../services/popup/popup.service";
 import {OAuthService} from "angular-oauth2-oidc";
 
 @Component({
@@ -9,7 +9,7 @@ import {OAuthService} from "angular-oauth2-oidc";
 })
 export class HomeComponent implements OnInit {
 
-  constructor(public login: LoginService, public oauth: OAuthService) { }
+  constructor(public login: PopupService, public oauth: OAuthService) { }
 
   ngOnInit() {
   }

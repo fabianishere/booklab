@@ -29,14 +29,16 @@
     </div>
     <div class="row flex-grow-1">
         <div class="col-12 results d-block ">
-            <app-image-search class="d-block"></app-image-search>
+            <app-image-search [ngClass]="{'d-none':image.img==null}"></app-image-search>
             <p *ngIf="!image.searching && booklist.books.length == 0 && image.img!= null">No books were found</p>
             <app-booklist [addTo]="this"
                           [buttonText]="'Add these books to my collection'"
                           (enterMouseEvent)="image.drawBox($event)"
                           (leaveMouseEvent)="image.clearBox($event)"></app-booklist>
             <p class="m-0" >Or do you want to </p>
-            <button class="button ml-0 mr-0" (click)="enterBook = true">Enter a book manually</button>
+            <button class="button ml-0 mr-0" (click)="enterBook = !enterBook">
+                {{enterBook?'Go back':'Enter a book manually'}}
+            </button>
             <app-manual-book-find *ngIf="enterBook"></app-manual-book-find>
         </div>
     </div>

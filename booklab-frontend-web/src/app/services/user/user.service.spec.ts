@@ -1,11 +1,14 @@
 import {UserService} from './user.service';
 import {OAuthService} from "angular-oauth2-oidc";
-import {Book} from "../../dataTypes";
+import {Book} from "../../interfaces/user";
+import {HttpService} from "../http/http.service";
+import {Observable} from "rxjs/Rx";
 
 
 describe('UserService should..', () => {
     let authSpy: jasmine.SpyObj<OAuthService>;
     let user: UserService;
+    let httpSpy: jasmine.SpyObj<HttpService>;
 
     function initBookShelf(): Book[] {
         const book: Book = { id: '123', title: 'test', authors: ['auth'], identifiers: { internal: '123' }, categories: [], images: {} };
@@ -15,8 +18,12 @@ describe('UserService should..', () => {
 
     beforeEach(() => {
         authSpy = jasmine.createSpyObj('OAuthService', ['hasValidAccessToken', 'fetchTokenUsingPasswordFlow', 'logOut']);
+        httpSpy = jasmine.createSpyObj('HttpService', ['setCollection', 'addToCollection']);
+        httpSpy.addToCollection.and.returnValue(new Observable());
+        httpSpy.setCollection.and.returnValue(new Observable());
         authSpy.hasValidAccessToken.and.returnValue(true);
-        user = new UserService(authSpy, jasmine.createSpyObj('Router', ['navigate']));
+        user = new UserService(authSpy, jasmine.createSpyObj('Router', ['navigate']), httpSpy);
+        user.collections = [{id: 1, user: null, name: '', books:[]}];
     });
 
     it('be created', () => {

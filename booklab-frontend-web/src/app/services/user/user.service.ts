@@ -1,33 +1,40 @@
 import {Injectable} from '@angular/core';
-import {Book} from '../../dataTypes';
+import {Book, BookCollection} from '../../interfaces/user';
 import {Observable} from 'rxjs/Observable';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import {OAuthService} from 'angular-oauth2-oidc';
 import {CanActivate, Router} from "@angular/router";
+import {HttpService} from "../http/http.service";
+import {isUndefined} from "util";
 
 /**
  * Class to hold the information of the user and to provide an interface for editing this information.
  */
 @Injectable()
-export class UserService implements CanActivate{
+export class UserService implements CanActivate {
 
     private bookshelf: Book[];
     private bookSub: BehaviorSubject<Book[]>;
-    public loggedIn: boolean;
+    private id: number;
+    loggedIn: boolean;
+    collections: BookCollection[] = [];
+
 
     /**
      * Constructor for UserService.
      *
      * @param oauthService The OAuth service provider to use.
+     * @param router
+     * @param http
      */
-    constructor(private oauthService: OAuthService, private router: Router) {
+    constructor(private oauthService: OAuthService, private router: Router, private http: HttpService) {
         this.bookSub = new BehaviorSubject([]);
         this.bookshelf = [];
         this.loggedIn = this.oauthService.hasValidAccessToken();
     }
 
     canActivate() {
-        if(this.oauthService.hasValidAccessToken()) {
+        if (this.oauthService.hasValidAccessToken()) {
             return true;
         }
         else {
@@ -49,7 +56,8 @@ export class UserService implements CanActivate{
      */
     setBookshelf(books: Book[]) {
         this.bookshelf = books;
-        this.bookSub.next(this.bookshelf);
+        this.http.setCollection(this.collections[0].id, books);
+        this.update();
     }
 
     /**
@@ -58,7 +66,30 @@ export class UserService implements CanActivate{
      */
     addToBookshelf(book: Book) {
         this.bookshelf.push(book);
-        this.bookSub.next(this.bookshelf);
+        this.http.addToCollection(this.collections[0].id, [book]).subscribe();
+        this.update();
+    }
+
+    loadUser() {
+        if(!this.oauthService.hasValidAccessToken()) {
+            return;
+        }
+        this.http.getUser().subscribe(res => {
+            this.id = res.id;
+            this.http.getCollection(this.id).subscribe(res => {
+                console.log(res);
+                if (res.length > 0) {
+                    this.collections = res;
+                    this.bookshelf = res[0].books;
+                    this.bookSub.next(this.bookshelf);
+                    this.router.navigate(['bookshelf'])
+                }
+                else {
+                    this.http.createCollection().subscribe(res =>
+                        this.collections.push(res));
+                }
+            });
+        });
     }
 
     /**
@@ -67,7 +98,8 @@ export class UserService implements CanActivate{
      */
     addMultToBookshelf(books: Book[]) {
         this.bookshelf = this.bookshelf.concat(books);
-        this.bookSub.next(this.bookshelf);
+        this.http.addToCollection(this.collections[0].id, books).subscribe();
+        this.update();
     }
 
 
@@ -77,6 +109,11 @@ export class UserService implements CanActivate{
      */
     deleteFromBookshelf(book: Book) {
         this.bookshelf = this.bookshelf.filter(b => b.title !== book.title);
+        this.http.setCollection(this.collections[0].id, this.bookshelf).subscribe();
+        this.update();
+    }
+
+    update() {
         this.bookSub.next(this.bookshelf);
     }
 
@@ -87,6 +124,8 @@ export class UserService implements CanActivate{
     logout() {
         this.oauthService.logOut();
         this.loggedIn = false;
+        this.bookshelf = [];
+        this.bookSub.next([]);
         this.router.navigate([""]);
     }
 }

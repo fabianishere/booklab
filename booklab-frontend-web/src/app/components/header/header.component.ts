@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {UserService} from '../../services/user/user.service';
-import {LoginService} from "../../services/login/login.service";
+import {PopupService} from "../../services/popup/popup.service";
 
 @Component({
     selector: 'app-header',
@@ -17,7 +17,7 @@ export class HeaderComponent implements OnInit {
     /**
      * Constructor for HeaderComponent.
      */
-    constructor(public user: UserService, public login: LoginService) {}
+    constructor(public user: UserService, public login: PopupService) {}
 
     ngOnInit() {
     }

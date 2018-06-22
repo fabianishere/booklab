@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import {Book} from "./dataTypes";
+
+import {Book} from "./user";
 
 export interface AddTo {
     addTo(books: Book[]): void

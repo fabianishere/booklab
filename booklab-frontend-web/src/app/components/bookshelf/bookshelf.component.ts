@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {UserService} from '../../services/user/user.service';
-import {Book} from '../../dataTypes';
+import {Book} from '../../interfaces/user';
 import {HttpService} from '../../services/http/http.service';
+import {PopupService} from "../../services/popup/popup.service";
 
 @Component({
     selector: 'app-bookshelf',
@@ -17,7 +18,7 @@ export class BookshelfComponent implements OnInit {
      * Constructor for bookshelf component
      * @param {UserService} user
      */
-    constructor(private user: UserService) {
+    constructor(private user: UserService, private popup: PopupService) {
     }
 
     ngOnInit() {
@@ -31,7 +32,7 @@ export class BookshelfComponent implements OnInit {
      * @param {Book} book: book to be deleted
      */
     deleteBook(book: Book) {
-        this.user.deleteFromBookshelf(book);
+        this.popup.openDoYouWantToDelete(book);
     }
 
 }

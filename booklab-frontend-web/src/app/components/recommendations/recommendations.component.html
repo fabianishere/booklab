@@ -16,14 +16,15 @@
     <app-booklist
         [addTo]="this"
         [buttonText]="'These are the books that I want to choose from'"
+        [keepThebooks]="true"
         (enterMouseEvent)="image.drawBox($event)"
         (leaveMouseEvent)="image.clearBox($event)"></app-booklist>
     <br><br>
     3) Profit
     <br><br>
     <button class="button m-0 mb-3"
-            [ngClass]="{'disabled':booklist.books.length==0}"
-            disabled="{{booklist.books.length==0? 'disabled':''}}"
+            [ngClass]="{'disabled':candidates.length==0}"
+            disabled="{{candidates.length==0? 'disabled':''}}"
             (click)="recommend()">Get recommendations!
     </button>
     <app-recommendations-list></app-recommendations-list>

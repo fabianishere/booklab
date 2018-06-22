@@ -1,5 +1,5 @@
 import {AfterViewChecked, Component, Input, OnInit} from '@angular/core';
-import {Book, BookItem} from "../../dataTypes";
+import {Book, BookItem} from "../../interfaces/user";
 
 @Component({
     selector: 'app-recommendations-list',
