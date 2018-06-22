@@ -10,6 +10,7 @@ import {BookDetection, BookItem, Box} from "../../dataTypes";
 import {Subject} from "rxjs/Rx";
 import {HttpService} from "../../services/http/http.service";
 import {Observable} from "rxjs/Observable";
+import {PopupService} from "../../services/popup/popup.service";
 
 @Component({
     selector: 'app-image-search',
@@ -27,8 +28,8 @@ export class ImageSearchComponent implements OnInit, AfterViewInit, AfterViewChe
     public img = null;
     public searching = false;
 
-    constructor(private http: HttpService) {
 
+    constructor(private http: HttpService, private popup: PopupService) {
     }
 
     ngOnInit() {
@@ -60,14 +61,18 @@ export class ImageSearchComponent implements OnInit, AfterViewInit, AfterViewChe
         };
         this.http.checkHealth();
         this.searching = true;
+        this.popup.bookLoader();
         this.http.putImg(img).subscribe((res) => {
             this.searching = false;
+            this.popup.dismissBookloader();
+
             const books = res
                 .filter(b => b.matches.length > 0)
                 .map((b: BookDetection) => new BookItem(b.matches[0], true, false, b.box));
             subject.next(books);
         }, error => {
             this.searching = false;
+            this.popup.dismissBookloader();
             this.http.handleError(error)
         });
         return subject;
@@ -84,7 +89,7 @@ export class ImageSearchComponent implements OnInit, AfterViewInit, AfterViewChe
             this.imageContext.canvas.height = image.height;
             this.drawingContext.canvas.width = image.width;
             this.drawingContext.canvas.height = image.height;
-            container.style.height = document.getElementById("imageCanvas").clientHeight.toString() + 'px';
+            container.style.height = (document.getElementById("imageCanvas").clientHeight + 20).toString() + 'px';
             this.imageContext.drawImage(image, 0, 0);
         }
     }

@@ -36,7 +36,9 @@
                           (enterMouseEvent)="image.drawBox($event)"
                           (leaveMouseEvent)="image.clearBox($event)"></app-booklist>
             <p class="m-0" >Or do you want to </p>
-            <button class="button ml-0 mr-0" (click)="enterBook = true">Enter a book manually</button>
+            <button class="button ml-0 mr-0" (click)="enterBook = !enterBook">
+                {{enterBook?'Go back':'Enter a book manually'}}
+            </button>
             <app-manual-book-find *ngIf="enterBook"></app-manual-book-find>
         </div>
     </div>

@@ -1,15 +1,15 @@
 import {inject} from '@angular/core/testing';
 
-import {LoginService} from './login.service';
+import {PopupService} from './popup.service';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 
-describe('LoginService', () => {
-    let login: LoginService;
+describe('PopupService', () => {
+    let login: PopupService;
     let modal: jasmine.SpyObj<NgbModal>;
 
   beforeEach(() => {
     modal = jasmine.createSpyObj('NgbModal', ['open']);
-    login = new LoginService(modal);
+    login = new PopupService(modal);
   });
 
   it('should be created', () => {

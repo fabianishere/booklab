@@ -1,26 +1,36 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewChecked, Component, OnInit, ViewChild} from '@angular/core';
 import {HttpService} from "../../services/http/http.service";
 import {UserService} from "../../services/user/user.service";
 import {Book, BookItem} from "../../dataTypes";
 import {isDefined} from "@angular/compiler/src/util";
+import {PopupService} from "../../services/popup/popup.service";
 
 @Component({
     selector: 'app-manual-book-find',
     templateUrl: './manual-book-find.component.html',
     styleUrls: ['./manual-book-find.component.less']
 })
-export class ManualBookFindComponent implements OnInit {
+export class ManualBookFindComponent implements OnInit, AfterViewChecked {
 
     public nameInput: string;
     public authorInput: string;
     public results: BookItem[];
     public searching = false;
+    public scrolled = false;
+    public notFound = false;
 
-    constructor(private user: UserService, private http: HttpService) {
+    constructor(private user: UserService, private http: HttpService, private popup: PopupService) {
     }
 
     ngOnInit() {
         this.results = [];
+    }
+
+    ngAfterViewChecked() {
+        const el = document.getElementById('search');
+        if (!this.scrolled && el) {
+            el.scrollIntoView();
+        }
     }
 
     /**
@@ -30,14 +40,17 @@ export class ManualBookFindComponent implements OnInit {
         if (!this.nameInput || !this.authorInput) {
             return;
         }
+        this.notFound = false;
         this.searching = true;
         this.results = [];
         this.http.findBook(this.nameInput, this.authorInput).subscribe((result) => {
             this.searching = false;
             this.results = result.map(r => new BookItem(r));
+            this.notFound = result.length == 0;
         }, error => this.http.handleError(error));
         this.authorInput = '';
         this.nameInput = '';
+
 
     }
 
@@ -46,10 +59,12 @@ export class ManualBookFindComponent implements OnInit {
             r.added = true;
             this.user.addToBookshelf(r.book);
         });
+        this.popup.openIsAdded();
+        this.results = [];
     }
 
-    deleteResult() {
-        this.results = null;
+    reset() {
+        this.results = [];
     }
 
     booksAddedToShelf(): boolean {

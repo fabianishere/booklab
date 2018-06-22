@@ -3,7 +3,7 @@ import {AppComponent} from './app.component';
 import {SidebarComponent} from "./components/sidebar/sidebar.component";
 import {BookshelfComponent} from "./components/bookshelf/bookshelf.component";
 import {HeaderComponent} from './components/header/header.component';
-import {BookSearchComponent} from "./components/image-upload/book-search.component";
+import {BookSearchComponent} from "./components/book-search/book-search.component";
 import {BrowserModule} from "@angular/platform-browser";
 import {FormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
