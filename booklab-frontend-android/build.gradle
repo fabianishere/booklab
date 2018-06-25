@@ -16,9 +16,9 @@
 
 plugins {
     id "com.android.application" version "3.1.2"
-    id "org.jetbrains.kotlin.android" version "1.2.50"
-    id "org.jetbrains.kotlin.android.extensions" version "1.2.50"
-    id "org.jetbrains.kotlin.kapt" version "1.2.50"
+    id "org.jetbrains.kotlin.android" version "1.2.41"
+    id "org.jetbrains.kotlin.android.extensions" version "1.2.41"
+    id "org.jetbrains.kotlin.kapt" version "1.2.41"
     id "org.jetbrains.dokka" version "0.9.17"
     id "org.jmailen.kotlinter" version "1.12.0"
 }
