@@ -20,23 +20,31 @@ import Material
 import URLNavigator
 
 public class LoginViewController : AbstractWelcomeViewController {
+    var scope: String!
+    var navigator: NavigatorType!
+    var authorizationService: AuthorizationService!
+    var userService: UserService!
+    
     @IBOutlet var email: ErrorTextField!
     @IBOutlet var password: ErrorTextField!
     @IBOutlet var submit: RaisedButton!
     
-    private var scope: String!
-    
     public override func viewDidLoad() {
         super.viewDidLoad()
-       
+        
         self.prepareEmail()
         self.preparePassword()
         self.prepareSubmit()
         
         self.scope = Bundle.main.object(forInfoDictionaryKey: "BOOKLAB_API_OAUTH_SCOPE") as! String
     }
-
-	@IBAction public func login() {
+    
+    @IBAction public func login() {
+        // Prevent button smashers from sending multiple requests while loading
+        if authorizationService.token.isLoading {
+            return
+        }
+        
         if email.isEmpty {
             email.detail = "Please enter your email address"
             email.isErrorRevealed = true
@@ -51,7 +59,26 @@ public class LoginViewController : AbstractWelcomeViewController {
         
         // Resign the first responders
         self.view.endEditing(true)
-	}
+        
+        
+        // Make the login request to the authorization service
+        let request = authorizationService.authorize(
+            username: email.text!,
+            password: password.text!,
+            scope: scope
+        )
+        authorizationService.token.load(using: request)
+            .flatMap { entity in
+                // Store the token in the user defaults
+                let token: AuthorizationToken = entity.typedContent()!
+                UserDefaults.standard.set(try? PropertyListEncoder().encode(token), forKey: "booklab-oauth-token")
+                
+                // Reload the user profile
+                return self.userService.me.load()
+            }
+            .useSnackbar(snackbarController: self.snackbarController!)
+            .onSuccess { _ in self.navigator.present("/") }
+    }
 }
 
 extension LoginViewController {

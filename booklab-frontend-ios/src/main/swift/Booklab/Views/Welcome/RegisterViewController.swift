@@ -19,12 +19,16 @@ import UIKit
 import Material
 import URLNavigator
 
-public class RegisterViewController : AbstractWelcomeViewController {  
+public class RegisterViewController : AbstractWelcomeViewController {
+    public var navigator: NavigatorType!
+    public var authorizationService: AuthorizationService!
+    public var userService: UserService!
+    
     @IBOutlet var email: ErrorTextField!
     @IBOutlet var password: ErrorTextField!
     @IBOutlet var confirmation: ErrorTextField!
     @IBOutlet var submit: RaisedButton!
- 
+    
     private var scope: String!
     private var isLoading: Bool = false
     
@@ -66,6 +70,45 @@ public class RegisterViewController : AbstractWelcomeViewController {
         
         // Resign the first responders
         self.view.endEditing(true)
+        
+        // Make the request to register the user
+        register(email: self.email.text!, password: self.password.text!)
+    }
+    
+    func register(email: String, password: String) {
+        isLoading = true
+        // We need a custom OAuth scope for this, so request that first
+        authorizationService
+            .authorize(scope: "user:registration")
+            .flatMap { entity in
+                let token = entity.content as! AuthorizationToken
+                return self.userService.register(email: email, password: password) {
+                    $0.addValue("Bearer \(token.value)", forHTTPHeaderField: "Authorization")
+                }
+            }
+            .flatMap { _ in
+                let request = self.authorizationService.authorize(
+                    username: email,
+                    password: password,
+                    scope: self.scope
+                )
+                return self.authorizationService.token.load(using: request)
+            }
+            .flatMap { entity in
+                // Store the token in the user defaults
+                let token: AuthorizationToken = entity.typedContent()!
+                UserDefaults.standard.set(try? PropertyListEncoder().encode(token), forKey: "booklab-oauth-token")
+                
+                // Reload the user profile
+                return self.userService.me.load()
+            }
+            .useSnackbar(snackbarController: self.snackbarController!)
+            .onSuccess { _ in
+                self.navigator.present("/")
+            }
+            .onCompletion { _ in
+                self.isLoading = false
+            }
     }
 }
 

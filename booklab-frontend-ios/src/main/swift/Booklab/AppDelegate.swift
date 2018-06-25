@@ -57,6 +57,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 return BackendService(authorization: r~>, baseUrl: baseUrl)
             }
             .inObjectScope(.container)
+        container
+            .register(UserService.self) { r in
+                let backend = r ~> BackendService.self
+                return UserService(resource: backend.users)
+            }
+            .inObjectScope(.container)
         
 
         // Section: Storyboards
@@ -67,6 +73,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         container
             .register(SwinjectStoryboard.self, name: "Main") { r in SwinjectStoryboard.create(name: "Main", bundle: nil, container: r) }
             .inObjectScope(.container)
+        
+        // Storyboard controller configurations
+        // SECTION: Welcome
+        container.storyboardInitCompleted(LoginViewController.self) { r, c in
+            c.navigator = r ~> NavigatorType.self
+            c.authorizationService = r ~> AuthorizationService.self
+            c.userService = r ~> UserService.self
+        }
+        container.storyboardInitCompleted(RegisterViewController.self) { r, c in
+            c.navigator = r ~> NavigatorType.self
+            c.authorizationService = r ~> AuthorizationService.self
+            c.userService = r ~> UserService.self
+        }
         
         return container
     }()
