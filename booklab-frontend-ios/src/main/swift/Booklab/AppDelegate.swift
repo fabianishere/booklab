@@ -81,7 +81,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 return CollectionService(resource: backend.collections)
             }
             .inObjectScope(.container)
-        
+        container
+            .register(RecommendationService.self) { r in
+                let backend = r ~> BackendService.self
+                return RecommendationService(resource: backend.recommendations)
+            }
+            .inObjectScope(.container)
 
         // Section: Storyboards
         container
@@ -147,6 +152,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         container.storyboardInitCompleted(CollectionSelectionAddToViewController.self) { r, c in
             c.userService = r ~> UserService.self
             c.collectionService = r ~> CollectionService.self
+        }
+        
+        // SECTION: Recommendation
+        container.storyboardInitCompleted(RecommendationSelectionViewController.self) { r, c in
+            c.userService = r ~> UserService.self
+            c.collectionService = r ~> CollectionService.self
+            c.recommendationService = r ~> RecommendationService.self
         }
         
         return container

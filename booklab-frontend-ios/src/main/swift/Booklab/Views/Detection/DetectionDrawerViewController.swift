@@ -193,6 +193,13 @@ public class DetectionDrawerViewController: UIViewController {
             let index = sender as? IndexPath
             let indices = index != nil ? [index!] : tableView.indexPathsForSelectedRows ?? []
             modal.books = indices.map { detections[$0.row].detection.matches[0] }
+        } else if segue.identifier == "recommend",
+            let destination = segue.destination as? UINavigationController,
+            let modal = destination.visibleViewController as? RecommendationSelectionViewController {
+            
+            let index = sender as? IndexPath
+            let indices = index != nil ? [index!] : tableView.indexPathsForSelectedRows ?? []
+            modal.candidates = indices.map { detections[$0.row].detection.matches[0] }
         }
     }
     

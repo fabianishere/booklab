@@ -56,6 +56,8 @@
 		1F917CCF20E19F7F00B28AF1 /* Siesta.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F917CCE20E19F7F00B28AF1 /* Siesta.framework */; };
 		1F917CD120E19F9800B28AF1 /* SiestaUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F917CD020E19F9800B28AF1 /* SiestaUI.framework */; };
 		1F917CD320E19FD000B28AF1 /* CRRefresh.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F917CD220E19FCF00B28AF1 /* CRRefresh.framework */; };
+		1F917CD620E1A31300B28AF1 /* RecommendationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F917CD520E1A31300B28AF1 /* RecommendationService.swift */; };
+		1F917CD920E1A31800B28AF1 /* RecommendationSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F917CD820E1A31800B28AF1 /* RecommendationSelectionViewController.swift */; };
 		1F9329F920D670D3007E2F75 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F9329F620D670D3007E2F75 /* Main.storyboard */; };
 		1F9329FB20D670D3007E2F75 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F9329F820D670D3007E2F75 /* LaunchScreen.storyboard */; };
 		1FB4611A20E17D65005B02C3 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1FB4611920E17D65005B02C3 /* Info.plist */; };
@@ -146,6 +148,8 @@
 		1F917CCE20E19F7F00B28AF1 /* Siesta.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Siesta.framework; path = Carthage/Build/iOS/Siesta.framework; sourceTree = "<group>"; };
 		1F917CD020E19F9800B28AF1 /* SiestaUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SiestaUI.framework; path = Carthage/Build/iOS/SiestaUI.framework; sourceTree = "<group>"; };
 		1F917CD220E19FCF00B28AF1 /* CRRefresh.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CRRefresh.framework; path = Carthage/Build/iOS/CRRefresh.framework; sourceTree = "<group>"; };
+		1F917CD520E1A31300B28AF1 /* RecommendationService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecommendationService.swift; sourceTree = "<group>"; };
+		1F917CD820E1A31800B28AF1 /* RecommendationSelectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RecommendationSelectionViewController.swift; sourceTree = "<group>"; };
 		1F9329F320D670BD007E2F75 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1F9329F620D670D3007E2F75 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		1F9329F820D670D3007E2F75 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -227,6 +231,7 @@
 		1F30DFF120D6DCFA000B0652 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				1F917CD420E1A31300B28AF1 /* Recommendation */,
 				1F917CBA20E19BE000B28AF1 /* Collection */,
 				1F917CB120E1972300B28AF1 /* Detection */,
 				1FB4613420E19042005B02C3 /* Catalogue */,
@@ -267,6 +272,7 @@
 		1F30E01120D9B273000B0652 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				1F917CD720E1A31800B28AF1 /* Recommendation */,
 				1F917CBD20E19BEB00B28AF1 /* Collection */,
 				1F917CA220E1971A00B28AF1 /* Detection */,
 				1FB4612420E18FC9005B02C3 /* Catalogue */,
@@ -484,6 +490,22 @@
 				1F917CC320E19BEB00B28AF1 /* CollectionSelectionAddToViewController.swift */,
 			);
 			path = Collection;
+			sourceTree = "<group>";
+		};
+		1F917CD420E1A31300B28AF1 /* Recommendation */ = {
+			isa = PBXGroup;
+			children = (
+				1F917CD520E1A31300B28AF1 /* RecommendationService.swift */,
+			);
+			path = Recommendation;
+			sourceTree = "<group>";
+		};
+		1F917CD720E1A31800B28AF1 /* Recommendation */ = {
+			isa = PBXGroup;
+			children = (
+				1F917CD820E1A31800B28AF1 /* RecommendationSelectionViewController.swift */,
+			);
+			path = Recommendation;
 			sourceTree = "<group>";
 		};
 		1F9329F020D67019007E2F75 /* config */ = {
@@ -781,6 +803,7 @@
 				1FB4613B20E19085005B02C3 /* CatalogueSearchTableViewController.swift in Sources */,
 				1FB4613320E18FC9005B02C3 /* BorderlessNavigationController.swift in Sources */,
 				1F30E00E20D84AF3000B0652 /* AnyCodable.swift in Sources */,
+				1F917CD620E1A31300B28AF1 /* RecommendationService.swift in Sources */,
 				1FB4613620E19042005B02C3 /* CatalogueService.swift in Sources */,
 				1FB4613220E18FC9005B02C3 /* ApplicationSnackbarController.swift in Sources */,
 				1F4B44C820DB0D2B0058D936 /* RegisterViewController.swift in Sources */,
@@ -789,6 +812,7 @@
 				1FB4612E20E18FC9005B02C3 /* CatalogueCollectionViewController.swift in Sources */,
 				1FB4613A20E19085005B02C3 /* CatalogueBookTableViewCell.swift in Sources */,
 				1F917CC520E19BEB00B28AF1 /* CollectionHeaderView.swift in Sources */,
+				1F917CD920E1A31800B28AF1 /* RecommendationSelectionViewController.swift in Sources */,
 				1F35E72520CA01010076ED0D /* AppDelegate.swift in Sources */,
 				1F917CA120E1948000B28AF1 /* SettingsViewController.swift in Sources */,
 				1F917CC620E19BEB00B28AF1 /* CollectionNavigationController.swift in Sources */,
