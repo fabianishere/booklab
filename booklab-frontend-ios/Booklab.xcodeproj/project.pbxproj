@@ -45,6 +45,17 @@
 		1F917CB520E197B800B28AF1 /* ImageCoordinateSpace.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F917CB420E197B700B28AF1 /* ImageCoordinateSpace.framework */; };
 		1F917CB720E197BF00B28AF1 /* Pulley.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F917CB620E197BF00B28AF1 /* Pulley.framework */; };
 		1F917CB920E1988500B28AF1 /* Detection.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1F917CB820E1988500B28AF1 /* Detection.xib */; };
+		1F917CBC20E19BE000B28AF1 /* CollectionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F917CBB20E19BE000B28AF1 /* CollectionService.swift */; };
+		1F917CC420E19BEB00B28AF1 /* CollectionSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F917CBE20E19BEB00B28AF1 /* CollectionSelectionViewController.swift */; };
+		1F917CC520E19BEB00B28AF1 /* CollectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F917CBF20E19BEB00B28AF1 /* CollectionHeaderView.swift */; };
+		1F917CC620E19BEB00B28AF1 /* CollectionNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F917CC020E19BEB00B28AF1 /* CollectionNavigationController.swift */; };
+		1F917CC720E19BEB00B28AF1 /* CollectionSelectionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F917CC120E19BEB00B28AF1 /* CollectionSelectionDelegate.swift */; };
+		1F917CC820E19BEB00B28AF1 /* CollectionTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F917CC220E19BEB00B28AF1 /* CollectionTableViewController.swift */; };
+		1F917CC920E19BEB00B28AF1 /* CollectionSelectionAddToViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F917CC320E19BEB00B28AF1 /* CollectionSelectionAddToViewController.swift */; };
+		1F917CCD20E19F2500B28AF1 /* Collection.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1F917CCC20E19F2500B28AF1 /* Collection.xib */; };
+		1F917CCF20E19F7F00B28AF1 /* Siesta.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F917CCE20E19F7F00B28AF1 /* Siesta.framework */; };
+		1F917CD120E19F9800B28AF1 /* SiestaUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F917CD020E19F9800B28AF1 /* SiestaUI.framework */; };
+		1F917CD320E19FD000B28AF1 /* CRRefresh.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F917CD220E19FCF00B28AF1 /* CRRefresh.framework */; };
 		1F9329F920D670D3007E2F75 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F9329F620D670D3007E2F75 /* Main.storyboard */; };
 		1F9329FB20D670D3007E2F75 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F9329F820D670D3007E2F75 /* LaunchScreen.storyboard */; };
 		1FB4611A20E17D65005B02C3 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1FB4611920E17D65005B02C3 /* Info.plist */; };
@@ -124,6 +135,17 @@
 		1F917CB420E197B700B28AF1 /* ImageCoordinateSpace.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageCoordinateSpace.framework; path = Carthage/Build/iOS/ImageCoordinateSpace.framework; sourceTree = "<group>"; };
 		1F917CB620E197BF00B28AF1 /* Pulley.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Pulley.framework; path = Carthage/Build/iOS/Pulley.framework; sourceTree = "<group>"; };
 		1F917CB820E1988500B28AF1 /* Detection.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Detection.xib; sourceTree = "<group>"; };
+		1F917CBB20E19BE000B28AF1 /* CollectionService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionService.swift; sourceTree = "<group>"; };
+		1F917CBE20E19BEB00B28AF1 /* CollectionSelectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionSelectionViewController.swift; sourceTree = "<group>"; };
+		1F917CBF20E19BEB00B28AF1 /* CollectionHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionHeaderView.swift; sourceTree = "<group>"; };
+		1F917CC020E19BEB00B28AF1 /* CollectionNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionNavigationController.swift; sourceTree = "<group>"; };
+		1F917CC120E19BEB00B28AF1 /* CollectionSelectionDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionSelectionDelegate.swift; sourceTree = "<group>"; };
+		1F917CC220E19BEB00B28AF1 /* CollectionTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionTableViewController.swift; sourceTree = "<group>"; };
+		1F917CC320E19BEB00B28AF1 /* CollectionSelectionAddToViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollectionSelectionAddToViewController.swift; sourceTree = "<group>"; };
+		1F917CCC20E19F2500B28AF1 /* Collection.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Collection.xib; sourceTree = "<group>"; };
+		1F917CCE20E19F7F00B28AF1 /* Siesta.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Siesta.framework; path = Carthage/Build/iOS/Siesta.framework; sourceTree = "<group>"; };
+		1F917CD020E19F9800B28AF1 /* SiestaUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SiestaUI.framework; path = Carthage/Build/iOS/SiestaUI.framework; sourceTree = "<group>"; };
+		1F917CD220E19FCF00B28AF1 /* CRRefresh.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CRRefresh.framework; path = Carthage/Build/iOS/CRRefresh.framework; sourceTree = "<group>"; };
 		1F9329F320D670BD007E2F75 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1F9329F620D670D3007E2F75 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		1F9329F820D670D3007E2F75 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -149,7 +171,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F917CCF20E19F7F00B28AF1 /* Siesta.framework in Frameworks */,
+				1F917CD120E19F9800B28AF1 /* SiestaUI.framework in Frameworks */,
 				1F917C9C20E1913500B28AF1 /* Cosmos.framework in Frameworks */,
+				1F917CD320E19FD000B28AF1 /* CRRefresh.framework in Frameworks */,
 				1F917CB720E197BF00B28AF1 /* Pulley.framework in Frameworks */,
 				1F21940F20CEAA9C005A632D /* Swinject.framework in Frameworks */,
 				1F21940C20CEA46D005A632D /* SwinjectStoryboard.framework in Frameworks */,
@@ -182,6 +207,9 @@
 		1F21940220CE9F53005A632D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1F917CD220E19FCF00B28AF1 /* CRRefresh.framework */,
+				1F917CD020E19F9800B28AF1 /* SiestaUI.framework */,
+				1F917CCE20E19F7F00B28AF1 /* Siesta.framework */,
 				1F917CB620E197BF00B28AF1 /* Pulley.framework */,
 				1F917CB420E197B700B28AF1 /* ImageCoordinateSpace.framework */,
 				1F917C9B20E1913500B28AF1 /* Cosmos.framework */,
@@ -199,6 +227,7 @@
 		1F30DFF120D6DCFA000B0652 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				1F917CBA20E19BE000B28AF1 /* Collection */,
 				1F917CB120E1972300B28AF1 /* Detection */,
 				1FB4613420E19042005B02C3 /* Catalogue */,
 				1FB4611E20E18BA7005B02C3 /* User */,
@@ -238,6 +267,7 @@
 		1F30E01120D9B273000B0652 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				1F917CBD20E19BEB00B28AF1 /* Collection */,
 				1F917CA220E1971A00B28AF1 /* Detection */,
 				1FB4612420E18FC9005B02C3 /* Catalogue */,
 				1FB4612120E18FC9005B02C3 /* Explore */,
@@ -435,6 +465,27 @@
 			path = Detection;
 			sourceTree = "<group>";
 		};
+		1F917CBA20E19BE000B28AF1 /* Collection */ = {
+			isa = PBXGroup;
+			children = (
+				1F917CBB20E19BE000B28AF1 /* CollectionService.swift */,
+			);
+			path = Collection;
+			sourceTree = "<group>";
+		};
+		1F917CBD20E19BEB00B28AF1 /* Collection */ = {
+			isa = PBXGroup;
+			children = (
+				1F917CBE20E19BEB00B28AF1 /* CollectionSelectionViewController.swift */,
+				1F917CBF20E19BEB00B28AF1 /* CollectionHeaderView.swift */,
+				1F917CC020E19BEB00B28AF1 /* CollectionNavigationController.swift */,
+				1F917CC120E19BEB00B28AF1 /* CollectionSelectionDelegate.swift */,
+				1F917CC220E19BEB00B28AF1 /* CollectionTableViewController.swift */,
+				1F917CC320E19BEB00B28AF1 /* CollectionSelectionAddToViewController.swift */,
+			);
+			path = Collection;
+			sourceTree = "<group>";
+		};
 		1F9329F020D67019007E2F75 /* config */ = {
 			isa = PBXGroup;
 			children = (
@@ -450,6 +501,7 @@
 				1F9329F620D670D3007E2F75 /* Main.storyboard */,
 				1F30E00F20D9AD69000B0652 /* Welcome.storyboard */,
 				1F917CB820E1988500B28AF1 /* Detection.xib */,
+				1F917CCC20E19F2500B28AF1 /* Collection.xib */,
 			);
 			path = views;
 			sourceTree = "<group>";
@@ -626,6 +678,7 @@
 				1F9329F920D670D3007E2F75 /* Main.storyboard in Resources */,
 				1F2193FE20CE9E6C005A632D /* Cartfile in Resources */,
 				1F9329FB20D670D3007E2F75 /* LaunchScreen.storyboard in Resources */,
+				1F917CCD20E19F2500B28AF1 /* Collection.xib in Resources */,
 				1F35E75920CA01C20076ED0D /* Assets.xcassets in Resources */,
 				1F30E01020D9AD69000B0652 /* Welcome.storyboard in Resources */,
 				1F917CB920E1988500B28AF1 /* Detection.xib in Resources */,
@@ -669,6 +722,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/Cosmos.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/ImageCoordinateSpace.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Pulley.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/CRRefresh.framework",
 			);
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Swinject.framework",
@@ -683,6 +737,7 @@
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Cosmos.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/ImageCoordinateSpace.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Pulley.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/CRRefresh.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -699,6 +754,7 @@
 				1FB4612020E18BA7005B02C3 /* UserService.swift in Sources */,
 				1F30E01420D9B285000B0652 /* LoginViewController.swift in Sources */,
 				1F917CAB20E1971A00B28AF1 /* DetectionViewController.swift in Sources */,
+				1F917CC920E19BEB00B28AF1 /* CollectionSelectionAddToViewController.swift in Sources */,
 				1FB4612C20E18FC9005B02C3 /* ExploreViewController.swift in Sources */,
 				1F30DFF420D6DD6E000B0652 /* BackendService.swift in Sources */,
 				1FB4612F20E18FC9005B02C3 /* CatalogueCollectionViewCell.swift in Sources */,
@@ -706,15 +762,19 @@
 				1F917CAF20E1971A00B28AF1 /* DetectionDrawerViewController.swift in Sources */,
 				1F917CAD20E1971A00B28AF1 /* DetectionPulleyViewController.swift in Sources */,
 				1F4B44CA20DB0F800058D936 /* AbstractWelcomeViewController.swift in Sources */,
+				1F917CC720E19BEB00B28AF1 /* CollectionSelectionDelegate.swift in Sources */,
 				1F4B44C620DAFF1A0058D936 /* WelcomeNavigationController.swift in Sources */,
 				1F30E00520D6F6E4000B0652 /* BackendModel.swift in Sources */,
+				1F917CC820E19BEB00B28AF1 /* CollectionTableViewController.swift in Sources */,
 				1FB4613120E18FC9005B02C3 /* ApplicationTabsController.swift in Sources */,
 				1F30DFFD20D6EAF1000B0652 /* AuthorizationService.swift in Sources */,
+				1F917CBC20E19BE000B28AF1 /* CollectionService.swift in Sources */,
 				1FB4613C20E19085005B02C3 /* CatalogueTableViewController.swift in Sources */,
 				1F917CB020E1971A00B28AF1 /* DetectionBoxView.swift in Sources */,
 				1FB4613020E18FC9005B02C3 /* CatalogueBookViewController.swift in Sources */,
 				1F30DFFF20D6ED7C000B0652 /* AuthorizationToken.swift in Sources */,
 				1F917CAE20E1971A00B28AF1 /* DetectionPreviewView.swift in Sources */,
+				1F917CC420E19BEB00B28AF1 /* CollectionSelectionViewController.swift in Sources */,
 				1F30E00A20D7F5C6000B0652 /* Siesta.swift in Sources */,
 				1F917CB320E1972300B28AF1 /* DetectionService.swift in Sources */,
 				1F917CAC20E1971A00B28AF1 /* DetectionNavigationController.swift in Sources */,
@@ -728,8 +788,10 @@
 				1F21940820CEA0E1005A632D /* Routes.swift in Sources */,
 				1FB4612E20E18FC9005B02C3 /* CatalogueCollectionViewController.swift in Sources */,
 				1FB4613A20E19085005B02C3 /* CatalogueBookTableViewCell.swift in Sources */,
+				1F917CC520E19BEB00B28AF1 /* CollectionHeaderView.swift in Sources */,
 				1F35E72520CA01010076ED0D /* AppDelegate.swift in Sources */,
 				1F917CA120E1948000B28AF1 /* SettingsViewController.swift in Sources */,
+				1F917CC620E19BEB00B28AF1 /* CollectionNavigationController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

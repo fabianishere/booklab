@@ -62,6 +62,10 @@ struct Routes {
             main.instantiateViewController(withIdentifier: "detection")
         }
         
+        navigator.register("/collections") { _, _, _ in
+            main.instantiateViewController(withIdentifier: "collections")
+        }
+        
         navigator.register("/settings") { _, _, _ in
             main.instantiateViewController(withIdentifier: "settings")
         }

@@ -39,6 +39,14 @@ public class CatalogueBookViewController : UIViewController {
         self.prepare()
     }
     
+    public override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "add-to",
+            let destination = segue.destination as? UINavigationController,
+            let modal = destination.visibleViewController as? CollectionSelectionAddToViewController {
+            modal.books = [book]
+        }
+    }
+    
     fileprivate func prepare() {
         titleLabel.text = book.title
         authorLabel.text = book.authors.count > 0 ? book.authors.joined(separator: ",") : "Unknown Author"

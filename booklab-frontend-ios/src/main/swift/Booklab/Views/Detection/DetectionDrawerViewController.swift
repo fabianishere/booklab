@@ -23,6 +23,7 @@ import URLNavigator
 
 public class DetectionDrawerViewController: UIViewController {
     public var navigator: NavigatorType!
+    public var collectionService: CollectionService!
     
     var detections: [DetectionBoxView] = [] {
         didSet {
@@ -129,7 +130,7 @@ public class DetectionDrawerViewController: UIViewController {
         }
         
         let addAction = UIAlertAction(title: "Add to", style: .default) { _ in
-            // TODO implement this action
+            self.performSegue(withIdentifier: "add-to", sender: index)
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -185,6 +186,13 @@ public class DetectionDrawerViewController: UIViewController {
             let destination = segue.destination as? CatalogueBookViewController,
             let index = sender as? IndexPath ?? tableView.indexPathForSelectedRow {
             destination.book = detections[index.row].detection.matches[0]
+        } else if segue.identifier == "add-to",
+            let destination = segue.destination as? UINavigationController,
+            let modal = destination.visibleViewController as? CollectionSelectionAddToViewController {
+            
+            let index = sender as? IndexPath
+            let indices = index != nil ? [index!] : tableView.indexPathsForSelectedRows ?? []
+            modal.books = indices.map { detections[$0.row].detection.matches[0] }
         }
     }
     

@@ -31,6 +31,7 @@ public class ApplicationTabsController: TabsController {
         viewControllers = [
             navigator.viewController(for: "/explore")!,
             navigator.viewController(for: "/detection")!,
+            navigator.viewController(for: "/collections")!,
             navigator.viewController(for: "/settings")!,
         ];
         
