@@ -35,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .inObjectScope(.container)
         
 
-        // REST Configuration
+        // Section: REST Configuration
         container
             .register(AuthorizationService.self) { r in
                 let baseUrl: String = Bundle.main.object(forInfoDictionaryKey: "BOOKLAB_API_BASE_URL") as! String
@@ -49,38 +49,73 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     clientSecret: secret
                 )
             }
+            .inObjectScope(.container)
         
         container
             .register(BackendService.self) { r in
                 let baseUrl: String = Bundle.main.object(forInfoDictionaryKey: "BOOKLAB_API_BASE_URL") as! String
                 return BackendService(authorization: r~>, baseUrl: baseUrl)
             }
-        
-        // Storyboard
+            .inObjectScope(.container)
         container
-            .register(SwinjectStoryboard.self) { r in SwinjectStoryboard.create(name: "Main", bundle: nil, container: r) }
+            .register(UserService.self) { r in
+                let backend = r ~> BackendService.self
+                return UserService(resource: backend.users)
+            }
             .inObjectScope(.container)
         
-        container.storyboardInitCompleted(ViewController.self) { r, c in
-            let backend = r ~> BackendService.self
+
+        // Section: Storyboards
+        container
+            .register(SwinjectStoryboard.self, name: "Welcome") { r in SwinjectStoryboard.create(name: "Welcome", bundle: nil, container: r) }
+            .inObjectScope(.container)
+        
+        container
+            .register(SwinjectStoryboard.self, name: "Main") { r in SwinjectStoryboard.create(name: "Main", bundle: nil, container: r) }
+            .inObjectScope(.container)
+        
+        // Storyboard controller configurations
+        // SECTION: Welcome
+        container.storyboardInitCompleted(LoginViewController.self) { r, c in
             c.navigator = r ~> NavigatorType.self
-            c.authorization = r ~> AuthorizationService.self
-            c.api = backend
+            c.authorizationService = r ~> AuthorizationService.self
+            c.userService = r ~> UserService.self
         }
+        container.storyboardInitCompleted(RegisterViewController.self) { r, c in
+            c.navigator = r ~> NavigatorType.self
+            c.authorizationService = r ~> AuthorizationService.self
+            c.userService = r ~> UserService.self
+        }
+        
         return container
     }()
     
 
 	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        // The navigator to use
+        let navigator = container ~> NavigatorType.self
+        
         // Initialise the routes of the application
-        Routes.initialize(container: container, navigator: container ~> NavigatorType.self)
+        Routes.initialize(container: container, navigator: navigator)
         
         let window = UIWindow(frame: UIScreen.main.bounds)
         window.makeKeyAndVisible()
         self.window = window
         
-        let storyboard = container ~> SwinjectStoryboard.self
-        window.rootViewController = UINavigationController(rootViewController: storyboard.instantiateInitialViewController()!)
+        let controller: UIViewController
+        
+        // Load token from user defaults if not expired yet
+        // Otherwise, we present a login view
+        if let data = UserDefaults.standard.object(forKey: "booklab-oauth-token") as? Data,
+           let token = try? PropertyListDecoder().decode(AuthorizationToken.self, from: data), !token.isExpired {
+            let authorizationService = container ~> AuthorizationService.self
+            authorizationService.token.overrideLocalContent(with: token)
+            controller = navigator.viewController(for: "/")!
+        } else {
+            controller = navigator.viewController(for: "/welcome")!
+        }
+
+        window.rootViewController = controller
       
 		return true
 	}
@@ -121,7 +156,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	func applicationWillTerminate(_ application: UIApplication) {
 		// Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 	}
-
-
 }
-

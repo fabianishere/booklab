@@ -16,7 +16,6 @@
 
 import Foundation
 import Siesta
-import RxSwift
 
 /**
  * A service for managing the authorization of the client.
@@ -56,9 +55,10 @@ public class AuthorizationService {
         self.token = service.resource("/token")
         
         service.configure("/token") {
+            $0.useNetworkActivityIndicator()
             $0.pipeline[.parsing].add(OAuth2MessageExtractor(), contentTypes: ["*/json"])
         }
-        
+       
         self.configureInvalidationTimer()
     }
     
@@ -70,18 +70,18 @@ public class AuthorizationService {
         // expired.
         var timer: Timer? = nil
         self.token.addObserver(owner: self) { entity, event in
-            print(event)
             switch event {
             case .newData:
-                let token: AuthorizationToken? = entity.typedContent()
                 timer?.invalidate()
-                timer = Timer(fire: token!.expiresAt, interval: 0, repeats: false) { timer in
-                    timer.invalidate()
-                    self.token.invalidate()
-                }
+                if let token: AuthorizationToken = entity.typedContent() {
+                    timer = Timer(fire: token.issuedAt.addingTimeInterval(token.expiresIn), interval: 0, repeats: false) { timer in
+                        timer.invalidate()
+                        self.token.invalidate()
+                    }
                 
-                // Schedule the timer on the main run loop
-                RunLoop.main.add(timer!, forMode: .commonModes)
+                    // Schedule the timer on the main run loop
+                    RunLoop.main.add(timer!, forMode: .commonModes)
+                }
             case .error, .requestCancelled:
                 timer?.invalidate()
             default:

@@ -27,6 +27,21 @@ struct Routes {
      * Initialise the given [NavigatorType].
      */
     static func initialize(container: Container, navigator: NavigatorType) {
-        let storyboard = container ~> SwinjectStoryboard.self
+        let welcome = container.resolve(SwinjectStoryboard.self, name: "Welcome")!
+        let main = container.resolve(SwinjectStoryboard.self, name: "Main")!
+    
+        navigator.register("/welcome") { _, _, _ in
+            if let welcome = welcome.instantiateInitialViewController() {
+                return ApplicationSnackbarController(rootViewController: welcome)
+            }
+            return nil
+        }
+        
+        navigator.register("/") { _, _, _ in
+            if let main = main.instantiateInitialViewController() {
+                return ApplicationSnackbarController(rootViewController: main)
+            }
+            return nil
+        }
     }
 }

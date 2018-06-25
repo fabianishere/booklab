@@ -55,12 +55,14 @@ public enum BackendResponse<T : Codable> : Codable {
             if values.contains(CodingKeys.data) {
                 let data = try values.decode(T.self, forKey: CodingKeys.data)
                 self = .Success(data, meta, links)
-                return
+            } else {
+                let error = try values.decode(BackendError.self, forKey: CodingKeys.error)
+                self = .Failure(error, meta, links)
             }
-            
-            let error = try values.decode(BackendError.self, forKey: CodingKeys.error)
-            throw error
+            return
         } catch let error {
+            print("failed to convert")
+            print(error.localizedDescription)
             self = .Failure(BackendError(
                 code: "invalid_response",
                 title: "Failed to convert the reponse into the appropriate object.",
@@ -106,34 +108,29 @@ public struct BackendError : Codable {
     /**
      * An application-specific error code, expressed as a string value.
      */
-    let code: String
+    public let code: String
     
     /**
      * A short, human-readable summary of the problem that SHOULD NOT change
      * from occurrence to occurrence of the problem, except for purposes of
      * localization.
      */
-    let title: String?
+    public let title: String?
     
     /**
      * A human-readable explanation specific to this occurrence of the problem.
      * Like title, this field’s value can be localized.
      */
-    let detail: String?
+    public let detail: String?
 }
 
 /**
  * An extension for the [BackendError] structure to make it conform to the [Error]
  * protocol.
  */
-extension BackendError : Error {
-    /**
-     * The localized description of this error.
-     */
-    var localizedDescription: String {
-        get {
-            return title != nil && detail != nil ? "\(title!): \(detail!)" : code
-        }
+extension BackendError : LocalizedError {
+    public var errorDescription: String? {
+        get { return detail ?? title ?? code }
     }
 }
 
@@ -150,7 +147,12 @@ public struct HealthCheck : Codable {
 /**
  * An entity representing a book.
  */
-public struct Book : Codable {
+public struct Book : Codable, Equatable {
+    /**
+     * The identifier of the book.
+     */
+    public let id: String
+
     /**
      * The identifiers of the book.
      */
@@ -205,6 +207,13 @@ public struct Book : Codable {
      * The links to the images of the book.
      */
     public let images: [String : URL]
+    
+    /**
+     * Determine equality between two [Book] instances.
+     */
+    public static func == (lhs: Book, rhs: Book) -> Bool {
+        return lhs.id == rhs.id
+    }
 }
 
 /**
@@ -243,13 +252,45 @@ public struct BookDetection : Codable {
     /**
      * The rectangle in the image where the book was detected.
      */
-    public let box: CGRect
+    public let box: Box
+}
+
+/**
+ * The rectangle in the image where the book was detected.
+ */
+public struct Box : Codable {
+    /**
+     * The x-coordinate of the box within the image.
+     */
+    public let x: Int
+    
+    /**
+     * The y-coordinate of the box within the image.
+     */
+    public let y: Int
+    
+    /**
+     * The width of the box.
+     */
+    public let width: Int
+    
+    /**
+     * The height of the box.
+     */
+    public let height: Int
+    
+    /**
+     * Convert this box to a [CGRect].
+     */
+    public var cgRect: CGRect {
+        get { return CGRect(x: x, y: y, width: width, height: height) }
+    }
 }
 
 /**
  * A book collection of a user.
  */
-public struct BookCollection : Codable {
+public struct BookCollection : Codable, Equatable {
     /**
      * The identifier of the collection.
      */
@@ -269,6 +310,13 @@ public struct BookCollection : Codable {
      * The books in the collection.
      */
     public let books: [Book]
+    
+    /**
+     * Determine equality between two [BookCollection] instances.
+     */
+    public static func == (lhs: BookCollection, rhs: BookCollection) -> Bool {
+        return lhs.id == rhs.id
+    }
 }
 
 /**
@@ -284,4 +332,11 @@ public struct User : Codable {
      * The email of the user.
      */
     public let email: String
+    
+    /**
+     * Determine equality between two [User] instances.
+     */
+    public static func == (lhs: User, rhs: User) -> Bool {
+        return lhs.id == rhs.id
+    }
 }

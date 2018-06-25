@@ -19,7 +19,6 @@ public struct JSONCodingKeys: CodingKey {
 
 
 public extension KeyedDecodingContainer {
-    
     public func decode(_ type: Dictionary<String, Any>.Type, forKey key: K) throws -> Dictionary<String, Any> {
         let container = try self.nestedContainer(keyedBy: JSONCodingKeys.self, forKey: key)
         return try container.decode(type)
