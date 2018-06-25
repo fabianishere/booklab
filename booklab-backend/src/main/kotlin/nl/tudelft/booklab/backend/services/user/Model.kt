@@ -39,5 +39,16 @@ data class User(
     @JsonIgnore
     val password: String,
     @JsonBackReference
-    val collections: List<BookCollection> = emptyList()
-) : Principal
+    val collections: Set<BookCollection> = emptySet()
+) : Principal {
+
+    override fun equals(other: Any?): Boolean {
+        return other is User && id == other.id
+    }
+
+    override fun hashCode(): Int {
+        return id
+    }
+
+    override fun toString(): String = "User(id=$id, email=$email)"
+}

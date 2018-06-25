@@ -108,7 +108,7 @@ internal class BookCollectionServiceTest {
 
     @Test
     fun `save returns saved collection`() {
-        val user = User(1, "test", "", emptyList())
+        val user = User(1, "test", "", emptySet())
         val collection = BookCollection(1, user, "test", emptySet())
 
         repository.stub {
@@ -130,7 +130,7 @@ internal class BookCollectionServiceTest {
 
     @Test
     fun `save fails on duplicate name for user`() {
-        val user = User(1, "test", "", listOf(BookCollection(2, null, "test", emptySet())))
+        val user = User(1, "test", "", setOf(BookCollection(2, null, "test", emptySet())))
         val collection = BookCollection(1, user, "test", emptySet())
 
         val throwable = assertThrows<BookCollectionServiceException.BookCollectionAlreadyExistsException> {
@@ -141,7 +141,7 @@ internal class BookCollectionServiceTest {
 
     @Test
     fun `save fails on duplicate name for user 2`() {
-        val user = User(1, "test", "", listOf(BookCollection(3, null, "aap", emptySet()), BookCollection(2, null, "test", emptySet())))
+        val user = User(1, "test", "", setOf(BookCollection(3, null, "aap", emptySet()), BookCollection(2, null, "test", emptySet())))
         val collection = BookCollection(1, user, "test", emptySet())
 
         val throwable = assertThrows<BookCollectionServiceException.BookCollectionAlreadyExistsException> {
