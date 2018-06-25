@@ -177,6 +177,19 @@ internal fun Route.collectionResource() {
         call.respond(Success(collection))
     }
 
+    // An endpoint for deleting a collection
+    deleteLocation<CollectionRoute> { (collection) ->
+        // Validate whether the current user can modify the collection
+        val principal = call.principal<AccessToken<ClientIdPrincipal, User>>()?.user
+        if (principal == null || collection.user?.id != principal.id) {
+            call.respond(HttpStatusCode.Forbidden, Forbidden())
+            return@deleteLocation
+        }
+
+        collectionService.delete(collection)
+        call.respond(Success(Unit))
+    }
+
     // An endpoint for retrieving the books of a collection
     getLocation<CollectionBooksRoute> { (collection) ->
         call.respond(Success(collection.books, meta = mapOf("count" to collection.books.size)))
