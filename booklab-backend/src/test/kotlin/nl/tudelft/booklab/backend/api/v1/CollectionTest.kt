@@ -693,7 +693,7 @@ internal class CollectionTest {
 
     @Test
     fun `find collection by user id`() = withTestEngine({ module() }) {
-        val collections = mutableListOf<BookCollection>()
+        val collections = mutableSetOf<BookCollection>()
         val user = User(1, "test@example.com", "", collections)
         collections += BookCollection(
             id = 1,
@@ -711,7 +711,7 @@ internal class CollectionTest {
         }
         with(request) {
             assertEquals(HttpStatusCode.OK, response.status())
-            val body: ApiResponse.Success<List<BookCollection>>? = response.content?.let { mapper.readValue(it) }
+            val body: ApiResponse.Success<Set<BookCollection>>? = response.content?.let { mapper.readValue(it) }
             assertEquals(collections, body?.data)
         }
     }
