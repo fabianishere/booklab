@@ -33,12 +33,18 @@ class TensorflowBookDetectorTest {
     }
 
     @Test
-    fun `smoke test`() {
+    fun `tensorflow can detect books in JPEG image`() {
         val buffer = TensorflowBookDetectorTest::class.java.getResourceAsStream("/bookshelf.jpg").readBytes()
         val mat = Imgcodecs.imdecode(MatOfByte(*buffer), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED)
         val books = detector.detect(mat)
+        assertEquals(36, books.size, "The amount of books in the image differed")
+    }
 
-        println(books)
+    @Test
+    fun `tensorflow can detect books in PNG image`() {
+        val buffer = TensorflowBookDetectorTest::class.java.getResourceAsStream("/bookshelf.png").readBytes()
+        val mat = Imgcodecs.imdecode(MatOfByte(*buffer), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED)
+        val books = detector.detect(mat)
         assertEquals(36, books.size, "The amount of books in the image differed")
     }
 

@@ -17,6 +17,7 @@
 package nl.tudelft.booklab.vision.detection.tensorflow
 
 import nl.tudelft.booklab.vision.detection.BookDetector
+import org.opencv.core.CvType
 import org.opencv.core.Mat
 import org.opencv.core.Point
 import org.opencv.core.Rect
@@ -92,12 +93,14 @@ class TensorflowBookDetector(private val graph: Graph, private val score: Float 
      * @return The matrix represented as an image tensor.
      */
     private fun Mat.toImageTensor(): Tensor<UInt8> {
-        val rgb = Mat()
-        Imgproc.cvtColor(this, rgb, Imgproc.COLOR_BGR2RGB, 0)
-        val bytes = ByteArray((total() * channels()).toInt())
+        // Convert the image to RGB format used by the Tensorflow model (OpenCV uses BGR)
+        val rgb = Mat(width(), height(), CvType.CV_8UC3)
+        Imgproc.cvtColor(this, rgb, Imgproc.COLOR_BGR2RGB)
+        val size = rgb.total() * rgb.elemSize()
+        val bytes = ByteArray(size.toInt())
         rgb.get(0, 0, bytes)
         val batchSize = 1L
-        val channels = 3L
+        val channels = rgb.channels().toLong()
         val shape = longArrayOf(batchSize, height().toLong(), width().toLong(), channels)
         return Tensor.create(UInt8::class.java, shape, ByteBuffer.wrap(bytes))
     }
