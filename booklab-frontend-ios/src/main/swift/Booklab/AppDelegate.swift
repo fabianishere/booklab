@@ -69,6 +69,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 return CatalogueService(resource: backend.catalogue)
             }
             .inObjectScope(.container)
+        container
+            .register(DetectionService.self) { r in
+                let backend = r ~> BackendService.self
+                return DetectionService(resource: backend.detection)
+            }
+            .inObjectScope(.container)
         
 
         // Section: Storyboards
@@ -112,6 +118,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // SECTION: Catalogue
         container.storyboardInitCompleted(CatalogueSearchTableViewController.self) { r, c in
             c.catalogueService = r ~> CatalogueService.self
+        }
+        
+        // SECTION: Detection
+        container.storyboardInitCompleted(DetectionViewController.self) { r, c in
+            c.detectionService = r ~> DetectionService.self
+        }
+        container.storyboardInitCompleted(DetectionDrawerViewController.self) { r, c in
+            c.navigator = r ~> NavigatorType.self
         }
         
         return container

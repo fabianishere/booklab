@@ -5,3 +5,5 @@ github "devxoul/URLNavigator"
 github "bustoutsolutions/siesta"
 github "CosmicMind/Material"
 github "evgenyneu/Cosmos" ~> 16.0
+github "52inc/Pulley"
+github "paulz/ImageCoordinateSpace" "master"

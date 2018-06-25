@@ -30,6 +30,7 @@ public class ApplicationTabsController: TabsController {
     public override func viewDidLoad() {
         viewControllers = [
             navigator.viewController(for: "/explore")!,
+            navigator.viewController(for: "/detection")!,
             navigator.viewController(for: "/settings")!,
         ];
         
