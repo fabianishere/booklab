@@ -103,6 +103,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             c.catalogueService = r ~> CatalogueService.self
         }
         
+        // SECTION: Settings
+        container.storyboardInitCompleted(SettingsViewController.self) { r, c in
+            c.navigator = r ~> NavigatorType.self
+            c.authorizationService = r ~> AuthorizationService.self
+        }
+        
         // SECTION: Catalogue
         container.storyboardInitCompleted(CatalogueSearchTableViewController.self) { r, c in
             c.catalogueService = r ~> CatalogueService.self

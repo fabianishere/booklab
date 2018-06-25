@@ -57,5 +57,9 @@ struct Routes {
             controller?.searchText = context as? String
             return controller
         }
+        
+        navigator.register("/settings") { _, _, _ in
+            main.instantiateViewController(withIdentifier: "settings")
+        }
     }
 }
