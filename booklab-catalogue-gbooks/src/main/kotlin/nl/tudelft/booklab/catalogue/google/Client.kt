@@ -56,6 +56,11 @@ class GoogleCatalogueClient(private val catalogue: Books) : CatalogueClient {
     override suspend fun find(isbn: String): Book? = query("isbn:$isbn", 1).firstOrNull()
 
     override suspend fun query(keywords: String, max: Int): List<Book> {
+        // Google Books fails on empty query (#121)
+        if (keywords.isBlank()) {
+            return emptyList()
+        }
+
         val response = catalogue.volumes().list(keywords).setMaxResults(min(40, max).toLong()).execute()
 
         // BUG (Google Books API): The items field is null when no items could be found, return null instead
