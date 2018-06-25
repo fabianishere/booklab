@@ -63,6 +63,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 return UserService(resource: backend.users)
             }
             .inObjectScope(.container)
+        container
+            .register(CatalogueService.self) { r in
+                let backend = r ~> BackendService.self
+                return CatalogueService(resource: backend.catalogue)
+            }
+            .inObjectScope(.container)
         
 
         // Section: Storyboards
@@ -75,6 +81,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .inObjectScope(.container)
         
         // Storyboard controller configurations
+        container.storyboardInitCompleted(ApplicationTabsController.self) { r, c in
+            c.navigator = r ~> NavigatorType.self
+        }
+        
         // SECTION: Welcome
         container.storyboardInitCompleted(LoginViewController.self) { r, c in
             c.navigator = r ~> NavigatorType.self
@@ -85,6 +95,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             c.navigator = r ~> NavigatorType.self
             c.authorizationService = r ~> AuthorizationService.self
             c.userService = r ~> UserService.self
+        }
+        
+        // SECTION: Explore
+        container.storyboardInitCompleted(ExploreViewController.self) { r, c in
+            c.navigator = r ~> NavigatorType.self
+            c.catalogueService = r ~> CatalogueService.self
+        }
+        
+        // SECTION: Catalogue
+        container.storyboardInitCompleted(CatalogueSearchTableViewController.self) { r, c in
+            c.catalogueService = r ~> CatalogueService.self
         }
         
         return container

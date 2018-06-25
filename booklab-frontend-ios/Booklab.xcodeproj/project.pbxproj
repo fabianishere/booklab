@@ -28,15 +28,27 @@
 		1F35E73C20CA01020076ED0D /* Booklab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F35E73B20CA01020076ED0D /* Booklab.swift */; };
 		1F35E74720CA01020076ED0D /* BooklabUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F35E74620CA01020076ED0D /* BooklabUITests.swift */; };
 		1F35E75920CA01C20076ED0D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1F35E75820CA01C20076ED0D /* Assets.xcassets */; };
-		1F4B44C420DAF8730058D936 /* ApplicationSnackbarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4B44C320DAF8730058D936 /* ApplicationSnackbarController.swift */; };
 		1F4B44C620DAFF1A0058D936 /* WelcomeNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4B44C520DAFF1A0058D936 /* WelcomeNavigationController.swift */; };
 		1F4B44C820DB0D2B0058D936 /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4B44C720DB0D2B0058D936 /* RegisterViewController.swift */; };
 		1F4B44CA20DB0F800058D936 /* AbstractWelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4B44C920DB0F800058D936 /* AbstractWelcomeViewController.swift */; };
+		1F917C9C20E1913500B28AF1 /* Cosmos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F917C9B20E1913500B28AF1 /* Cosmos.framework */; };
 		1F9329F920D670D3007E2F75 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F9329F620D670D3007E2F75 /* Main.storyboard */; };
 		1F9329FB20D670D3007E2F75 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1F9329F820D670D3007E2F75 /* LaunchScreen.storyboard */; };
 		1FB4611A20E17D65005B02C3 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1FB4611920E17D65005B02C3 /* Info.plist */; };
 		1FB4611D20E17D7F005B02C3 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1FB4611C20E17D7F005B02C3 /* Info.plist */; };
 		1FB4612020E18BA7005B02C3 /* UserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB4611F20E18BA7005B02C3 /* UserService.swift */; };
+		1FB4612C20E18FC9005B02C3 /* ExploreViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB4612220E18FC9005B02C3 /* ExploreViewController.swift */; };
+		1FB4612D20E18FC9005B02C3 /* ExploreNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB4612320E18FC9005B02C3 /* ExploreNavigationController.swift */; };
+		1FB4612E20E18FC9005B02C3 /* CatalogueCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB4612520E18FC9005B02C3 /* CatalogueCollectionViewController.swift */; };
+		1FB4612F20E18FC9005B02C3 /* CatalogueCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB4612620E18FC9005B02C3 /* CatalogueCollectionViewCell.swift */; };
+		1FB4613020E18FC9005B02C3 /* CatalogueBookViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB4612720E18FC9005B02C3 /* CatalogueBookViewController.swift */; };
+		1FB4613120E18FC9005B02C3 /* ApplicationTabsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB4612920E18FC9005B02C3 /* ApplicationTabsController.swift */; };
+		1FB4613220E18FC9005B02C3 /* ApplicationSnackbarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB4612A20E18FC9005B02C3 /* ApplicationSnackbarController.swift */; };
+		1FB4613320E18FC9005B02C3 /* BorderlessNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB4612B20E18FC9005B02C3 /* BorderlessNavigationController.swift */; };
+		1FB4613620E19042005B02C3 /* CatalogueService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB4613520E19042005B02C3 /* CatalogueService.swift */; };
+		1FB4613A20E19085005B02C3 /* CatalogueBookTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB4613720E19085005B02C3 /* CatalogueBookTableViewCell.swift */; };
+		1FB4613B20E19085005B02C3 /* CatalogueSearchTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB4613820E19085005B02C3 /* CatalogueSearchTableViewController.swift */; };
+		1FB4613C20E19085005B02C3 /* CatalogueTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FB4613920E19085005B02C3 /* CatalogueTableViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,16 +94,28 @@
 		1F35E74220CA01020076ED0D /* BooklabUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BooklabUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F35E74620CA01020076ED0D /* BooklabUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BooklabUITests.swift; sourceTree = "<group>"; };
 		1F35E75820CA01C20076ED0D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		1F4B44C320DAF8730058D936 /* ApplicationSnackbarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationSnackbarController.swift; sourceTree = "<group>"; };
 		1F4B44C520DAFF1A0058D936 /* WelcomeNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeNavigationController.swift; sourceTree = "<group>"; };
 		1F4B44C720DB0D2B0058D936 /* RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 		1F4B44C920DB0F800058D936 /* AbstractWelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbstractWelcomeViewController.swift; sourceTree = "<group>"; };
+		1F917C9B20E1913500B28AF1 /* Cosmos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cosmos.framework; path = Carthage/Build/iOS/Cosmos.framework; sourceTree = "<group>"; };
 		1F9329F320D670BD007E2F75 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1F9329F620D670D3007E2F75 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		1F9329F820D670D3007E2F75 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1FB4611920E17D65005B02C3 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1FB4611C20E17D7F005B02C3 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1FB4611F20E18BA7005B02C3 /* UserService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserService.swift; sourceTree = "<group>"; };
+		1FB4612220E18FC9005B02C3 /* ExploreViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExploreViewController.swift; sourceTree = "<group>"; };
+		1FB4612320E18FC9005B02C3 /* ExploreNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExploreNavigationController.swift; sourceTree = "<group>"; };
+		1FB4612520E18FC9005B02C3 /* CatalogueCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CatalogueCollectionViewController.swift; sourceTree = "<group>"; };
+		1FB4612620E18FC9005B02C3 /* CatalogueCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CatalogueCollectionViewCell.swift; sourceTree = "<group>"; };
+		1FB4612720E18FC9005B02C3 /* CatalogueBookViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CatalogueBookViewController.swift; sourceTree = "<group>"; };
+		1FB4612920E18FC9005B02C3 /* ApplicationTabsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationTabsController.swift; sourceTree = "<group>"; };
+		1FB4612A20E18FC9005B02C3 /* ApplicationSnackbarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationSnackbarController.swift; sourceTree = "<group>"; };
+		1FB4612B20E18FC9005B02C3 /* BorderlessNavigationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BorderlessNavigationController.swift; sourceTree = "<group>"; };
+		1FB4613520E19042005B02C3 /* CatalogueService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CatalogueService.swift; sourceTree = "<group>"; };
+		1FB4613720E19085005B02C3 /* CatalogueBookTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CatalogueBookTableViewCell.swift; sourceTree = "<group>"; };
+		1FB4613820E19085005B02C3 /* CatalogueSearchTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CatalogueSearchTableViewController.swift; sourceTree = "<group>"; };
+		1FB4613920E19085005B02C3 /* CatalogueTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CatalogueTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +123,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F917C9C20E1913500B28AF1 /* Cosmos.framework in Frameworks */,
 				1F21940F20CEAA9C005A632D /* Swinject.framework in Frameworks */,
 				1F21940C20CEA46D005A632D /* SwinjectStoryboard.framework in Frameworks */,
 				1F21940620CEA080005A632D /* SwinjectAutoregistration.framework in Frameworks */,
@@ -129,6 +154,7 @@
 		1F21940220CE9F53005A632D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1F917C9B20E1913500B28AF1 /* Cosmos.framework */,
 				1F30E01820DA9D1A000B0652 /* Motion.framework */,
 				1F30E01620DA9D13000B0652 /* Material.framework */,
 				1F21941020CEAAA7005A632D /* URLMatcher.framework */,
@@ -143,6 +169,7 @@
 		1F30DFF120D6DCFA000B0652 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				1FB4613420E19042005B02C3 /* Catalogue */,
 				1FB4611E20E18BA7005B02C3 /* User */,
 				1F30DFFB20D6EA0B000B0652 /* Authorization */,
 				1F30DFF220D6DD4C000B0652 /* Backend */,
@@ -180,8 +207,10 @@
 		1F30E01120D9B273000B0652 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				1FB4612420E18FC9005B02C3 /* Catalogue */,
+				1FB4612120E18FC9005B02C3 /* Explore */,
 				1F30E01220D9B278000B0652 /* Welcome */,
-				1F4B44C220DAF8660058D936 /* Util */,
+				1FB4612820E18FC9005B02C3 /* Util */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -342,14 +371,6 @@
 			path = resources;
 			sourceTree = "<group>";
 		};
-		1F4B44C220DAF8660058D936 /* Util */ = {
-			isa = PBXGroup;
-			children = (
-				1F4B44C320DAF8730058D936 /* ApplicationSnackbarController.swift */,
-			);
-			path = Util;
-			sourceTree = "<group>";
-		};
 		1F9329F020D67019007E2F75 /* config */ = {
 			isa = PBXGroup;
 			children = (
@@ -390,6 +411,46 @@
 				1FB4611F20E18BA7005B02C3 /* UserService.swift */,
 			);
 			path = User;
+			sourceTree = "<group>";
+		};
+		1FB4612120E18FC9005B02C3 /* Explore */ = {
+			isa = PBXGroup;
+			children = (
+				1FB4612220E18FC9005B02C3 /* ExploreViewController.swift */,
+				1FB4612320E18FC9005B02C3 /* ExploreNavigationController.swift */,
+			);
+			path = Explore;
+			sourceTree = "<group>";
+		};
+		1FB4612420E18FC9005B02C3 /* Catalogue */ = {
+			isa = PBXGroup;
+			children = (
+				1FB4613720E19085005B02C3 /* CatalogueBookTableViewCell.swift */,
+				1FB4613820E19085005B02C3 /* CatalogueSearchTableViewController.swift */,
+				1FB4613920E19085005B02C3 /* CatalogueTableViewController.swift */,
+				1FB4612520E18FC9005B02C3 /* CatalogueCollectionViewController.swift */,
+				1FB4612620E18FC9005B02C3 /* CatalogueCollectionViewCell.swift */,
+				1FB4612720E18FC9005B02C3 /* CatalogueBookViewController.swift */,
+			);
+			path = Catalogue;
+			sourceTree = "<group>";
+		};
+		1FB4612820E18FC9005B02C3 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				1FB4612920E18FC9005B02C3 /* ApplicationTabsController.swift */,
+				1FB4612A20E18FC9005B02C3 /* ApplicationSnackbarController.swift */,
+				1FB4612B20E18FC9005B02C3 /* BorderlessNavigationController.swift */,
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
+		1FB4613420E19042005B02C3 /* Catalogue */ = {
+			isa = PBXGroup;
+			children = (
+				1FB4613520E19042005B02C3 /* CatalogueService.swift */,
+			);
+			path = Catalogue;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -539,6 +600,7 @@
 				"$(SRCROOT)/Carthage/Build/iOS/SiestaUI.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Motion.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/Material.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/Cosmos.framework",
 			);
 			outputPaths = (
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Swinject.framework",
@@ -550,6 +612,7 @@
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/SiestaUI.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Motion.framework",
 				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Material.framework",
+				"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/Cosmos.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -564,17 +627,28 @@
 			files = (
 				1FB4612020E18BA7005B02C3 /* UserService.swift in Sources */,
 				1F30E01420D9B285000B0652 /* LoginViewController.swift in Sources */,
+				1FB4612C20E18FC9005B02C3 /* ExploreViewController.swift in Sources */,
 				1F30DFF420D6DD6E000B0652 /* BackendService.swift in Sources */,
+				1FB4612F20E18FC9005B02C3 /* CatalogueCollectionViewCell.swift in Sources */,
 				1F4B44CA20DB0F800058D936 /* AbstractWelcomeViewController.swift in Sources */,
 				1F4B44C620DAFF1A0058D936 /* WelcomeNavigationController.swift in Sources */,
 				1F30E00520D6F6E4000B0652 /* BackendModel.swift in Sources */,
+				1FB4613120E18FC9005B02C3 /* ApplicationTabsController.swift in Sources */,
 				1F30DFFD20D6EAF1000B0652 /* AuthorizationService.swift in Sources */,
-				1F4B44C420DAF8730058D936 /* ApplicationSnackbarController.swift in Sources */,
+				1FB4613C20E19085005B02C3 /* CatalogueTableViewController.swift in Sources */,
+				1FB4613020E18FC9005B02C3 /* CatalogueBookViewController.swift in Sources */,
 				1F30DFFF20D6ED7C000B0652 /* AuthorizationToken.swift in Sources */,
 				1F30E00A20D7F5C6000B0652 /* Siesta.swift in Sources */,
+				1FB4613B20E19085005B02C3 /* CatalogueSearchTableViewController.swift in Sources */,
+				1FB4613320E18FC9005B02C3 /* BorderlessNavigationController.swift in Sources */,
 				1F30E00E20D84AF3000B0652 /* AnyCodable.swift in Sources */,
+				1FB4613620E19042005B02C3 /* CatalogueService.swift in Sources */,
+				1FB4613220E18FC9005B02C3 /* ApplicationSnackbarController.swift in Sources */,
 				1F4B44C820DB0D2B0058D936 /* RegisterViewController.swift in Sources */,
+				1FB4612D20E18FC9005B02C3 /* ExploreNavigationController.swift in Sources */,
 				1F21940820CEA0E1005A632D /* Routes.swift in Sources */,
+				1FB4612E20E18FC9005B02C3 /* CatalogueCollectionViewController.swift in Sources */,
+				1FB4613A20E19085005B02C3 /* CatalogueBookTableViewCell.swift in Sources */,
 				1F35E72520CA01010076ED0D /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

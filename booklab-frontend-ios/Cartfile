@@ -4,3 +4,4 @@ github "Swinject/SwinjectStoryboard"
 github "devxoul/URLNavigator"
 github "bustoutsolutions/siesta"
 github "CosmicMind/Material"
+github "evgenyneu/Cosmos" ~> 16.0

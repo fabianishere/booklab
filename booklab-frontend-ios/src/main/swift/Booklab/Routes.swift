@@ -43,5 +43,19 @@ struct Routes {
             }
             return nil
         }
+        
+        navigator.register("/explore") { _, _, _ in
+            main.instantiateViewController(withIdentifier: "explore")
+        }
+        
+        navigator.register("/catalogue/<id:int>") { url, values, context in
+            main.instantiateViewController(withIdentifier: "catalogue-child")
+        }
+        
+        navigator.register("/catalogue") { url, values, context in
+            let controller = main.instantiateViewController(withIdentifier: "catalogue-root") as? CatalogueSearchTableViewController
+            controller?.searchText = context as? String
+            return controller
+        }
     }
 }
