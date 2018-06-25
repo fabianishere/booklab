@@ -59,4 +59,13 @@ class GoogleCatalogueClientTest {
             assertEquals(2, results.size)
         }
     }
+
+    @Test
+    fun `empty query`() {
+        runBlocking {
+            val results = client.query("", 5)
+
+            assertEquals(0, results.size)
+        }
+    }
 }
