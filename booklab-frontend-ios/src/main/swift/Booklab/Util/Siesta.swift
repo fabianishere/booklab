@@ -15,7 +15,6 @@
  */
 
 import Siesta
-import RxSwift
 
 public extension Request {
     public func map(transform: @escaping (Entity<Any>) throws -> Entity<Any>) -> Request {

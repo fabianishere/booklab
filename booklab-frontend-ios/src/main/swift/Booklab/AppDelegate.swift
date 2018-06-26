@@ -63,7 +63,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 return UserService(resource: backend.users)
             }
             .inObjectScope(.container)
-        
+        container
+            .register(CatalogueService.self) { r in
+                let backend = r ~> BackendService.self
+                return CatalogueService(resource: backend.catalogue)
+            }
+            .inObjectScope(.container)
+        container
+            .register(DetectionService.self) { r in
+                let backend = r ~> BackendService.self
+                return DetectionService(resource: backend.detection)
+            }
+            .inObjectScope(.container)
+        container
+            .register(CollectionService.self) { r in
+                let backend = r ~> BackendService.self
+                return CollectionService(resource: backend.collections)
+            }
+            .inObjectScope(.container)
+        container
+            .register(RecommendationService.self) { r in
+                let backend = r ~> BackendService.self
+                return RecommendationService(resource: backend.recommendations)
+            }
+            .inObjectScope(.container)
 
         // Section: Storyboards
         container
@@ -75,6 +98,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             .inObjectScope(.container)
         
         // Storyboard controller configurations
+        container.storyboardInitCompleted(ApplicationTabsController.self) { r, c in
+            c.navigator = r ~> NavigatorType.self
+        }
+        
         // SECTION: Welcome
         container.storyboardInitCompleted(LoginViewController.self) { r, c in
             c.navigator = r ~> NavigatorType.self
@@ -85,6 +112,53 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             c.navigator = r ~> NavigatorType.self
             c.authorizationService = r ~> AuthorizationService.self
             c.userService = r ~> UserService.self
+        }
+        
+        // SECTION: Explore
+        container.storyboardInitCompleted(ExploreViewController.self) { r, c in
+            c.navigator = r ~> NavigatorType.self
+            c.catalogueService = r ~> CatalogueService.self
+        }
+        
+        // SECTION: Settings
+        container.storyboardInitCompleted(SettingsViewController.self) { r, c in
+            c.navigator = r ~> NavigatorType.self
+            c.authorizationService = r ~> AuthorizationService.self
+        }
+        
+        // SECTION: Catalogue
+        container.storyboardInitCompleted(CatalogueSearchTableViewController.self) { r, c in
+            c.catalogueService = r ~> CatalogueService.self
+        }
+        
+        // SECTION: Detection
+        container.storyboardInitCompleted(DetectionViewController.self) { r, c in
+            c.detectionService = r ~> DetectionService.self
+        }
+        container.storyboardInitCompleted(DetectionDrawerViewController.self) { r, c in
+            c.navigator = r ~> NavigatorType.self
+            c.collectionService = r ~> CollectionService.self
+        }
+        
+        // SECTION: Collection
+        container.storyboardInitCompleted(CollectionTableViewController.self) { r, c in
+            c.userService = r ~> UserService.self
+            c.collectionService = r ~> CollectionService.self
+        }
+        container.storyboardInitCompleted(CollectionSelectionViewController.self) { r, c in
+            c.userService = r ~> UserService.self
+            c.collectionService = r ~> CollectionService.self
+        }
+        container.storyboardInitCompleted(CollectionSelectionAddToViewController.self) { r, c in
+            c.userService = r ~> UserService.self
+            c.collectionService = r ~> CollectionService.self
+        }
+        
+        // SECTION: Recommendation
+        container.storyboardInitCompleted(RecommendationSelectionViewController.self) { r, c in
+            c.userService = r ~> UserService.self
+            c.collectionService = r ~> CollectionService.self
+            c.recommendationService = r ~> RecommendationService.self
         }
         
         return container
