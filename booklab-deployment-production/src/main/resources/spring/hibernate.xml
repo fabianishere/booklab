@@ -43,6 +43,11 @@
                 <value>/jpa/schema.xml</value>
             </array>
         </property>
+        <property name="jpaProperties">
+            <props>
+                <prop key="#{T(org.hibernate.cfg.AvailableSettings).KEYWORD_AUTO_QUOTING_ENABLED}">true</prop>
+            </props>
+        </property>
         <property name="jpaVendorAdapter">
             <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
                 <property name="showSql" value="false" />
