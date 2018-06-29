@@ -17,7 +17,20 @@
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <subviews>
+                            <imageView userInteractionEnabled="NO" alpha="0.65000000000000002" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="LoginBackground" translatesAutoresizingMaskIntoConstraints="NO" id="ucw-y3-Ngs">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="tintColor" red="0.91372549020000005" green="0.1176470588" blue="0.38823529410000002" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" secondItem="ucw-y3-Ngs" secondAttribute="bottom" id="PJN-Z2-74g"/>
+                            <constraint firstAttribute="trailing" secondItem="ucw-y3-Ngs" secondAttribute="trailing" id="gZe-0V-Dd7"/>
+                            <constraint firstItem="ucw-y3-Ngs" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="top" id="qud-Sr-dqk"/>
+                            <constraint firstItem="ucw-y3-Ngs" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="vGk-rL-bmX"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
                 </viewController>
@@ -26,4 +39,7 @@
             <point key="canvasLocation" x="53" y="375"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="LoginBackground" width="1000" height="1500"/>
+    </resources>
 </document>

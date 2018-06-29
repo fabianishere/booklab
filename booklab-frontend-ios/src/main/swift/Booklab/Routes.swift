@@ -27,6 +27,47 @@ struct Routes {
      * Initialise the given [NavigatorType].
      */
     static func initialize(container: Container, navigator: NavigatorType) {
-        let storyboard = container ~> SwinjectStoryboard.self
+        let welcome = container.resolve(SwinjectStoryboard.self, name: "Welcome")!
+        let main = container.resolve(SwinjectStoryboard.self, name: "Main")!
+    
+        navigator.register("/welcome") { _, _, _ in
+            if let welcome = welcome.instantiateInitialViewController() {
+                return ApplicationSnackbarController(rootViewController: welcome)
+            }
+            return nil
+        }
+        
+        navigator.register("/") { _, _, _ in
+            if let main = main.instantiateInitialViewController() {
+                return ApplicationSnackbarController(rootViewController: main)
+            }
+            return nil
+        }
+        
+        navigator.register("/explore") { _, _, _ in
+            main.instantiateViewController(withIdentifier: "explore")
+        }
+        
+        navigator.register("/catalogue/<id:int>") { url, values, context in
+            main.instantiateViewController(withIdentifier: "catalogue-child")
+        }
+        
+        navigator.register("/catalogue") { url, values, context in
+            let controller = main.instantiateViewController(withIdentifier: "catalogue-root") as? CatalogueSearchTableViewController
+            controller?.searchText = context as? String
+            return controller
+        }
+        
+        navigator.register("/detection") { _, _, _ in
+            main.instantiateViewController(withIdentifier: "detection")
+        }
+        
+        navigator.register("/collections") { _, _, _ in
+            main.instantiateViewController(withIdentifier: "collections")
+        }
+        
+        navigator.register("/settings") { _, _, _ in
+            main.instantiateViewController(withIdentifier: "settings")
+        }
     }
 }

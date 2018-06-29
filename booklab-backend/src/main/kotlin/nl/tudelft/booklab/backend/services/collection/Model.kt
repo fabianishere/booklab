@@ -37,5 +37,13 @@ data class BookCollection(
     val name: String,
     val books: Set<Book>
 ) {
+    override fun equals(other: Any?): Boolean {
+        return other is BookCollection && id == other.id
+    }
+
+    override fun hashCode(): Int {
+        return id
+    }
+
     override fun toString(): String = "BookCollection(id=$id, name=$name, books=$books)"
 }

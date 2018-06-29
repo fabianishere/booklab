@@ -27,6 +27,7 @@ import com.nhaarman.mockitokotlin2.doThrow
 import com.nhaarman.mockitokotlin2.eq
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.stub
+import com.nhaarman.mockitokotlin2.verify
 import io.ktor.application.Application
 import io.ktor.auth.authenticate
 import io.ktor.http.HttpMethod
@@ -57,6 +58,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.context.support.beans
+import kotlin.test.assertNotNull
 
 /**
  * Unit test suite for the users endpoint of the BookLab REST api.
@@ -693,7 +695,7 @@ internal class CollectionTest {
 
     @Test
     fun `find collection by user id`() = withTestEngine({ module() }) {
-        val collections = mutableListOf<BookCollection>()
+        val collections = mutableSetOf<BookCollection>()
         val user = User(1, "test@example.com", "", collections)
         collections += BookCollection(
             id = 1,
@@ -711,8 +713,68 @@ internal class CollectionTest {
         }
         with(request) {
             assertEquals(HttpStatusCode.OK, response.status())
-            val body: ApiResponse.Success<List<BookCollection>>? = response.content?.let { mapper.readValue(it) }
+            val body: ApiResponse.Success<Set<BookCollection>>? = response.content?.let { mapper.readValue(it) }
             assertEquals(collections, body?.data)
+        }
+    }
+
+    @Test
+    fun `delete collection with invalid user`() = withTestEngine({ module() }) {
+        val collections = mutableSetOf<BookCollection>()
+        val user = User(1, "test@example.com", "", collections)
+        val collection = BookCollection(
+            id = 1,
+            user = user,
+            name = "test",
+            books = setOf(book1)
+        )
+        collections += collection
+
+        collectionService.stub {
+            on { findById(eq(1)) } doReturn collection
+            on { existsById(eq(1)) } doReturn true
+        }
+
+        val request = handleRequest(HttpMethod.Delete, "/api/collections/1/") {
+            configureAuthorization("test", listOf("collection"))
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.Forbidden, response.status())
+            val body: ApiResponse.Failure? = response.content?.let { mapper.readValue(it) }
+            assertEquals("forbidden", body?.error?.code)
+        }
+    }
+
+    @Test
+    fun `delete collection with valid user`() = withTestEngine({ module() }) {
+        val collections = mutableSetOf<BookCollection>()
+        val user = User(1, "test@example.com", "", collections)
+        val collection = BookCollection(
+            id = 1,
+            user = user,
+            name = "test",
+            books = setOf(book1)
+        )
+        collections += collection
+
+        collectionService.stub {
+            on { findById(eq(1)) } doReturn collection
+            on { existsById(eq(1)) } doReturn true
+        }
+
+        userService.stub {
+            on { findById(eq(1)) } doReturn user
+            on { findByEmail(eq("test@example.com")) } doReturn user
+        }
+
+        val request = handleRequest(HttpMethod.Delete, "/api/collections/1/") {
+            configureAuthorization("test", listOf("collection"))
+        }
+        with(request) {
+            assertEquals(HttpStatusCode.OK, response.status())
+            val body: ApiResponse.Success<Unit>? = response.content?.let { mapper.readValue(it) }
+            assertNotNull(body)
+            verify(collectionService).delete(eq(collection))
         }
     }
 

@@ -90,7 +90,7 @@ class BookCollectionService(private val repository: BookCollectionRepository) {
     }
 
     /**
-     * Register the given collection collection to the specified repository.
+     * Register the given book collection to the specified repository.
      *
      * @param collection The collection to register.
      * @return The collection that has been registered.
@@ -113,6 +113,17 @@ class BookCollectionService(private val repository: BookCollectionRepository) {
                 e.message ?: "A constraint violation occurred"
             )
         }
+    }
+
+    /**
+     * Delete the given book collection from the underlying repository.
+     *
+     * @param collection The collection to delete.
+     */
+    @Transactional
+    @Throws(BookCollectionServiceException::class)
+    fun delete(collection: BookCollection) {
+        repository.deleteById(collection.id)
     }
 }
 
