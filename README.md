@@ -7,7 +7,14 @@
 
 ## Introduction
 BookLab allows users to quickly scan the books on their bookshelves and provides
-recommendations based on your collection when scanning other bookshelves.
+recommendations based on your collection when scanning other bookshelves. Click 
+the image below for a video preview of the application:
+
+<p align="center">
+    <a href="https://www.youtube.com/watch?v=LiuYcdHfqjM">
+        <img src="http://img.youtube.com/vi/LiuYcdHfqjM/0.jpg" alt="Booklab Preview">
+    </a>
+</p>
 
 ## Quick Start
 
